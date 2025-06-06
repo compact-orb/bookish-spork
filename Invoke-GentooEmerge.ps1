@@ -1,13 +1,13 @@
 param(
     [string]$Packages,
 
-    [switch]$Resume,
+    [bool]$Resume,
 
     [Int32]$Bootstrap,
 
     [Int32]$PortageProfile,
 
-    [switch]$EmergePerl
+    [bool]$EmergePerl
 )
 
 $ErrorActionPreference = "Stop"
