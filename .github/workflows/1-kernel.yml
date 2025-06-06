@@ -35,6 +35,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "llvm-runtimes/libunwind sys-kernel/gentoo-kernel net-vpn/ovpn-dco"
 
       - name: Clean Up Emerge
+        if: always()
         run: sudo --preserve-env pwsh -File ./Invoke-Gentoo.ps1 -Clean
 
       - name: Unmount Filesystems
