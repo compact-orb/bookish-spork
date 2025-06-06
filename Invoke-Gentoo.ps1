@@ -31,5 +31,6 @@ umount /mnt/gentoo/mnt /mnt/gentoo/opt/microsoft
 Remove-Item -Path /mnt/gentoo/opt/microsoft
 
 if ($Error.Count -gt 0) {
+    Write-Host -Object "An error occurred"
     exit 1
 }
