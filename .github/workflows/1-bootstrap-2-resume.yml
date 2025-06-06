@@ -20,18 +20,18 @@ jobs:
         run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh ./Copy-Gentoo.ps1 -From -Bootstrap
+        run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -From -Bootstrap
 
       - name: Mount Filesystems
-        run: sudo --preserve-env pwsh ./Mount-Gentoo.ps1
+        run: sudo --preserve-env pwsh -File ./Mount-Gentoo.ps1
 
       - name: Emerge
-        run: sudo --preserve-env pwsh ./Invoke-Gentoo.ps1 -Resume -Bootstrap 1
+        run: sudo --preserve-env pwsh -File ./Invoke-Gentoo.ps1 -Resume -Bootstrap 1
 
       - name: Unmount Filesystems
         if: always()
-        run: sudo --preserve-env pwsh ./Dismount-Gentoo.ps1
+        run: sudo --preserve-env pwsh -File ./Dismount-Gentoo.ps1
 
       - name: Upload Gentoo
         if: success() || failure()
-        run: sudo --preserve-env pwsh ./Copy-Gentoo.ps1 -To
+        run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -To
