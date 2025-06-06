@@ -10,13 +10,6 @@ param(
     [switch]$EmergePerl
 )
 
-$scriptFailed = $false
-
-trap {
-    $scriptFailed = $true
-    continue
-}
-
 New-Item -Path /mnt/gentoo/opt/microsoft -ItemType Directory
 
 mount --bind /opt/microsoft /mnt/gentoo/opt/microsoft
