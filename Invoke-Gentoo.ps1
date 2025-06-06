@@ -10,12 +10,16 @@ param(
     [switch]$EmergePerl
 )
 
-if (-not $Resume) {
-    $Resume = $false
+$resume = $false
+
+if ($Resume) {
+    $resume = $true
 }
 
-if (-not $EmergePerl) {
-    $EmergePerl = $false
+$emergePerl = $false
+
+if ($EmergePerl) {
+    $emergePerl = $true
 }
 
 New-Item -Path /mnt/gentoo/opt/microsoft -ItemType Directory
