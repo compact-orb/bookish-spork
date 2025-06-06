@@ -11,7 +11,7 @@ param(
 )
 
 if (-not $Resume) {
-    $Packages = $false
+    $Resume = $false
 }
 
 if (-not $EmergePerl) {
