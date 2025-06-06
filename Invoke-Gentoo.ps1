@@ -29,6 +29,6 @@ umount /mnt/gentoo/mnt /mnt/gentoo/opt/microsoft
 
 Remove-Item -Path /mnt/gentoo/opt/microsoft
 
-if ($scriptFailed) {
+if ($Error.Count -gt 0) {
     exit 1
 }
