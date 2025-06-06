@@ -10,6 +10,14 @@ param(
     [switch]$EmergePerl
 )
 
+if (-not $Resume) {
+    $Packages = $false
+}
+
+if (-not $EmergePerl) {
+    $EmergePerl = $false
+}
+
 New-Item -Path /mnt/gentoo/opt/microsoft -ItemType Directory
 
 mount --bind /opt/microsoft /mnt/gentoo/opt/microsoft
