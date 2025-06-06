@@ -3,7 +3,7 @@ param(
 
     [switch]$Resume,
 
-    [switch]$Bootstrap,
+    [Int32]$Bootstrap,
 
     [Int32]$PortageProfile,
 

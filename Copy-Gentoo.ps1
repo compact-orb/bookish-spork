@@ -15,7 +15,7 @@ if ($From) {
         $fileName = "$env:CONFIG_PREFIX.tar.zstd"
     }
 
-    aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$fileName
+    aria2c --dir=/mnt --header="AccessKey: $env:BUNNY_STORAGE_ACCESS_KEY" --header="accept: */*" https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName
 
     New-Item -Path /mnt/gentoo -ItemType Directory
 
