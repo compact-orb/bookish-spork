@@ -10,6 +10,13 @@ param(
     [switch]$EmergePerl
 )
 
+$scriptFailed = $false
+
+trap {
+    $scriptFailed = $true
+    continue
+}
+
 New-Item -Path /mnt/gentoo/opt/microsoft -ItemType Directory
 
 mount --bind /opt/microsoft /mnt/gentoo/opt/microsoft
@@ -23,3 +30,7 @@ chroot /mnt/gentoo /opt/microsoft/powershell/7/pwsh -Command "$scriptPath"
 umount /mnt/gentoo/mnt /mnt/gentoo/opt/microsoft
 
 Remove-Item -Path /mnt/gentoo/opt/microsoft
+
+if ($scriptFailed) {
+    exit 1
+}
