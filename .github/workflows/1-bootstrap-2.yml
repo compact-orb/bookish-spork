@@ -17,21 +17,21 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install PowerShell
-        run: sudo bash ./install-powershell.sh
+        run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo pwsh ./Copy-Gentoo.ps1 -From -Bootstrap
+        run: sudo --preserve-env pwsh ./Copy-Gentoo.ps1 -From -Bootstrap
 
       - name: Mount Filesystems
-        run: sudo pwsh ./Mount-Gentoo.ps1
+        run: sudo --preserve-env pwsh ./Mount-Gentoo.ps1
 
       - name: Emerge
-        run: sudo pwsh ./Invoke-Gentoo.ps1 -Bootstrap 1
+        run: sudo --preserve-env pwsh ./Invoke-Gentoo.ps1 -Bootstrap 1
 
       - name: Unmount Filesystems
         if: always()
-        run: sudo pwsh ./Dismount-Gentoo.ps1
+        run: sudo --preserve-env pwsh ./Dismount-Gentoo.ps1
 
       - name: Upload Gentoo
         if: success() || failure()
-        run: sudo pwsh ./Copy-Gentoo.ps1 -To
+        run: sudo --preserve-env pwsh ./Copy-Gentoo.ps1 -To

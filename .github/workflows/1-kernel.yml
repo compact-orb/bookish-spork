@@ -17,27 +17,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install PowerShell
-        run: sudo bash ./install-powershell.sh
+        run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo pwsh ./Copy-Gentoo.ps1 -From -Bootstrap
+        run: sudo --preserve-env pwsh ./Copy-Gentoo.ps1 -From -Bootstrap
 
       - name: Set Up Binary Packages
-        run: sudo pwsh ./Copy-GentooBinaryPackages.ps1 -From
+        run: sudo --preserve-env pwsh ./Copy-GentooBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
-        run: sudo pwsh ./Mount-Gentoo.ps1
+        run: sudo --preserve-env pwsh ./Mount-Gentoo.ps1
 
       - name: Emerge
-        run: sudo pwsh ./Invoke-Gentoo.ps1 -Packages "llvm-runtimes/libunwind sys-kernel/gentoo-kernel net-vpn/ovpn-dco"
+        run: sudo --preserve-env pwsh ./Invoke-Gentoo.ps1 -Packages "llvm-runtimes/libunwind sys-kernel/gentoo-kernel net-vpn/ovpn-dco"
 
       - name: Unmount Filesystems
         if: always()
-        run: sudo pwsh ./Dismount-Gentoo.ps1
+        run: sudo --preserve-env pwsh ./Dismount-Gentoo.ps1
 
       - name: Upload Gentoo Binary Packages
-        run: sudo pwsh ./Copy-GentooBinaryPackages.ps1 -To
+        run: sudo --preserve-env pwsh ./Copy-GentooBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
         if: success() || failure()
-        run: sudo pwsh ./Copy-Gentoo.ps1 -To
+        run: sudo --preserve-env pwsh ./Copy-Gentoo.ps1 -To
