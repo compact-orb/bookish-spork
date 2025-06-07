@@ -32,7 +32,7 @@ if ($From) {
     }
 
     Measure-Command -Expression {
-        Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:STORAGE_ZONE_NAME/$env:CONFIG_PREFIX.tar.zst" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile /tmp/$env:CONFIG_PREFIX.tar.zst
+        Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$env:CONFIG_PREFIX.tar.zst" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile /tmp/$env:CONFIG_PREFIX.tar.zst
     }
 } else {
     exit 1
