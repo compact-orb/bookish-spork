@@ -25,7 +25,7 @@ if ($From) {
 
     if (-not $NoOverlay) {
         umount /mnt/gentoo/var/cache/binpkgs
-        
+
         Remove-Item -Path /mnt/gentoo/var/cache/binpkgs-lowerdir, /mnt/gentoo/var/cache/binpkgs-upperdir, /mnt/gentoo/var/cache/binpkgs-workdir -Recurse -Force
     }
 } else {
