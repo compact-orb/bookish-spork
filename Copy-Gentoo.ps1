@@ -19,7 +19,11 @@ if ($From) {
 
     New-Item -Path /mnt/gentoo -ItemType Directory
 
-    tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --xattrs-include="*.*"
+    if ($Bootstrap -eq 0) {
+        tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --xattrs-include="*.*"
+    } else {
+        zstd --decompress --long=31 --stdout /tmp/$fileName | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
+    }
 
     Remove-Item -Path /tmp/$fileName
 
