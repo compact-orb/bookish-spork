@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 if ($From) {
-    if ($Bootstrap -eq 0) {
+    if ($Bootstrap) {
         $fileName = "$env:CONFIG_PREFIX-bootstrap.tar.xz"
     } else {
         $fileName = "$env:CONFIG_PREFIX.tar.zst"
@@ -19,7 +19,7 @@ if ($From) {
 
     New-Item -Path /mnt/gentoo -ItemType Directory
 
-    if ($Bootstrap -eq 0) {
+    if ($Bootstrap) {
         tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --xattrs-include="*.*"
     } else {
         tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
