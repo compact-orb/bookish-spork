@@ -26,9 +26,9 @@ switch ($Bootstrap) {
             eselect --brief profile set $PortageProfile
         }
 
-        Set-Content -Path /etc/portage/package.use/bootstrap -Value "*/* -pgo"
-
         Set-Content -Path /etc/portage/package.env/bootstrap -Value "*/* gcc.conf"
+
+        Set-Content -Path /etc/portage/package.use/bootstrap -Value "*/* -pgo"
 
         emerge llvm-core/clang
 
