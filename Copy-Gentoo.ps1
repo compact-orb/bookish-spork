@@ -25,7 +25,7 @@ if ($From) {
 
     Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc
 } elseif ($To) {
-    Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/db/repos/*, /mnt/gentoo/var/tmp/* -Recurse
+    Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/db/repos/*, /mnt/gentoo/var/tmp/* -Recurse -Force
 
     Measure-Command -Expression {
         tar --create --directory=/mnt/gentoo --file=/tmp/$env:CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
