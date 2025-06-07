@@ -1,5 +1,3 @@
-# Simple script to copy a directory to and from Bunny Storage.
-
 param(
     [switch]$From,
 
