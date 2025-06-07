@@ -11,7 +11,7 @@ $ErrorActionPreference = "Stop"
 if ($From) {
     New-Item -Path /mnt/gentoo/var/cache/binpkgs-lowerdir, /mnt/gentoo/var/cache/binpkgs-upperdir, /mnt/gentoo/var/cache/binpkgs-workdir -ItemType Directory
 
-    ./Copy-BSDirectory.ps1 -SourcePath "/$env:CONFIG_PREFIX" -DestinationPath "/mnt/gentoo/var/cache/binpkgs-lowerdir" -FromBS -ThrottleLimit 8
+    ./Copy-BsDirectory.ps1 -SourcePath "/$env:CONFIG_PREFIX" -DestinationPath "/mnt/gentoo/var/cache/binpkgs-lowerdir" -FromBs -ThrottleLimit 8
 
     mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
 } elseif ($To) {
@@ -21,7 +21,7 @@ if ($From) {
         $binpkgsPath = "/mnt/gentoo/var/cache/binpkgs-upperdir"
     }
 
-    ./Copy-BSDirectory.ps1 -SourcePath "$binpkgsPath" -DestinationPath "/$env:CONFIG_PREFIX" -ToBS -ThrottleLimit 8
+    ./Copy-BsDirectory.ps1 -SourcePath "$binpkgsPath" -DestinationPath "/$env:CONFIG_PREFIX" -ToBs -ThrottleLimit 8
 
     if (-not $NoOverlay) {
         umount /mnt/gentoo/var/cache/binpkgs

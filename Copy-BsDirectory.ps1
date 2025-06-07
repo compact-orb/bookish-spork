@@ -5,9 +5,9 @@ param(
 
     [string]$DestinationPath,
 
-    [switch]$FromBS,
+    [switch]$FromBs,
 
-    [switch]$ToBS,
+    [switch]$ToBs,
 
     [Int32]$MaximumRetryCount = 4,
 
@@ -18,7 +18,7 @@ param(
     [switch]$NoExecute
 )
 
-function FromBS {
+function FromBs {
     param(
         [Parameter(Mandatory = $true)]
         [string]$SourcePath,
@@ -34,10 +34,10 @@ function FromBS {
             $httpResponse = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$SourcePath/" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method GET
 
             $httpResponse | ForEach-Object -Parallel {
-                . $using:PSCommandPath -SourcePath $using:SourcePath -DestinationPath $using:DestinationPath -FromBS -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
+                . $using:PSCommandPath -SourcePath $using:SourcePath -DestinationPath $using:DestinationPath -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
 
                 if ($_.IsDirectory) {
-                    FromBS -SourcePath "$SourcePath/$($_.ObjectName)" -DestinationPath "$DestinationPath/$($_.ObjectName)"
+                    FromBs -SourcePath "$SourcePath/$($_.ObjectName)" -DestinationPath "$DestinationPath/$($_.ObjectName)"
                 } else {
                     aria2c --dir=$DestinationPath --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --max-tries=$MaximumRetryCount --quiet --retry-wait=$RetryIntervalSec https://$env:BUNNY_STORAGE_ENDPOINT/$SourcePath/$($_.ObjectName)
 
@@ -65,7 +65,7 @@ function FromBS {
     }
 }
 
-function ToBS {
+function ToBs {
     param(
         [Parameter(Mandatory = $true)]
         [string]$SourcePath,
@@ -95,12 +95,12 @@ function ToBS {
 }
 
 if (-not $NoExecute) {
-    if ($FromBS -and $ToBS) {
+    if ($FromBs -and $ToBs) {
         exit 1
-    } elseif ($FromBS) {
-        FromBS -SourcePath "$env:BUNNY_STORAGE_ZONE_NAME$SourcePath" -DestinationPath "$DestinationPath"
-    } elseif ($ToBS) {
-        ToBS -SourcePath "$SourcePath" -DestinationPath "$env:BUNNY_STORAGE_ZONE_NAME$DestinationPath"
+    } elseif ($FromBs) {
+        FromBs -SourcePath "$env:BUNNY_STORAGE_ZONE_NAME$SourcePath" -DestinationPath "$DestinationPath"
+    } elseif ($ToBs) {
+        ToBs -SourcePath "$SourcePath" -DestinationPath "$env:BUNNY_STORAGE_ZONE_NAME$DestinationPath"
     } else {
         exit 1
     }
