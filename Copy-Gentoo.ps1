@@ -3,6 +3,8 @@ param(
 
     [switch]$To,
 
+    [switch]$Temporary,
+
     [switch]$Bootstrap
 )
 
@@ -29,14 +31,20 @@ if ($From) {
 
     Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc
 } elseif ($To) {
+    if ($Temporary) {
+        $fileName = "$env:CONFIG_PREFIX-temporary.tar.zst"
+    } else {
+        $fileName = "$env:CONFIG_PREFIX.tar.zst"
+    }
+
     Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/db/repos/*, /mnt/gentoo/var/tmp/* -Recurse -Force
 
     Measure-Command -Expression {
-        tar --create --directory=/mnt/gentoo --file=/tmp/$env:CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
+        tar --create --directory=/mnt/gentoo --file=/tmp/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
     }
 
     Measure-Command -Expression {
-        Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$env:CONFIG_PREFIX.tar.zst" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile /tmp/$env:CONFIG_PREFIX.tar.zst
+        Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile /tmp/$fileName
     }
 } else {
     exit 1

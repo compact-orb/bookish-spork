@@ -40,5 +40,4 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Dismount-Gentoo.ps1
 
       - name: Upload Gentoo
-        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -To
