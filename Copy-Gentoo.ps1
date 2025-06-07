@@ -9,7 +9,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 if ($From) {
-    if ($Bootstrap) {
+    if ($Bootstrap -eq 0) {
         $fileName = "$env:CONFIG_PREFIX-bootstrap.tar.xz"
     } else {
         $fileName = "$env:CONFIG_PREFIX.tar.zstd"
