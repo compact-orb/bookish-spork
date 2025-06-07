@@ -22,7 +22,7 @@ if ($From) {
     if ($Bootstrap -eq 0) {
         tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --xattrs-include="*.*"
     } else {
-        zstd --decompress --long=31 --stdout /tmp/$fileName | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
+        tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
     }
 
     Remove-Item -Path /tmp/$fileName
