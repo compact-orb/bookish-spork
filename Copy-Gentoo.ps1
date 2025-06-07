@@ -12,7 +12,7 @@ if ($From) {
     if ($Bootstrap -eq 0) {
         $fileName = "$env:CONFIG_PREFIX-bootstrap.tar.xz"
     } else {
-        $fileName = "$env:CONFIG_PREFIX.tar.zstd"
+        $fileName = "$env:CONFIG_PREFIX.tar.zst"
     }
 
     aria2c --dir=/tmp --header="AccessKey: $env:BUNNY_STORAGE_ACCESS_KEY" --header="accept: */*" https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName
