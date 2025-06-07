@@ -42,7 +42,7 @@ switch ($Bootstrap) {
         if ($Resume) {
             timeout 19800 emerge --buildpkg=n --emptytree --resume
         } else {
-            timeout 19800 emerge --buildpkg=n --emptytree @system
+            timeout 19800 emerge --buildpkg=n --emptytree "@system"
         }
 
         Remove-Item -Path /etc/portage/package.use/bootstrap
@@ -51,7 +51,7 @@ switch ($Bootstrap) {
         if ($Resume) {
             timeout 19800 emerge --emptytree --resume
         } else {
-            timeout 19800 emerge --emptytree @world
+            timeout 19800 emerge --emptytree "@world"
         }
     }
     default {
