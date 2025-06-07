@@ -40,7 +40,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Dismount-Gentoo.ps1
 
       - name: Upload Gentoo Binary Packages
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackages.ps1 -To -NoOverlay
+        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To -NoOverlay
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -To
