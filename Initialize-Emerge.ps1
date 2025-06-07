@@ -2,6 +2,9 @@ param(
     [switch]$Clean
 )
 
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
+
 switch ($Clean) {
     $true {
         Remove-Item -Path /mnt/gentoo/usr/local/bin/pwsh

@@ -18,6 +18,9 @@ param(
     [switch]$NoExecute
 )
 
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
+
 function FromBs {
     param(
         [Parameter(Mandatory = $true)]
@@ -39,11 +42,11 @@ function FromBs {
                 if ($_.IsDirectory) {
                     FromBs -SourcePath "$SourcePath/$($_.ObjectName)" -DestinationPath "$DestinationPath/$($_.ObjectName)"
                 } else {
-                    aria2c --dir=$DestinationPath --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --max-tries=$MaximumRetryCount --quiet --retry-wait=$RetryIntervalSec https://$env:BUNNY_STORAGE_ENDPOINT/$SourcePath/$($_.ObjectName)
+                    try {
+                        aria2c --dir=$DestinationPath --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --max-tries=$MaximumRetryCount --quiet --retry-wait=$RetryIntervalSec https://$env:BUNNY_STORAGE_ENDPOINT/$SourcePath/$($_.ObjectName)
 
-                    if ($LASTEXITCODE -eq 0) {
                         Write-Host -Object "Copied $($_.ObjectName)"
-                    } else {
+                    } catch {
                         Write-Host -Object "Failed to copy $($_.ObjectName)"
                     }
                 }
