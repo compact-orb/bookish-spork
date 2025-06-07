@@ -26,14 +26,14 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Mount-Gentoo.ps1
 
       - name: Set Up Emerge
-        run: sudo --preserve-env pwsh -File ./Invoke-Gentoo.ps1
+        run: sudo --preserve-env pwsh -File ./Initialize-Emerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Bootstrap 2 -Resume
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-Emerge.ps1 -Bootstrap 2 -Resume
 
       - name: Clean Up Emerge
         if: always()
-        run: sudo --preserve-env pwsh -File ./Invoke-Gentoo.ps1 -Clean
+        run: sudo --preserve-env pwsh -File ./Initialize-Emerge.ps1 -Clean
 
       - name: Unmount Filesystems
         if: always()
