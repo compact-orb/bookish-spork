@@ -44,4 +44,5 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To -NoOverlay
 
       - name: Upload Gentoo
+        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To
