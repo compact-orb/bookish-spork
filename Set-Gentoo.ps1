@@ -1,4 +1,5 @@
 $ErrorActionPreference = "Stop"
+
 $PSNativeCommandUseErrorActionPreference = $true
 
 Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/env, /mnt/gentoo/etc/portage/package.env, /mnt/gentoo/etc/portage/package.use -Recurse -Force -ErrorAction SilentlyContinue

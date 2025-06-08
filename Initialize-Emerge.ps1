@@ -3,6 +3,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
 $PSNativeCommandUseErrorActionPreference = $true
 
 switch ($Clean) {

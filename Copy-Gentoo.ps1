@@ -9,6 +9,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
 $PSNativeCommandUseErrorActionPreference = $true
 
 if ($From) {
