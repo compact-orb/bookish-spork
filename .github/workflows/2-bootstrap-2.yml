@@ -24,7 +24,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
       - name: Mount Filesystems
-        run: sudo --preserve-env pwsh -File ./Mount-Gentoo.ps1
+        run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
       - name: Set Up Emerge
         run: sudo --preserve-env pwsh -File ./Initialize-Emerge.ps1
@@ -38,7 +38,7 @@ jobs:
 
       - name: Unmount Filesystems
         if: always()
-        run: sudo --preserve-env pwsh -File ./Dismount-Gentoo.ps1
+        run: sudo --preserve-env pwsh -File ./DisMount-GentooFilesystem.ps1
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To
