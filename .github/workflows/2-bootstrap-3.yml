@@ -38,7 +38,7 @@ jobs:
 
       - name: Unmount Filesystems
         if: always()
-        run: sudo --preserve-env pwsh -File ./DisMount-GentooFilesystem.ps1
+        run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
 
       - name: Upload Gentoo Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To -NoOverlay
