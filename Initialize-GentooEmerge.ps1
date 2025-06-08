@@ -8,12 +8,9 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 switch ($Clean) {
     $true {
-        Remove-Item -Path /mnt/gentoo/usr/local/bin/pwsh
-
         umount /mnt/gentoo/mnt /mnt/gentoo/opt/microsoft
 
-        Remove-Item -Path /mnt/gentoo/opt/microsoft
-        
+        Remove-Item -Path /mnt/gentoo/opt/microsoft, /mnt/gentoo/usr/local/bin/pwsh
     }
     $false {
         New-Item -Path /mnt/gentoo/opt/microsoft -ItemType Directory
