@@ -5,7 +5,7 @@ source ./variables.sh
 if [ $1 = "official" ]; then
     aria2c --dir=/tmp https://github.com/PowerShell/PowerShell/releases/download/v7.${POWERSHELL_7_VERSION}/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
 else
-    aria2c --dir=/tmp --header="AccessKey: $env:BUNNY_STORAGE_ACCESS_KEY" --header="accept: */*" https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst
+    aria2c --dir=/tmp --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst
 fi
 
 mkdir --parents /opt/microsoft/powershell/7
