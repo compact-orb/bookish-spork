@@ -1,9 +1,9 @@
 # Simple script to copy a directory to and from Bunny Storage.
 
 param(
-    [string]$SourcePath,
+    [string]$Path,
 
-    [string]$DestinationPath,
+    [string]$Destination,
 
     [switch]$FromBs,
 
@@ -25,26 +25,26 @@ $PSNativeCommandUseErrorActionPreference = $true
 function FromBs {
     param(
         [Parameter(Mandatory = $true)]
-        [string]$SourcePath,
+        [string]$Path,
 
         [Parameter(Mandatory = $true)]
-        [string]$DestinationPath
+        [string]$Destination
     )
 
     $attempt = 0
 
     while ($attempt -lt $MaximumRetryCount) {
         try {
-            $httpResponse = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$SourcePath/" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method GET
+            $httpResponse = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$Path/" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method GET
 
             $httpResponse | ForEach-Object -Parallel {
-                . $using:PSCommandPath -SourcePath $using:SourcePath -DestinationPath $using:DestinationPath -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
+                . $using:PSCommandPath -Path $using:Path -Destination $using:Destination -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
 
                 if ($_.IsDirectory) {
-                    FromBs -SourcePath "$SourcePath/$($_.ObjectName)" -DestinationPath "$DestinationPath/$($_.ObjectName)"
+                    FromBs -Path "$Path/$($_.ObjectName)" -Destination "$Destination/$($_.ObjectName)"
                 } else {
                     try {
-                        aria2c --dir=$DestinationPath --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --max-tries=$MaximumRetryCount --quiet --retry-wait=$RetryIntervalSec https://$env:BUNNY_STORAGE_ENDPOINT/$SourcePath/$($_.ObjectName)
+                        aria2c --dir=$Destination --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --max-tries=$MaximumRetryCount --quiet --retry-wait=$RetryIntervalSec https://$env:BUNNY_STORAGE_ENDPOINT/$Path/$($_.ObjectName)
 
                         Write-Host -Object "Copied $($_.ObjectName)"
                     } catch {
@@ -56,11 +56,11 @@ function FromBs {
             break
         } catch {
             if ($httpStatusCode -eq 404) {
-                Write-Host "$SourcePath not found"
+                Write-Host "$Path not found"
 
                 exit 1
             }
-            Write-Host "[$($attempt + 1)/$MaximumRetryCount] Failed to retrieve directory listing for $SourcePath. Status code: $httpStatusCode"
+            Write-Host "[$($attempt + 1)/$MaximumRetryCount] Failed to retrieve directory listing for $Path. Status code: $httpStatusCode"
 
             Start-Sleep -Seconds $RetryIntervalSec
 
@@ -72,18 +72,18 @@ function FromBs {
 function ToBs {
     param(
         [Parameter(Mandatory = $true)]
-        [string]$SourcePath,
+        [string]$Path,
 
         [Parameter(Mandatory = $true)]
-        [string]$DestinationPath
+        [string]$Destination
     )
 
-    Get-ChildItem -Path $SourcePath -Recurse -Name -File | ForEach-Object -Parallel {
+    Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
         $attempt = 0
 
         while ($attempt -lt $using:MaximumRetryCount) {
             try {
-                Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$using:DestinationPath/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile "$($_.FullName)"
+                Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$using:Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile "$($_.FullName)"
 
                 Write-Host -Object "Copied $_"
                 break
@@ -102,9 +102,9 @@ if (-not $NoExecute) {
     if ($FromBs -and $ToBs) {
         exit 1
     } elseif ($FromBs) {
-        FromBs -SourcePath "$env:BUNNY_STORAGE_ZONE_NAME$SourcePath" -DestinationPath "$DestinationPath"
+        FromBs -Path "$env:BUNNY_STORAGE_ZONE_NAME$Path" -Destination "$Destination"
     } elseif ($ToBs) {
-        ToBs -SourcePath "$SourcePath" -DestinationPath "$env:BUNNY_STORAGE_ZONE_NAME$DestinationPath"
+        ToBs -Path "$Path" -Destination "$env:BUNNY_STORAGE_ZONE_NAME$Destination"
     } else {
         exit 1
     }
