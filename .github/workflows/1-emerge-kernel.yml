@@ -21,7 +21,7 @@ jobs:
         run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -From
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
@@ -48,4 +48,4 @@ jobs:
 
       - name: Upload Gentoo
         if: failure()
-        run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -To -Temporary
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To -Temporary

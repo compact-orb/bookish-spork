@@ -21,7 +21,7 @@ jobs:
         run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -From
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-Gentoo.ps1
@@ -41,4 +41,4 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Dismount-Gentoo.ps1
 
       - name: Upload Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-Gentoo.ps1 -To
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To
