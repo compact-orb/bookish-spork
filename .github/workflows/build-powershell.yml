@@ -1,0 +1,22 @@
+name: Build PowerShell
+
+on:
+  workflow_dispatch:
+
+env:
+  BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
+  BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
+  BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
+
+jobs:
+  build-powershell:
+    name: Build PowerShell
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PowerShell
+        run: sudo --preserve-env bash ./install-powershell.sh official
+
+      - name: Build PowerShell
+        run: sudo --preserve-env pwsh -File ./Start-PowerShellBuild.ps1

@@ -12,17 +12,11 @@ mkdir --parents /opt/microsoft/powershell/7
 
 if [ $1 = "official" ]; then
     tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
-else
-    tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst --use-compress-program="zstd --long=31"
-fi
 
-tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
-
-rm /tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
-
-if [ $1 = "official" ]; then
     rm /tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
 else
+    tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst --use-compress-program="zstd --long=31"
+
     rm /tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst
 fi
 
