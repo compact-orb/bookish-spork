@@ -12,6 +12,7 @@ env:
 
 jobs:
   emerge:
+    name: Emerge
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

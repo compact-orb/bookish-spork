@@ -1,4 +1,4 @@
-name: 1 Bootstrap 2 Resume
+name: 2 Bootstrap 2
 
 on:
   workflow_dispatch:
@@ -8,11 +8,11 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 1
+  CONFIG_PREFIX: 2
 
 jobs:
-  bootstrap-2-resume:
-    name: Bootstrap 2 Resume
+  bootstrap-2:
+    name: Bootstrap 2
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-Emerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-Emerge.ps1 -Bootstrap 1 -Resume
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-Emerge.ps1 -Bootstrap 1
 
       - name: Clean Up Emerge
         if: always()
