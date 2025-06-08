@@ -1,4 +1,4 @@
-name: 2 Kernel
+name: 2 Emerge Kernel
 
 on:
   workflow_dispatch:
