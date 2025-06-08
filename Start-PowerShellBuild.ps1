@@ -1,3 +1,5 @@
+# This script builds PowerShell with Invariant Globalization enabled. This is for Gentoo Stage 3s without ICU support.
+
 $ErrorActionPreference = "Stop"
 
 $PSNativeCommandUseErrorActionPreference = $true
