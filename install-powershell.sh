@@ -3,21 +3,21 @@ set -e
 source ./variables.sh
 
 if [ $1 = "official" ]; then
-    aria2c --dir=/tmp https://github.com/PowerShell/PowerShell/releases/download/v7.${POWERSHELL_7_VERSION}/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
+    aria2c --dir=/tmp https://github.com/PowerShell/PowerShell/releases/download/v7.$POWERSHELL_7_VERSION/powershell-7.$POWERSHELL_7_VERSION-linux-x64.tar.gz
 else
-    aria2c --dir=/tmp --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst
+    aria2c --dir=/tmp --header="accept: */*" --header="accesskey: $BUNNY_STORAGE_ACCESS_KEY" https://$BUNNY_STORAGE_ENDPOINT/$BUNNY_STORAGE_ZONE_NAME/powershell-7.$POWERSHELL_7_VERSION-linux-x64.tar.zst
 fi
 
 mkdir --parents /opt/microsoft/powershell/7
 
 if [ $1 = "official" ]; then
-    tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
+    tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.$POWERSHELL_7_VERSION-linux-x64.tar.gz
 
-    rm /tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.gz
+    rm /tmp/powershell-7.$POWERSHELL_7_VERSION-linux-x64.tar.gz
 else
-    tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst --use-compress-program="zstd --long=31"
+    tar --directory=/opt/microsoft/powershell/7 --extract --file=/tmp/powershell-7.$POWERSHELL_7_VERSION-linux-x64.tar.zst --use-compress-program="zstd --long=31"
 
-    rm /tmp/powershell-7.${POWERSHELL_7_VERSION}-linux-x64.tar.zst
+    rm /tmp/powershell-7.$POWERSHELL_7_VERSION-linux-x64.tar.zst
 fi
 
 chmod +x /opt/microsoft/powershell/7/pwsh
