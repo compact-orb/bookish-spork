@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $PSNativeCommandUseErrorActionPreference = $true
 
-. /mnt/Variables.ps1
+. ./Variables.ps1
 
 git clone --branch=v7.$powerShell7Version https://github.com/PowerShell/PowerShell.git /mnt/PowerShell
 
