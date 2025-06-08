@@ -1,3 +1,1 @@
-set -e
-
 POWERSHELL_7_VERSION="5.1"
