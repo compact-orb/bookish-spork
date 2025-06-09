@@ -35,9 +35,7 @@ function FromBs {
 
     while ($attempt -lt $MaximumRetryCount) {
         try {
-            $httpResponse = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$Path/" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method GET
-
-            $httpResponse | ForEach-Object -Parallel {
+            Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$Path/" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method GET | ForEach-Object -Parallel {
                 . $using:PSCommandPath -Path $using:Path -Destination $using:Destination -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
 
                 if ($_.IsDirectory) {
