@@ -3,6 +3,8 @@ param(
 
     [switch]$Resume,
 
+    [switch]$Update,
+
     [Int32]$Bootstrap,
 
     [Int32]$PortageProfile,
@@ -61,10 +63,18 @@ switch ($Bootstrap) {
         }
     }
     default {
-        if ($Resume) {
+        if ($Update) {
+            emerge --deep --newuse --update "@world"
+
+            emerge --depclean
+        } elseif ($Resume) {
             emerge --resume
+
+            emerge --depclean
         } else {
             emerge "$Packages"
+
+            emerge --depclean
         }
     }
 }
