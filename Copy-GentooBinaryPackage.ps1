@@ -25,10 +25,12 @@ if ($From) {
 
     ./Copy-BsDirectory.ps1 -Path "$binpkgsPath" -Destination "/$env:CONFIG_PREFIX" -ToBs -ThrottleLimit 8
 
-    if (-not $NoOverlay) {
+    if ($NoOverlay) {
+        Remove-Item -Path /mnt/gentoo/var/cache/binpkgs/* -Recurse
+    } else {
         umount /mnt/gentoo/var/cache/binpkgs
 
-        Remove-Item -Path /mnt/gentoo/var/cache/binpkgs-lowerdir, /mnt/gentoo/var/cache/binpkgs-upperdir, /mnt/gentoo/var/cache/binpkgs-workdir -Recurse -Force
+        Remove-Item -Path /mnt/gentoo/var/cache/binpkgs-lowerdir, /mnt/gentoo/var/cache/binpkgs-upperdir, /mnt/gentoo/var/cache/binpkgs-workdir -Recurse
     }
 } else {
     exit 1
