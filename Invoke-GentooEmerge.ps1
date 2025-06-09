@@ -19,7 +19,7 @@ $PSNativeCommandUseErrorActionPreference = $true
 emerge-webrsync --revert=$portageSnapshotDate --quiet
 
 switch ($Bootstrap) {
-    0 {
+    1 {
         locale-gen --quiet
 
         eselect --brief locale set 6
@@ -40,7 +40,7 @@ switch ($Bootstrap) {
             emerge --buildpkg=n --oneshot dev-lang/perl
         }
     }
-    1 {
+    2 {
         if ($Resume) {
             timeout 19800 emerge --buildpkg=n --emptytree --resume
         } else {
@@ -49,7 +49,7 @@ switch ($Bootstrap) {
 
         Remove-Item -Path /etc/portage/package.use/bootstrap
     }
-    2 {
+    3 {
         if ($Resume) {
             timeout 19800 emerge --emptytree --resume
 

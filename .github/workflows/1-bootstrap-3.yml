@@ -30,7 +30,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Bootstrap 2
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Bootstrap 3
 
       - name: Clean Up Emerge
         if: always()
