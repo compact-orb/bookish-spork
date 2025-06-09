@@ -54,27 +54,21 @@ switch ($Bootstrap) {
     3 {
         if ($Resume) {
             timeout 19800 emerge --emptytree --resume
-
-            emerge --depclean
         } else {
             timeout 19800 emerge --emptytree "@world"
-
-            emerge --depclean
         }
+
+        emerge --depclean
     }
     default {
         if ($Update) {
             emerge --deep --newuse --update "@world"
-
-            emerge --depclean
         } elseif ($Resume) {
             emerge --resume
-
-            emerge --depclean
         } else {
             emerge "$Packages"
-
-            emerge --depclean
         }
+
+        emerge --depclean
     }
 }
