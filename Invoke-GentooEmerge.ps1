@@ -52,8 +52,12 @@ switch ($Bootstrap) {
     2 {
         if ($Resume) {
             timeout 19800 emerge --emptytree --resume
+
+            emerge --depclean
         } else {
             timeout 19800 emerge --emptytree "@world"
+
+            emerge --depclean
         }
     }
     default {
