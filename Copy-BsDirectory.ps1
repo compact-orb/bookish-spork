@@ -83,12 +83,12 @@ function ToBs {
 
         while ($attempt -lt $using:MaximumRetryCount) {
             try {
-                Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$using:Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile "$($_.FullName)"
+                Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$using:Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$_" | Out-Null
 
                 Write-Host -Object "Copied $_"
                 break
             } catch {
-                Write-Host "[$($attempt + 1)/$using:MaximumRetryCount] Failed to copy $_. Status code: $($_.StatusCode)"
+                Write-Host "[$($attempt + 1)/$using:MaximumRetryCount] Failed to copy $_. Status code: $httpStatusCode"
 
                 Start-Sleep -Seconds $using:RetryIntervalSec
 
