@@ -24,7 +24,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From -Bootstrap
 
       - name: Fix
-        run: Remove-Item -Path /mnt/gentoo/var/cache/binpkgs/* -Recurse
+        run: sudo pwsh -Command Remove-Item -Path /mnt/gentoo/var/cache/binpkgs/* -Recurse
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To
