@@ -66,19 +66,21 @@ switch ($Bootstrap) {
     }
     default {
         if ($Update) {
-            emerge-webrsync --revert=$portageSnapshotDate --quiet
-
             emerge --deep --newuse --update "@world"
+
+            emerge --depclean
         } elseif ($WebRsync) {
             emerge-webrsync --revert=$portageSnapshotDate --quiet
         } elseif ($Sync) {
             emerge --sync
         } elseif ($Resume) {
             emerge --resume
+
+            emerge --depclean
         } else {
             emerge "$Packages"
-        }
 
-        emerge --depclean
+            emerge --depclean
+        }
     }
 }
