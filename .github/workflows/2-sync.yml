@@ -1,0 +1,30 @@
+name: 2 Sync
+
+on:
+  workflow_dispatch:
+
+env:
+  BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
+  BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
+  BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
+  BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
+  CONFIG_PREFIX: 2
+
+jobs:
+  sync:
+    name: Sync
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PowerShell
+        run: sudo --preserve-env bash ./install-powershell.sh
+
+      - name: Set Up Gentoo
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
+
+      - name: Emerge
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Sync
+
+      - name: Upload Gentoo
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To
