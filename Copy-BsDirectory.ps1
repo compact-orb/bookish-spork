@@ -42,7 +42,7 @@ function FromBs {
 
                 if ($_.IsDirectory) {
                     FromBs -Path "$Path/$($_.ObjectName)" -Destination "$Destination/$($_.ObjectName)"
-                } else {
+                } elseif ($_.ObjectName) {
                     try {
                         aria2c --dir=$Destination --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --max-tries=$MaximumRetryCount --quiet --retry-wait=$RetryIntervalSec https://$env:BUNNY_STORAGE_ENDPOINT/$Path/$($_.ObjectName)
 
