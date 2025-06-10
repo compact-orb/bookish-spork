@@ -39,7 +39,7 @@ if ($From) {
         $fileName = "$env:CONFIG_PREFIX.tar.zst"
     }
 
-    Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/db/repos/*, /mnt/gentoo/var/tmp/* -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/tmp/* -Recurse -Force -ErrorAction SilentlyContinue
 
     Measure-Command -Expression {
         tar --create --directory=/mnt/gentoo --file=/tmp/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .

@@ -18,10 +18,10 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 . /mnt/Variables.ps1
 
-emerge-webrsync --revert=$portageSnapshotDate --quiet
-
 switch ($Bootstrap) {
     1 {
+        emerge-webrsync --revert=$portageSnapshotDate --quiet
+
         locale-gen --quiet
 
         eselect --brief locale set 6
@@ -62,6 +62,8 @@ switch ($Bootstrap) {
     }
     default {
         if ($Update) {
+            emerge-webrsync --revert=$portageSnapshotDate --quiet
+
             emerge --deep --newuse --update "@world"
         } elseif ($Resume) {
             emerge --resume
