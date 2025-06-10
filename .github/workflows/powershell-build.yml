@@ -1,4 +1,4 @@
-name: Build PowerShell
+name: PowerShell Build
 
 on:
   workflow_dispatch:
@@ -9,8 +9,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
 
 jobs:
-  build-powershell:
-    name: Build PowerShell
+  powershell-build:
+    name: PowerShell Build
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
