@@ -5,6 +5,8 @@ param(
 
     [switch]$Update,
 
+    [switch]$WebRsync,
+
     [Int32]$Bootstrap,
 
     [Int32]$PortageProfile,
@@ -65,6 +67,8 @@ switch ($Bootstrap) {
             emerge-webrsync --revert=$portageSnapshotDate --quiet
 
             emerge --deep --newuse --update "@world"
+        } elseif ($WebRsync) {
+            emerge-webrsync --revert=$portageSnapshotDate --quiet
         } elseif ($Resume) {
             emerge --resume
         } else {
