@@ -1,3 +1,3 @@
-$portageSnapshotDate = 20250609
+$portageSnapshotDate = 20250610
 
 $powerShell7Version="5.1"
