@@ -22,8 +22,6 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 . /mnt/Variables.ps1
 
-$packages = $Packages -split " "
-
 switch ($Bootstrap) {
     1 {
         emerge-webrsync --revert=$portageSnapshotDate --quiet
@@ -80,7 +78,7 @@ switch ($Bootstrap) {
 
             emerge --depclean
         } else {
-            emerge $packages
+            emerge ($Packages -split " ")
 
             emerge --depclean
         }
