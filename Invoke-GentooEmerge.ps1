@@ -5,7 +5,7 @@ param(
 
     [switch]$Update,
 
-    [switch]$WebRsync,
+    [switch]$Webrsync,
 
     [switch]$Sync,
 
@@ -69,7 +69,7 @@ switch ($Bootstrap) {
             emerge --deep --newuse --update "@world"
 
             emerge --depclean
-        } elseif ($WebRsync) {
+        } elseif ($Webrsync) {
             emerge-webrsync --revert=$portageSnapshotDate --quiet
         } elseif ($Sync) {
             emerge --sync
