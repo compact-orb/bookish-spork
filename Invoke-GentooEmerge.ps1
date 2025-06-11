@@ -78,7 +78,7 @@ switch ($Bootstrap) {
 
             emerge --depclean
         } else {
-            emerge "$Packages"
+            emerge $Packages
 
             emerge --depclean
         }
