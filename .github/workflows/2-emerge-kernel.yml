@@ -9,6 +9,7 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
+  PACKAGES: llvm-runtimes/libunwind sys-kernel/gentoo-kernel
 
 jobs:
   emerge:
@@ -33,7 +34,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "llvm-runtimes/libunwind sys-kernel/gentoo-kernel"
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES"
 
       - name: Clean Up Emerge
         if: always()
