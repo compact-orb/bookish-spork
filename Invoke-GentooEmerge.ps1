@@ -1,5 +1,5 @@
 param(
-    [string[]]$Packages = $Packages -split " ",
+    [string[]]$Packages,
 
     [switch]$Resume,
 
@@ -21,6 +21,8 @@ $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
 . /mnt/Variables.ps1
+
+$packages = $Packages -split " "
 
 switch ($Bootstrap) {
     1 {
@@ -78,7 +80,7 @@ switch ($Bootstrap) {
 
             emerge --depclean
         } else {
-            emerge $Packages
+            emerge $packages
 
             emerge --depclean
         }
