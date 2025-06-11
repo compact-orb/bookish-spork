@@ -40,9 +40,9 @@ function FromBs {
             $httpResponse | ForEach-Object -Parallel {
                 . $using:PSCommandPath -Path $using:Path -Destination $using:Destination -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
 
-                if ($_.IsDirectory) {
+                if (($null -ne $_.IsDirectory) -and ($_.IsDirectory)) {
                     FromBs -Path "$Path/$($_.ObjectName)" -Destination "$Destination/$($_.ObjectName)"
-                } elseif ($_.ObjectName) {
+                } else {
                     try {
                         aria2c --dir=$Destination --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --max-tries=$MaximumRetryCount --quiet --retry-wait=$RetryIntervalSec https://$env:BUNNY_STORAGE_ENDPOINT/$Path/$($_.ObjectName)
 
