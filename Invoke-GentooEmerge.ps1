@@ -1,5 +1,5 @@
 param(
-    [string[]]$Packages,
+    [string]$Packages,
 
     [switch]$Resume,
 
