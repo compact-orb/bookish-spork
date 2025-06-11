@@ -1,5 +1,5 @@
 param(
-    [string[]]$Packages,
+    [string[]]$Packages = $Packages -split " ",
 
     [switch]$Resume,
 
