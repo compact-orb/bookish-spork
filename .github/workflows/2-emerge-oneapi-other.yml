@@ -1,4 +1,4 @@
-name: 2 Emerge OneAPI Other
+name: 2 Emerge oneAPI Other
 
 on:
   workflow_dispatch:
