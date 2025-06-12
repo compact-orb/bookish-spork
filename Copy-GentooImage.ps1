@@ -15,6 +15,8 @@ $PSNativeCommandUseErrorActionPreference = $true
 if ($From) {
     if ($Bootstrap) {
         $fileName = "$env:CONFIG_PREFIX-bootstrap.tar.xz"
+    } elseif ($Temporary) {
+        $fileName = "$env:CONFIG_PREFIX-temporary.tar.zst"
     } else {
         $fileName = "$env:CONFIG_PREFIX.tar.zst"
     }

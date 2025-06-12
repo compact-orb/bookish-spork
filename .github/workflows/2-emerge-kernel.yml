@@ -45,6 +45,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
 
       - name: Upload Gentoo Binary Packages
+        if: always()
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To
 
       - name: Upload Gentoo

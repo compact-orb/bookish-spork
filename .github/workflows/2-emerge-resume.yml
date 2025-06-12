@@ -1,4 +1,4 @@
-name: 1 Emerge Other
+name: 2 Emerge Resume
 
 on:
   workflow_dispatch:
@@ -8,8 +8,7 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 1
-  PACKAGES: app-admin/sudo app-arch/7zip app-arch/rpm app-containers/docker app-containers/docker-cli app-containers/docker-compose app-emulation/virt-manager app-editors/vscode app-misc/screen app-shells/bash-completion app-shells/pwsh-bin dev-python/pip media-fonts/fonts-meta media-fonts/intel-one-mono media-gfx/gimp media-gfx/inkscape media-libs/libva-intel-media-driver media-video/mpv media-video/shotcut media-video/vlc net-misc/aria2 net-misc/moonlight net-misc/mosh net-misc/remmina net-misc/yt-dlp net-vpn/networkmanager-openvpn net-vpn/openvpn net-print/brlaser net-print/gutenprint sys-auth/rtkit sys-block/io-scheduler-udev-rules sys-firmware/intel-microcode sys-fs/exfatprogs sys-fs/f2fs-tools sys-kernel/linux-firmware sys-kernel/gentoo-kernel-bin sys-kernel/installkernel www-client/firefox-bin www-client/google-chrome
+  CONFIG_PREFIX: 2
 
 jobs:
   emerge:
@@ -22,7 +21,7 @@ jobs:
         run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From -Temporary
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
@@ -34,7 +33,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES"
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Resume
 
       - name: Clean Up Emerge
         if: always()
