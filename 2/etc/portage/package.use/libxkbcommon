@@ -1,0 +1,5 @@
+# required by dev-qt/qtbase
+
+# required by dev-qt/qttranslations
+
+x11-libs/libxkbcommon X

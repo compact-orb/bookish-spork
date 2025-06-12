@@ -1,0 +1,3 @@
+# required by www-servers/nginx
+
+app-misc/mime-types nginx
