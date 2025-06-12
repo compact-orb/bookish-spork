@@ -9,7 +9,7 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
-  PACKAGES: app-admin/sudo app-arch/7zip app-containers/docker app-containers/docker-cli app-containers/docker-compose app-misc/jq app-misc/screen app-shells/bash-completion dev-lang/rust-bin dev-libs/mimalloc dev-vcs/git net-misc/aria2 net-misc/mosh net-p2p/qbittorrent net-vpn/i2pd net-vpn/wireguard-tools sys-block/io-scheduler-udev-rules sys-kernel/installkernel sys-kernel/linux-firmware www-servers/nginx
+  PACKAGES: app-admin/sudo app-arch/7zip app-containers/docker app-containers/docker-cli app-containers/docker-compose app-misc/jq app-misc/screen app-shells/bash-completion dev-db/mariadb dev-lang/rust-bin dev-libs/mimalloc dev-vcs/git net-misc/aria2 net-misc/mosh net-p2p/qbittorrent net-vpn/i2pd net-vpn/wireguard-tools sys-block/io-scheduler-udev-rules sys-kernel/installkernel sys-kernel/linux-firmware www-servers/nginx
 
 jobs:
   emerge:

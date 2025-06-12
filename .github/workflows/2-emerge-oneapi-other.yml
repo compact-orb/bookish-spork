@@ -9,7 +9,7 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
-  PACKAGES: dev-db/mariadb net-libs/nodejs
+  PACKAGES: net-libs/nodejs
 
 jobs:
   emerge:
