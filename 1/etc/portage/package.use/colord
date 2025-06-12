@@ -1,0 +1,3 @@
+# dependency required by "media-gfx/simple-scan"
+
+x11-misc/colord vala
