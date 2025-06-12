@@ -18,36 +18,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-#      - name: Install PowerShell
-#        run: sudo --preserve-env bash ./install-powershell.sh
-#
-#      - name: Set Up Gentoo
-#        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
-#
-#      - name: Set Up Binary Packages
-#        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
-#
-#      - name: Mount Filesystems
-#        run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
-#
-#      - name: Set Up Emerge
-#        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
-#
-#      - name: Emerge
-#        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES"
-#
-#      - name: Clean Up Emerge
-#        if: always()
-#        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1 -Clean
-#
-#      - name: Unmount Filesystems
-#        if: always()
-#        run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
-#
-#      - name: Upload Gentoo Binary Packages
-#        if: always()
-#        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To
-#
-#      - name: Upload Gentoo
-#        if: failure()
-#        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To -Temporary
+      - name: Install PowerShell
+        run: sudo --preserve-env bash ./install-powershell.sh
+
+      - name: Set Up Gentoo
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
+
+      - name: Set Up Binary Packages
+        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
+
+      - name: Install Intel oneAPI DPC++/C++ Compiler
+        run: sudo --preserve-env pwsh -File ./Initialize-OneapiDcp++C++Compiler.ps1
+
+      - name: Mount Filesystems
+        run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
+
+      - name: Set Up Emerge
+        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
+
+      - name: Emerge
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES"
+
+      - name: Clean Up Emerge
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1 -Clean
+
+      - name: Unmount Filesystems
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
+
+      - name: Upload Gentoo Binary Packages
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To
+
+      - name: Upload Gentoo
+        if: failure()
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To -Temporary
