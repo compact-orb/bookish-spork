@@ -5,6 +5,10 @@ param(
 
     [switch]$Update,
 
+    [switch]$Oneshot,
+
+    [switch]$Deselect,
+
     [switch]$Webrsync,
 
     [switch]$Sync,
@@ -75,6 +79,14 @@ switch ($Bootstrap) {
             emerge --sync
         } elseif ($Resume) {
             emerge --resume
+
+            emerge --depclean
+        } elseif ($Deselect) {
+            emerge --deselect ($Packages -split " ")
+
+            emerge --depclean
+        } elseif ($Oneshot) {
+            emerge --oneshot ($Packages -split " ")
 
             emerge --depclean
         } else {
