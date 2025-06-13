@@ -9,6 +9,8 @@ param(
 
     [switch]$Deselect,
 
+    [string]$UsepkgExclude,
+
     [switch]$Webrsync,
 
     [switch]$Sync,
@@ -90,7 +92,11 @@ switch ($Bootstrap) {
 
             emerge --depclean
         } else {
-            emerge ($Packages -split " ")
+            if ($UsepkgExclude) {
+                emerge --usepkg-exclude $UsepkgExclude ($Packages -split " ")
+            } else {
+                emerge ($Packages -split " ")
+            }
 
             emerge --depclean
         }
