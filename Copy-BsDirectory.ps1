@@ -41,6 +41,8 @@ function FromBs {
                 . $using:PSCommandPath -Path $using:Path -Destination $using:Destination -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
 
                 if ($_.IsDirectory) {
+                    New-Item -Path "$Destination/$($_.ObjectName)" -ItemType Directory | Out-Null
+
                     FromBs -Path "$Path/$($_.ObjectName)" -Destination "$Destination/$($_.ObjectName)"
                 } elseif (($null -ne $_.IsDirectory) -and (-not $_.IsDirectory)) {
                     try {
