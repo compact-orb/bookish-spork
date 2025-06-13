@@ -1,0 +1,5 @@
+# required by dev-libs/libayatana-appindicator
+
+# required by net-misc/remmina
+
+dev-libs/libdbusmenu gtk3

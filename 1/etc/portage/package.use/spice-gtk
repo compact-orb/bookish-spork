@@ -1,0 +1,3 @@
+# required by app-emulation/virt-manager
+
+net-misc/spice-gtk usbredir

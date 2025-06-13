@@ -1,0 +1,3 @@
+# required by net-misc/moonlight
+
+media-libs/libsdl2 kms

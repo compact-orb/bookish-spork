@@ -1,0 +1,9 @@
+# required by media-libs/assimp
+
+# required by dev-qt/qtquick3d
+
+# required by dev-qt/qtmultimedia
+
+# required by media-video/shotcut
+
+sys-libs/zlib minizip

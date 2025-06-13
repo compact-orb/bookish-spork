@@ -1,0 +1,9 @@
+# required by app-crypt/swtpm
+
+# required by app-emulation/libvirt
+
+# required by app-emulation/libvirt-glib
+
+# required by app-emulation/virt-manager
+
+net-libs/gnutls pkcs11 tools
