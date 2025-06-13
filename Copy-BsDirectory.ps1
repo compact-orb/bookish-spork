@@ -83,7 +83,7 @@ function ToBs {
 
         while ($attempt -lt $using:MaximumRetryCount) {
             try {
-                Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$using:Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$_" | Out-Null
+                Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$using:Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$_" | Out-Null
 
                 Write-Host -Object "Copied $_"
                 break
