@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: media-video/shotcut media-video/vlc
-  USEPKG_EXCLUDE: media-video/shotcut media-video/vlc
+  PACKAGES: media-video/shotcut
+  USEPKG_EXCLUDE: media-video/shotcut
 
 jobs:
   emerge:
