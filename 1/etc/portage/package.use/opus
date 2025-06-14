@@ -1,0 +1,7 @@
+# required by media-sound/jack2
+
+# required by virtual/jack
+
+# required by media-video/shotcut
+
+media-libs/opus custom-modes
