@@ -1,4 +1,4 @@
-name: 1 Emerge Other
+name: 1 Emerge oneAPI Temporary
 
 on:
   workflow_dispatch:
@@ -10,7 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: app-admin/sudo app-arch/7zip app-arch/rpm app-containers/docker app-containers/docker-cli app-containers/docker-compose app-emulation/virt-manager app-editors/vscode app-misc/screen app-shells/bash-completion app-shells/pwsh dev-python/pip media-fonts/fonts-meta media-fonts/intel-one-mono media-libs/libva-intel-media-driver media-video/mpv media-video/shotcut media-video/vlc net-misc/aria2 net-misc/mosh net-misc/remmina net-misc/yt-dlp net-print/brlaser net-print/gutenprint sys-auth/rtkit sys-block/io-scheduler-udev-rules sys-firmware/intel-microcode sys-fs/exfatprogs sys-fs/f2fs-tools sys-kernel/linux-firmware sys-kernel/installkernel www-client/firefox-bin www-client/google-chrome
+  PACKAGES: media-gfx/gimp media-gfx/inkscape
+  USEPKG_EXCLUDE: media-gfx/gimp media-gfx/inkscape
 
 jobs:
   emerge:
@@ -28,6 +29,9 @@ jobs:
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
 
+      - name: Install Intel oneAPI DPC++/C++ Compiler
+        run: sudo --preserve-env pwsh -File ./Initialize-OneapiDcp++C++Compiler.ps1
+
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
@@ -35,7 +39,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES"
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
 
       - name: Clean Up Emerge
         if: always()
