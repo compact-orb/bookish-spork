@@ -5,6 +5,8 @@ param(
 
     [switch]$Update,
 
+    [switch]$KeepGoing,
+
     [switch]$Oneshot,
 
     [switch]$Deselect,
@@ -85,6 +87,10 @@ switch ($Bootstrap) {
             emerge --depclean
         } elseif ($Deselect) {
             emerge --deselect ($Packages -split " ")
+
+            emerge --depclean
+        } elseif ($KeepGoing) {
+            emerge --keep-going ($Packages -split " ")
 
             emerge --depclean
         } elseif ($Oneshot) {
