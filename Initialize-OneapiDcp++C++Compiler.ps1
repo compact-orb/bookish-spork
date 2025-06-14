@@ -9,3 +9,7 @@ aria2c --dir=/tmp --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE
 bash /tmp/intel-dpcpp-cpp-compiler-$($oneapiDcpppCppCompiler)_offline.sh --silent -a --eula accept --ignore-errors --silent --install-dir /mnt/gentoo/opt/intel/oneapi
 
 Remove-Item -Path /tmp/intel-dpcpp-cpp-compiler-$($oneapiDcpppCppCompiler)_offline.sh
+
+Set-Content -Path /mnt/gentoo/etc/ld.so.conf.d/oneapi.conf -Value "/opt/intel/oneapi/compiler/latest/lib"
+
+chroot /mnt/gentoo env-update
