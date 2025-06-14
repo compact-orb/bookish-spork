@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  PACKAGES: media-libs/mesa
+  USEPKG_EXCLUDE: media-libs/mesa
 
 jobs:
   emerge:
