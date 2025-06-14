@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: gnome-base/gnome-shell
-  USEPKG_EXCLUDE: gnome-base/gnome-shell
+  PACKAGES: media-libs/mlt
+  USEPKG_EXCLUDE: media-libs/mlt
 
 jobs:
   emerge:
@@ -39,7 +39,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES" -KeepGoing -UsePkgExclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
 
       - name: Clean Up Emerge
         if: always()
