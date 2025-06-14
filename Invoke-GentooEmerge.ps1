@@ -90,7 +90,11 @@ switch ($Bootstrap) {
 
             emerge --depclean
         } elseif ($KeepGoing) {
-            emerge --keep-going ($Packages -split " ")
+            if ($UsepkgExclude) {
+                emerge --keep-going --usepkg-exclude $UsepkgExclude ($Packages -split " ")
+            } else {
+                emerge --keep-going ($Packages -split " ")
+            }
 
             emerge --depclean
         } elseif ($Oneshot) {
