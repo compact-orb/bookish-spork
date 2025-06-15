@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  PACKAGES: "@world"
+  USEPKG_EXCLUDE: app-arch/7zip dev-libs/wayland gnome-base/* media-gfx/inkscape media-video/ffmpeg
 
 jobs:
   bootstrap-temporary:

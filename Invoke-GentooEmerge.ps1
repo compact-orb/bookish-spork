@@ -1,21 +1,21 @@
 param(
     [string]$Packages,
 
-    [switch]$Resume,
-
-    [switch]$Update,
-
     [switch]$KeepGoing,
 
     [switch]$Oneshot,
 
-    [switch]$Deselect,
-
     [string]$UsepkgExclude,
 
-    [switch]$Webrsync,
+    [switch]$Update,
+
+    [switch]$Resume,
+
+    [switch]$Deselect,
 
     [switch]$Sync,
+
+    [switch]$Webrsync,
 
     [Int32]$Bootstrap,
 
@@ -73,36 +73,40 @@ switch ($Bootstrap) {
         emerge --depclean
     }
     default {
-        if ($Update) {
-            emerge --deep --newuse --update "@world"
-
-            emerge --depclean
+        if ($Sync) {
+            emerge --sync
         } elseif ($Webrsync) {
             emerge-webrsync --revert=$portageSnapshotDate --quiet
-        } elseif ($Sync) {
-            emerge --sync
+        } elseif ($Deselect) {
+            emerge --deselect ($Packages -split " ")
         } elseif ($Resume) {
             emerge --resume
 
             emerge --depclean
-        } elseif ($Deselect) {
-            emerge --deselect ($Packages -split " ")
-
-            emerge --depclean
-        } elseif ($KeepGoing) {
-            if ($UsepkgExclude) {
-                emerge --keep-going --usepkg-exclude $UsepkgExclude ($Packages -split " ")
-            } else {
-                emerge --keep-going ($Packages -split " ")
-            }
-
-            emerge --depclean
-        } elseif ($Oneshot) {
-            emerge --oneshot ($Packages -split " ")
+        } elseif ($Update) {
+            emerge --deep --newuse --update "@world"
 
             emerge --depclean
         } else {
-            if ($UsepkgExclude) {
+            if ($KeepGoing) {
+                if ($Oneshot) {
+                    if ($UsepkgExclude) {
+                        emerge --keep-going --oneshot --usepkg-exclude $UsepkgExclude ($Packages -split " ")
+                    } else {
+                        emerge --keep-going --oneshot ($Packages -split " ")
+                    }
+                } elseif ($UsepkgExclude) {
+                    emerge --keep-going --usepkg-exclude $UsepkgExclude ($Packages -split " ")
+                } else {
+                    emerge --keep-going ($Packages -split " ")
+                }
+            } elseif ($Oneshot) {
+                if ($UsepkgExclude) {
+                    emerge --oneshot --usepkg-exclude $UsepkgExclude ($Packages -split " ")
+                } else {
+                    emerge --oneshot ($Packages -split " ")
+                }
+            } elseif ($UsepkgExclude) {
                 emerge --usepkg-exclude $UsepkgExclude ($Packages -split " ")
             } else {
                 emerge ($Packages -split " ")

@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: dev-libs/wayland app-arch/7zip
-  USEPKG_EXCLUDE: dev-libs/wayland app-arch/7zip
+  PACKAGES: app-arch/7zip dev-libs/wayland gnome-base/gnome-light media-gfx/inkscape media-video/ffmpeg
+  USEPKG_EXCLUDE: app-arch/7zip dev-libs/wayland gnome-base/* media-gfx/inkscape media-video/ffmpeg
 
 jobs:
   emerge:
