@@ -19,3 +19,5 @@ mount --make-slave /mnt/gentoo/run
 mount --bind /tmp /mnt/gentoo/tmp
 
 mount --make-slave /mnt/gentoo/tmp
+
+mount tmpfs /mnt/gentoo/var/tmp/portage
