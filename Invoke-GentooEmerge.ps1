@@ -1,6 +1,8 @@
 param(
     [string]$Packages,
 
+    [switch]$Emptytree,
+
     [switch]$KeepGoing,
 
     [switch]$Oneshot,
@@ -80,37 +82,39 @@ switch ($Bootstrap) {
         } elseif ($Deselect) {
             emerge --deselect ($Packages -split " ")
         } elseif ($Resume) {
-            emerge --resume
+            timeout 19800 emerge --resume
 
             emerge --depclean
         } elseif ($Update) {
-            emerge --deep --newuse --update "@world"
+            timeout 19800 emerge --deep --newuse --update "@world"
 
             emerge --depclean
         } else {
-            if ($KeepGoing) {
-                if ($Oneshot) {
-                    if ($UsepkgExclude) {
-                        emerge --keep-going --oneshot --usepkg-exclude $UsepkgExclude ($Packages -split " ")
-                    } else {
-                        emerge --keep-going --oneshot ($Packages -split " ")
-                    }
-                } elseif ($UsepkgExclude) {
-                    emerge --keep-going --usepkg-exclude $UsepkgExclude ($Packages -split " ")
-                } else {
-                    emerge --keep-going ($Packages -split " ")
-                }
-            } elseif ($Oneshot) {
-                if ($UsepkgExclude) {
-                    emerge --oneshot --usepkg-exclude $UsepkgExclude ($Packages -split " ")
-                } else {
-                    emerge --oneshot ($Packages -split " ")
-                }
-            } elseif ($UsepkgExclude) {
-                emerge --usepkg-exclude $UsepkgExclude ($Packages -split " ")
-            } else {
-                emerge ($Packages -split " ")
+            $emptytreeOption = ""
+
+            if ($Emptytree) {
+                $emptytreeOption = " --emptytree"
             }
+
+            $keepGoingOption = ""
+
+            if ($KeepGoing) {
+                $keepGoingOption = " --keep-going"
+            }
+
+            $oneshotOption = ""
+
+            if ($Oneshot) {
+                $oneshotOption = " --oneshot"
+            }
+
+            $usepkgExcludeOption = ""
+
+            if ($UsepkgExclude) {
+                $usepkgExcludeOption = " --usepkg-exclude `"$UsepkgExclude`""
+            }
+
+            Invoke-Expression -Command "timeout 19800 emerge$emptytreeOption$keepGoingOption$oneshotOption$usepkgExcludeOption $($Packages -split " ")"
 
             emerge --depclean
         }
