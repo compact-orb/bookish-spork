@@ -1,3 +1,5 @@
 gnome-base/* oneapi.conf
 
 gnome-base/gnome-shell no-oneapi.conf
+
+gnome-base/librsvg no-oneapi.conf
