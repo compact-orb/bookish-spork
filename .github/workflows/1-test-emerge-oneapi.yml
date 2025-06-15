@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: gnome-base/gdm
-  USEPKG_EXCLUDE: gnome-base/gdm
+  PACKAGES: dev-libs/wayland
+  USEPKG_EXCLUDE: dev-libs/wayland
 
 jobs:
   test-emerge:
