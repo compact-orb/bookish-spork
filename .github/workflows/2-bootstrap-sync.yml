@@ -13,7 +13,7 @@ env:
 
 jobs:
   bootstrap-sync:
-    name: Sync
+    name: Bootstrap Sync
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
