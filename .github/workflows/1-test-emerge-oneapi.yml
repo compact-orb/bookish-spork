@@ -14,28 +14,9 @@ env:
   USEPKG_EXCLUDE: dev-libs/wayland
 
 jobs:
-  reconfigure-temporary:
-    name: Reconfigure Temporary
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install PowerShell
-        run: sudo --preserve-env bash ./install-powershell.sh
-
-      - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
-
-      - name: Configure Gentoo
-        run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
-
-      - name: Upload Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To -Temporary
-
   test-emerge:
     name: Test Emerge
     runs-on: ubuntu-24.04
-    needs: reconfigure-temporary
     steps:
       - uses: actions/checkout@v4
 
@@ -44,6 +25,9 @@ jobs:
 
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From -Temporary
+
+      - name: Configure Gentoo
+        run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
