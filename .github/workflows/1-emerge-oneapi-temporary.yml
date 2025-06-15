@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: net-misc/moonlight
-  USEPKG_EXCLUDE: net-misc/moonlight
+  PACKAGES: 
+  USEPKG_EXCLUDE: 
 
 jobs:
   emerge:
