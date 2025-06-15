@@ -28,3 +28,5 @@ BINPKG_COMPRESS="zstd"
 BINPKG_COMPRESS_FLAGS="-22 -T8 --long --ultra"
 '@
 }
+
+chroot /mnt/gentoo env-update
