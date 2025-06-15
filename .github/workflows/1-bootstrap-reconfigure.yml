@@ -1,4 +1,4 @@
-name: 1 Reconfigure
+name: 1 Bootstrap Reconfigure
 
 on:
   workflow_dispatch:

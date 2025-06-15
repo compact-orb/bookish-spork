@@ -1,4 +1,4 @@
-name: 2 oneAPI
+name: 2 Bootstrap oneAPI
 
 on:
   workflow_dispatch:

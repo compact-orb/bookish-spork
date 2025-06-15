@@ -1,4 +1,4 @@
-name: 2 Sync
+name: 1 Bootstrap oneAPI
 
 on:
   workflow_dispatch:
@@ -9,11 +9,11 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 2
+  CONFIG_PREFIX: 1
 
 jobs:
-  sync:
-    name: Sync
+  oneapi:
+    name: oneAPI
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -24,22 +24,8 @@ jobs:
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
-      - name: Mount Filesystems
-        run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
-
-      - name: Set Up Emerge
-        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
-
-      - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Sync
-
-      - name: Clean Up Emerge
-        if: always()
-        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1 -Clean
-
-      - name: Unmount Filesystems
-        if: always()
-        run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
+      - name: Install Intel oneAPI DPC++/C++ Compiler
+        run: sudo --preserve-env pwsh -File ./Start-InstallOneapiDcp++C++Compiler.ps1
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To

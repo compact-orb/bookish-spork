@@ -1,4 +1,4 @@
-name: 2 Update
+name: 2 Bootstrap Sync
 
 on:
   workflow_dispatch:
@@ -12,8 +12,8 @@ env:
   CONFIG_PREFIX: 2
 
 jobs:
-  update:
-    name: Update
+  sync:
+    name: Sync
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -24,9 +24,6 @@ jobs:
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
-      - name: Set Up Binary Packages
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
-
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
@@ -34,7 +31,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Update
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Sync
 
       - name: Clean Up Emerge
         if: always()
@@ -43,9 +40,6 @@ jobs:
       - name: Unmount Filesystems
         if: always()
         run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
-
-      - name: Upload Gentoo Binary Packages
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To

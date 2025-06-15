@@ -1,4 +1,4 @@
-name: 2 Reconfigure
+name: 2 Bootstrap Webrsync
 
 on:
   workflow_dispatch:
@@ -12,8 +12,8 @@ env:
   CONFIG_PREFIX: 2
 
 jobs:
-  reconfigure:
-    name: Reconfigure
+  webrsync:
+    name: Webrsync
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +24,22 @@ jobs:
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
-      - name: Configure Gentoo
-        run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
+      - name: Mount Filesystems
+        run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
+
+      - name: Set Up Emerge
+        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
+
+      - name: Emerge
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Webrsync
+
+      - name: Clean Up Emerge
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1 -Clean
+
+      - name: Unmount Filesystems
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To
