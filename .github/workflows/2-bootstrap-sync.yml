@@ -12,7 +12,7 @@ env:
   CONFIG_PREFIX: 2
 
 jobs:
-  sync:
+  bootstrap-sync:
     name: Sync
     runs-on: ubuntu-24.04
     steps:

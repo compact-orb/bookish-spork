@@ -12,7 +12,7 @@ env:
   CONFIG_PREFIX: 1
 
 jobs:
-  webrsync:
+  bootstrap-webrsync:
     name: Webrsync
     runs-on: ubuntu-24.04
     steps:

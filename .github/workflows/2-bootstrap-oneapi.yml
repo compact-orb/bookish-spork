@@ -12,7 +12,7 @@ env:
   CONFIG_PREFIX: 2
 
 jobs:
-  oneapi:
+  bootstrap-oneapi:
     name: oneAPI
     runs-on: ubuntu-24.04
     steps:
