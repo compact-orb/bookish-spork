@@ -22,4 +22,4 @@ mount --make-slave /mnt/gentoo/tmp
 
 New-Item -Path /mnt/gentoo/var/tmp/portage -ItemType Directory
 
-mount tmpfs /mnt/gentoo/var/tmp/portage
+mount --types tmpfs tmpfs /mnt/gentoo/var/tmp/portage
