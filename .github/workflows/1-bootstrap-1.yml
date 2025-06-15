@@ -27,14 +27,14 @@ jobs:
       - name: Configure Gentoo
         run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
 
+      - name: Install Intel oneAPI DPC++/C++ Compiler
+        run: sudo --preserve-env pwsh -File ./Start-InstallOneapiDcp++C++Compiler.ps1
+
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
       - name: Set Up Emerge
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
-
-      - name: Install Intel oneAPI DPC++/C++ Compiler
-        run: sudo --preserve-env pwsh -File ./Start-InstallOneapiDcp++C++Compiler.ps1
 
       - name: Emerge
         run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Bootstrap 1 -PortageProfile 26 -EmergePerl
