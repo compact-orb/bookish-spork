@@ -111,7 +111,7 @@ switch ($Bootstrap) {
             $usepkgExcludeOption = ""
 
             if ($UsepkgExclude) {
-                $usepkgExcludeOption = " --usepkg-exclude `"$UsepkgExclude`""
+                $usepkgExcludeOption = " --usepkg-exclude '$UsepkgExclude'"
             }
 
             $emergeCommand = "timeout 19800 emerge$emptytreeOption$keepGoingOption$oneshotOption$usepkgExcludeOption $($Packages -split " ")"
