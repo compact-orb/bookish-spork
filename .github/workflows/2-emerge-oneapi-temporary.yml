@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
-  PACKAGES: dev-db/mariadb
-  USEPKG_EXCLUDE: dev-db/mariadb
+  PACKAGES: 
+  USEPKG_EXCLUDE: 
 
 jobs:
   emerge:
@@ -28,9 +28,6 @@ jobs:
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
-
-      - name: Install Intel oneAPI DPC++/C++ Compiler
-        run: sudo --preserve-env pwsh -File ./Initialize-OneapiDcp++C++Compiler.ps1
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1

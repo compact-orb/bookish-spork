@@ -1,4 +1,4 @@
-name: 2 Emerge oneAPI Other
+name: 1 Emerge oneAPI Other
 
 on:
   workflow_dispatch:
@@ -9,8 +9,8 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 2
-  PACKAGES: dev-db/mariadb
+  CONFIG_PREFIX: 1
+  PACKAGES: media-gfx/inkscape media-video/ffmpeg
 
 jobs:
   emerge:
@@ -27,9 +27,6 @@ jobs:
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
-
-      - name: Install Intel oneAPI DPC++/C++ Compiler
-        run: sudo --preserve-env pwsh -File ./Initialize-OneapiDcp++C++Compiler.ps1
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1

@@ -1,0 +1,31 @@
+name: 1 oneAPI
+
+on:
+  workflow_dispatch:
+
+env:
+  BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
+  BUNNY_STORAGE_CDN: ${{ secrets.BUNNY_STORAGE_CDN }}
+  BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
+  BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
+  BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
+  CONFIG_PREFIX: 1
+
+jobs:
+  oneapi:
+    name: oneAPI
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PowerShell
+        run: sudo --preserve-env bash ./install-powershell.sh
+
+      - name: Set Up Gentoo
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
+
+      - name: Install Intel oneAPI DPC++/C++ Compiler
+        run: sudo --preserve-env pwsh -File ./Start-InstallOneapiDcp++C++Compiler.ps1
+
+      - name: Upload Gentoo
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To

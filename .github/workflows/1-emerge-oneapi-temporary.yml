@@ -29,9 +29,6 @@ jobs:
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
 
-      - name: Install Intel oneAPI DPC++/C++ Compiler
-        run: sudo --preserve-env pwsh -File ./Initialize-OneapiDcp++C++Compiler.ps1
-
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
