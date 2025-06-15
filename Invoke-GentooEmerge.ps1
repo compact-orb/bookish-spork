@@ -114,7 +114,11 @@ switch ($Bootstrap) {
                 $usepkgExcludeOption = " --usepkg-exclude `"$UsepkgExclude`""
             }
 
-            Invoke-Expression -Command "timeout 19800 emerge$emptytreeOption$keepGoingOption$oneshotOption$usepkgExcludeOption $($Packages -split " ")"
+            $emergeCommand = "timeout 19800 emerge$emptytreeOption$keepGoingOption$oneshotOption$usepkgExcludeOption $($Packages -split " ")"
+
+            Write-Output -InputObject $emergeCommand
+
+            Invoke-Expression -Command $emergeCommand
 
             emerge --depclean
         }
