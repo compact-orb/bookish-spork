@@ -1,0 +1,3 @@
+# required by media-gfx/blender
+
+sci-libs/fftw threads

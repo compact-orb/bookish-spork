@@ -1,3 +1,7 @@
+# required by media-gfx/blender
+
+media-libs/freetype brotli
+
 # required by media-libs/sdl2-ttf
 
 # required by net-misc/moonlight
