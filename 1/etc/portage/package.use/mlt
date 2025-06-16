@@ -1,0 +1,3 @@
+# required by kde-apps/kdenlive
+
+media-libs/mlt frei0r ffmpeg

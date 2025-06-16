@@ -1,0 +1,7 @@
+# required by media-plugins/frei0r-plugins
+
+# required by media-libs/mlt
+
+# required by kde-apps/kdenlive
+
+media-libs/opencv contrib contribdnn features2d
