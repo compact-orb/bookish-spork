@@ -1,0 +1,64 @@
+name: 1 Test Benchmark oneAPI
+
+on:
+  workflow_dispatch:
+
+env:
+  BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
+  BUNNY_STORAGE_CDN: ${{ secrets.BUNNY_STORAGE_CDN }}
+  BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
+  BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
+  BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
+  CONFIG_PREFIX: 1
+  PACKAGES: app-arch/7zip
+  USEPKG_EXCLUDE: app-arch/7zip
+  BENCHMARK_EXPRESSION: 7zz b
+  REMOVE_PACKAGE_ENVIRONMENT: 7zip
+
+jobs:
+  test-benchmark:
+    name: Test Benchmark
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PowerShell
+        run: sudo --preserve-env bash ./install-powershell.sh
+
+      - name: Set Up Gentoo
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
+
+      - name: Configure Gentoo
+        run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
+
+      - name: Set Up Binary Packages
+        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
+
+      - name: Mount Filesystems
+        run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
+
+      - name: Set Up Emerge
+        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
+
+      - name: Emerge
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
+
+      - name: Benchmark
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -Command $BENCHMARK_EXPRESSION
+
+      - name: Remove Environment Override
+        run: sudo --preserve-env rm /mnt/gentoo/etc/portage/package.env/$REMOVE_PACKAGE_ENVIRONMENT
+
+      - name: Emerge
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
+
+      - name: Benchmark
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -Command $BENCHMARK_EXPRESSION
+
+      - name: Clean Up Emerge
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1 -Clean
+
+      - name: Unmount Filesystems
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
