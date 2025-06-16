@@ -1,7 +1,0 @@
-# required by media-plugins/frei0r-plugins
-
-# required by media-libs/mlt
-
-# required by media-video/shotcut
-
-media-libs/opencv contrib contribdnn features2d
