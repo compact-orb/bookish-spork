@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  PACKAGES: gnome-extra/gnome-calculator gnome-extra/gnome-clocks gnome-extra/gnome-logs gnome-extra/gnome-shell-extension-appindicator gnome-extra/gnome-system-monitor gnome-extra/gnome-tweaks gnome-extra/polkit-gnome x11-wm/mutter
+  USEPKG_EXCLUDE: gnome-extra/* x11-wm/mutter
 
 jobs:
   test-emerge:
