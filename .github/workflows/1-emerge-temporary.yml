@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: app-crypt/seahorse app-editors/gnome-text-editor gnome-base/gnome-light gnome-extra/gnome-calculator gnome-extra/gnome-clocks gnome-extra/gnome-logs gnome-extra/gnome-shell-extension-appindicator gnome-extra/gnome-system-monitor gnome-extra/gnome-tweaks media-gfx/eog media-gfx/simple-scan sci-geosciences/gnome-maps app-admin/sudo app-arch/7zip app-arch/rpm app-containers/docker app-containers/docker-cli app-containers/docker-compose app-emulation/virt-manager app-editors/vscode app-misc/screen app-shells/bash-completion app-shells/pwsh dev-python/pip media-fonts/fonts-meta media-fonts/intel-one-mono media-gfx/gimp media-libs/libva-intel-media-driver media-video/mpv media-video/shotcut media-video/vlc net-misc/aria2 net-misc/moonlight net-misc/mosh net-misc/remmina net-misc/yt-dlp net-print/brlaser net-print/gutenprint sys-auth/rtkit sys-block/io-scheduler-udev-rules sys-firmware/intel-microcode sys-fs/exfatprogs sys-fs/f2fs-tools sys-kernel/linux-firmware sys-kernel/installkernel www-client/firefox-bin www-client/google-chrome
-  USEPKG_EXCLUDE: gnome-extra/* x11-wm/mutter
+  PACKAGES: gnome-base/gnome-settings-daemon
+  USEPKG_EXCLUDE: gnome-base/gnome-settings-daemon
 
 jobs:
   emerge:
