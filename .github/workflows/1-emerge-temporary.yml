@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
-  PACKAGES: gnome-base/gvfs
-  USEPKG_EXCLUDE: gnome-base/gvfs
+  PACKAGES: media-gfx/blender
+  USEPKG_EXCLUDE: media-gfx/blender
 
 jobs:
   emerge:
