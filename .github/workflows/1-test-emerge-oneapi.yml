@@ -24,7 +24,7 @@ jobs:
         run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From -Temporary
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
       - name: Configure Gentoo
         run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
