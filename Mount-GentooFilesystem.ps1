@@ -19,7 +19,3 @@ mount --make-slave /mnt/gentoo/run
 mount --bind /tmp /mnt/gentoo/tmp
 
 mount --make-slave /mnt/gentoo/tmp
-
-New-Item -Path /mnt/gentoo/var/tmp/portage -ItemType Directory
-
-mount --types tmpfs tmpfs /mnt/gentoo/var/tmp/portage
