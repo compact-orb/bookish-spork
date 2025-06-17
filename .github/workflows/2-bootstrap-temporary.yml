@@ -10,8 +10,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
-  PACKAGES: net-dns/bind
-  USEPKG_EXCLUDE: net-dns/bind
+  PACKAGES: 
+  USEPKG_EXCLUDE: 
 
 jobs:
   bootstrap-temporary:
