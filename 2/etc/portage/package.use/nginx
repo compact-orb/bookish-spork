@@ -1,1 +1,1 @@
-www-servers/nginx javascript upstream_zone
+www-servers/nginx NGINX_MODULES_HTTP: javascript upstream_zone
