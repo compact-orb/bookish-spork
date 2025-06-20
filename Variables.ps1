@@ -1,4 +1,4 @@
-$portageSnapshotDate = "20250613"
+$portageSnapshotDate = "20250619"
 
 $oneapiDcpppCppCompiler = "2025.1.1.9"
 
