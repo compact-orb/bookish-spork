@@ -31,9 +31,6 @@ jobs:
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
-      - name: Set Up Emerge
-        run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
-
       - name: Emerge
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 1
 
