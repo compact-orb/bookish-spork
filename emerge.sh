@@ -153,10 +153,10 @@ write_file() {
     printf '%s\n' "$2" > "$1"
 }
 
+echo $bootstrap
+
 case $bootstrap in
     1)
-        echo hifdsfdsfsfdsf
-        ls -l /etc/portage/make.profile
 
         emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
