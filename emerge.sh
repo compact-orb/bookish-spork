@@ -213,7 +213,7 @@ case $bootstrap in
             (( oneshot )) && opts+=( --oneshot )
 
             [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
-            
+
             t_emerge "--resume ${opts[@]}"
 
             emerge --depclean
