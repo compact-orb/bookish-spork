@@ -27,9 +27,6 @@ jobs:
       - name: Configure Gentoo
         run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
 
-      - name: Install Intel oneAPI DPC++/C++ Compiler
-        run: sudo --preserve-env pwsh -File ./Start-InstallOneapiDcp++C++Compiler.ps1
-
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
