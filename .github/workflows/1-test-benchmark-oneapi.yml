@@ -42,7 +42,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Benchmark
         run: sudo --preserve-env chroot /mnt/gentoo pwsh -Command $BENCHMARK_EXPRESSION
@@ -51,7 +51,7 @@ jobs:
         run: sudo --preserve-env rm /mnt/gentoo/etc/portage/package.env/$REMOVE_PACKAGE_ENVIRONMENT
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Benchmark
         run: sudo --preserve-env chroot /mnt/gentoo pwsh -Command $BENCHMARK_EXPRESSION

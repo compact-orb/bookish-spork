@@ -40,7 +40,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Clean Up Emerge
         if: always()

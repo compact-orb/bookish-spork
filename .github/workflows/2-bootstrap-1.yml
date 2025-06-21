@@ -23,7 +23,7 @@ jobs:
         run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From -Bootstrap
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From --bootstrap
 
       - name: Configure Gentoo
         run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
@@ -38,7 +38,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh -Bootstrap 1
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 1
 
       - name: Clean Up Emerge
         if: always()
