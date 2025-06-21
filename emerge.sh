@@ -155,6 +155,8 @@ write_file() {
 
 case $bootstrap in
     1)
+        ls -l /etc/portage/make.profile
+
         emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
         locale-gen --quiet
