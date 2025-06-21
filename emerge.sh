@@ -6,7 +6,7 @@ source /mnt/variables.sh
 
 LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,help
 
-eval "$(getopt -o h --longoptions "$LONG_OPTS" -- "$@")" || exit 1
+eval set -- "$(getopt -o h --longoptions "$LONG_OPTS" -- "$@")" || exit 1
 
 set -- $REPLY
 
