@@ -8,8 +8,6 @@ LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,d
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" -- "$@")" || exit 1
 
-set -- $REPLY
-
 packages=""
 
 emptytree=0
