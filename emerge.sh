@@ -151,8 +151,6 @@ write_file() {
     printf '%s\n' "$2" > "$1"
 }
 
-echo $bootstrap
-
 case $bootstrap in
     1)
 
