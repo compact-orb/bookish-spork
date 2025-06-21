@@ -2,7 +2,7 @@ set -e
 
 TIMEOUT=19800
 
-source /mnt/Variables.sh
+source /mnt/variables.sh
 
 LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,help
 
@@ -155,7 +155,7 @@ write_file() {
 
 case $bootstrap in
     1)
-        emerge-webrsync --revert="$portageSnapshotDate" --quiet
+        emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
         locale-gen --quiet
 
@@ -199,7 +199,7 @@ case $bootstrap in
         if   (( sync_flag )); then
             emerge --sync
         elif (( webrsync )); then
-            emerge-webrsync --revert="$portageSnapshotDate" --quiet
+            emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
         elif (( deselect )); then
             read -ra PKG_ARR <<< "$packages"
 
