@@ -153,7 +153,6 @@ write_file() {
 
 case $bootstrap in
     1)
-
         emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
         locale-gen --quiet
