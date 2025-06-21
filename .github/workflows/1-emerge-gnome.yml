@@ -30,14 +30,14 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
 
       - name: Mount Filesystems
-        run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
+        run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
       - name: Unmount Filesystems
         if: always()
-        run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
+        run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
         if: always()

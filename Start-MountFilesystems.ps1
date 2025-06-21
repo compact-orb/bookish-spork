@@ -7,6 +7,8 @@ $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
 if ($Unmount) {
+    umount --lazy /mnt/gentoo/dev /mnt/gentoo/proc /mnt/gentoo/run /mnt/gentoo/sys /mnt/gentoo/tmp /mnt/gentoo/mnt
+} else {
     mount --types proc /proc /mnt/gentoo/proc
 
     mount --rbind /sys /mnt/gentoo/sys
@@ -26,6 +28,4 @@ if ($Unmount) {
     mount --make-slave /mnt/gentoo/tmp
 
     mount --bind ./ /mnt/gentoo/mnt
-} else {
-    umount --lazy /mnt/gentoo/dev /mnt/gentoo/proc /mnt/gentoo/run /mnt/gentoo/sys /mnt/gentoo/tmp /mnt/gentoo/mnt
 }
