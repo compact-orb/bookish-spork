@@ -1,5 +1,3 @@
-# By default, this script downloads PowerShell with Invariant Globalization enabled. This is for Gentoo Stage 3s without ICU support.
-
 set -e
 
 source ./variables.sh
