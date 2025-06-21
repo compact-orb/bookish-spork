@@ -204,7 +204,17 @@ case $bootstrap in
 
             emerge --deselect "${PKG_ARR[@]}"
         elif (( resume )); then
-            t_emerge --resume
+            declare -a opts
+
+            (( emptytree )) && opts+=( --emptytree )
+
+            (( keep_going )) && opts+=( --keep-going )
+
+            (( oneshot )) && opts+=( --oneshot )
+
+            [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
+            
+            t_emerge "--resume ${opts[@]}"
 
             emerge --depclean
         elif (( update )); then
