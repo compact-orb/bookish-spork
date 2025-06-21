@@ -1,4 +1,4 @@
-name: 3 Bootstrap 3
+name: 3 Bootstrap 2
 
 on:
   workflow_dispatch:
