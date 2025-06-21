@@ -4,9 +4,9 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,help
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl
 
-eval set -- "$(getopt --longoptions "$LONG_OPTS" -- "$@")" || exit 1
+eval set -- "$(getopt --longoptions "$LONG_OPTS" --name"$0" --options "" -- "$@")" || exit 1
 
 packages=""
 
