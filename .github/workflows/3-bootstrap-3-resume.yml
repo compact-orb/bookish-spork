@@ -1,4 +1,4 @@
-name: 2 Emerge Temporary
+name: 3 Bootstrap 3 Resume
 
 on:
   workflow_dispatch:
@@ -9,13 +9,11 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 2
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  CONFIG_PREFIX: 3
 
 jobs:
-  emerge:
-    name: Emerge
+  bootstrap-3-resume:
+    name: Bootstrap 3 Resume
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -26,9 +24,6 @@ jobs:
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From
 
-      - name: Set Up Binary Packages
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
-
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Mount-GentooFilesystem.ps1
 
@@ -36,7 +31,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Bootstrap 3 -Resume
 
       - name: Clean Up Emerge
         if: always()
@@ -47,9 +42,8 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Dismount-GentooFilesystem.ps1
 
       - name: Upload Gentoo Binary Packages
-        if: always()
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To
+        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To -NoOverlay
 
       - name: Upload Gentoo
-        if: failure()
-        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To -Temporary
+        if: success() || failure()
+        run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -To

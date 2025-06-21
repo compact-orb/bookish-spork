@@ -1,4 +1,4 @@
-name: 2 Emerge Temporary
+name: 3 Emerge Kernel
 
 on:
   workflow_dispatch:
@@ -9,9 +9,8 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 2
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  CONFIG_PREFIX: 3
+  PACKAGES: llvm-runtimes/libunwind sys-kernel/gentoo-kernel
 
 jobs:
   emerge:
@@ -36,7 +35,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Initialize-GentooEmerge.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES" -UsePkgExclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo pwsh -File /mnt/Invoke-GentooEmerge.ps1 -Packages "$PACKAGES"
 
       - name: Clean Up Emerge
         if: always()
