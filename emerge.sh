@@ -40,8 +40,6 @@ while [[ $# -gt 0 ]]; do
         --packages)
             packages+=" $2"
 
-            emptytree=1
-
             shift 2
             ;;
         --emptytree)
@@ -52,77 +50,55 @@ while [[ $# -gt 0 ]]; do
         --keep-going)
             keep_going=1
 
-            emptytree=1
-
             shift
             ;;
         --oneshot)
             oneshot=1
-
-            emptytree=1
 
             shift
             ;;
         --usepkg-exclude)
             usepkg_exclude=$2
 
-            emptytree=1
-
             shift 2
             ;;
         --update)
             update=1
-
-            emptytree=1
 
             shift
             ;;
         --resume)
             resume=1
 
-            emptytree=1
-
             shift
             ;;
         --deselect)
             deselect=1
-
-            emptytree=1
 
             shift
             ;;
         --sync)
             sync_flag=1
 
-            emptytree=1
-
             shift
             ;;
         --webrsync)
             webrsync=1
-
-            emptytree=1
 
             shift
             ;;
         --bootstrap)
             bootstrap=$2
 
-            emptytree=1
-
             shift 2
             ;;
         --portage-profile)
             portage_profile=$2
 
-            emptytree=1
-
             shift 2
             ;;
         --emerge-perl)
             emerge_perl=1
-
-            emptytree=1
 
             shift
             ;;
