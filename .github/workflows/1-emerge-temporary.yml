@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: net-libs/libnatpmp
-  USEPKG_EXCLUDE: net-libs/libnatpmp
+  PACKAGES: sys-apps/zram-generator
+  USEPKG_EXCLUDE: sys-apps/zram-generator
 
 jobs:
   emerge:
