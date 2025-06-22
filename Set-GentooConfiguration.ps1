@@ -25,7 +25,7 @@ MAKEOPTS="--jobs=8 --load-average=9"
 
 EMERGE_DEFAULT_OPTS="--buildpkg --quiet-build --usepkg"
 BINPKG_COMPRESS="zstd"
-BINPKG_COMPRESS_FLAGS="-22 -T8 --long --ultra"
+BINPKG_COMPRESS_FLAGS="-22 -T4 --long --ultra"
 '@
 }
 
