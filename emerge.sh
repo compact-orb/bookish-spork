@@ -233,6 +233,8 @@ case $bootstrap in
 
             read -ra PKG_ARR <<< "$packages"
 
+            echo t_emerge "${opts[@]}" "${PKG_ARR[@]}"
+
             t_emerge "${opts[@]}" "${PKG_ARR[@]}"
 
             emerge --depclean
