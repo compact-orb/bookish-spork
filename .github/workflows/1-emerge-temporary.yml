@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: sys-apps/zram-generator
-  USEPKG_EXCLUDE: sys-apps/zram-generator
+  PACKAGES: net-analyzer/nmap
+  USEPKG_EXCLUDE: net-analyzer/nmap
 
 jobs:
   emerge:
