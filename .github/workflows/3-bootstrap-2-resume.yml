@@ -29,7 +29,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 3 --resume
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
         if: always()
