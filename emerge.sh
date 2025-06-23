@@ -143,7 +143,7 @@ case $bootstrap in
 
         write_file /etc/portage/package.use/bootstrap "*/* -pgo"
 
-        emerge llvm-core/clang
+        emerge --buildpkg=n llvm-core/clang
 
         rm -f /etc/portage/package.env/bootstrap
 
