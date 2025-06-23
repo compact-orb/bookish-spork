@@ -1,5 +1,5 @@
 param (
-    [switch]$Client
+    [switch]$Endpoint
 )
 
 $ErrorActionPreference = "Stop"

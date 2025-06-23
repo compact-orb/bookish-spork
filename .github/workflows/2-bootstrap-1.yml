@@ -26,7 +26,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Copy-GentooImage.ps1 -From -Bootstrap
 
       - name: Configure Gentoo
-        run: sudo --preserve-env pwsh -File ./Set-GentooConfiguration.ps1
+        run: sudo --preserve-env pwsh -File ./Start-SetConfiguration.ps1
 
       - name: Install Intel oneAPI DPC++/C++ Compiler
         run: sudo --preserve-env pwsh -File ./Start-InstallOneapiDcp++C++Compiler.ps1
