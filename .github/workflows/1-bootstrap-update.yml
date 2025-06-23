@@ -26,7 +26,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 
       - name: Set Up Binary Packages
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -From
+        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
@@ -39,7 +39,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To
+        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To

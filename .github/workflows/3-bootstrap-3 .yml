@@ -36,7 +36,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        run: sudo --preserve-env pwsh -File ./Copy-GentooBinaryPackage.ps1 -To -NoOverlay
+        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To -NoOverlay
 
       - name: Upload Gentoo
         if: success() || failure()
