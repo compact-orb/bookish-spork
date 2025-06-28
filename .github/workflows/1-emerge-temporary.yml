@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: media-libs/intel-mediasdk
-  USEPKG_EXCLUDE: media-libs/intel-mediasdk
+  PACKAGES: media-video/ffmpeg
+  USEPKG_EXCLUDE: media-video/ffmpeg
 
 jobs:
   emerge:
