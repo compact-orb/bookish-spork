@@ -1,1 +1,1 @@
-www-servers/nginx NGINX_MODULES_HTTP: brotli NGINX_MODULES_STREAM: javascript upstream_zone
+www-servers/nginx NGINX_MODULES_STREAM: javascript upstream_zone
