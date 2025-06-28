@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: net-analyzer/nmap
-  USEPKG_EXCLUDE: net-analyzer/nmap
+  PACKAGES: media-libs/intel-mediasdk
+  USEPKG_EXCLUDE: media-libs/intel-mediasdk
 
 jobs:
   emerge:
