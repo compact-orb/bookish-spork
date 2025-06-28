@@ -10,7 +10,7 @@ Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/binre
 
 Copy-Item -Path $env:CONFIG_PREFIX/* -Destination /mnt/gentoo -Recurse -Force
 
-if (-not $Client) {
+if (-not $Endpoint) {
     Set-Content -Path /mnt/gentoo/etc/portage/make.conf -Value (Get-Content -Path /mnt/gentoo/etc/portage/make.conf | ForEach-Object {
         if ($_ -match "^EMERGE_DEFAULT_OPTS=") {
             "# $_"
