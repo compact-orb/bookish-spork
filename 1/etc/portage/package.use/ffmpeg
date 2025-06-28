@@ -1,3 +1,5 @@
 # required by media-gfx/blender
 
 media-video/ffmpeg lame theora
+
+media-video/ffmpeg zimg
