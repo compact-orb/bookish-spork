@@ -43,7 +43,7 @@ jobs:
 
           pid=$!
 
-          sleep "360" &
+          sleep "310" &
 
           sleep_pid=$!
 
