@@ -23,9 +23,6 @@ jobs:
       - name: Install PowerShell
         run: sudo --preserve-env bash ./install-powershell.sh
 
-      - name: Install CRIU
-        run: sudo --preserve-env pwsh -File ./Start-InstallCriu.ps1
-
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 

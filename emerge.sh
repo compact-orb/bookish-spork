@@ -136,6 +136,8 @@ packages=$(echo "$packages" | xargs echo)
 t_emerge() {
     if (( criu )); then
         echo "Starting CRIU..."
+        
+        emerge sys-process/criu
 
         if (( criu_restore )); then
             echo "Restoring CRIU..."
