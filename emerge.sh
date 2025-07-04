@@ -5,7 +5,7 @@ TIMEOUT=360
 
 source /mnt/variables.sh
 
-export FEATURES="-ipc-sandbox -network-sandbox"
+export FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox"
 
 LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,criu,criu-restore
 
