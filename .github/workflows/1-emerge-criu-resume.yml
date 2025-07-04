@@ -35,7 +35,22 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --criu-restore
+        run: |
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh
+
+          pid=$!
+
+          sleep "360" &
+
+          sleep_pid=$!
+
+          wait -n "$pid" "$sleep_pid"
+
+          if kill -0 $pid; then
+            sudo criu dump --images-dir /mnt/gentoo/var/lib/criu --shell-job --tree "$pid"
+
+            exit 1
+          fi
 
       - name: Unmount Filesystems
         if: always()
