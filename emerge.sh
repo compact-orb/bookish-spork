@@ -4,7 +4,7 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,criu,criu-restore
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -34,6 +34,9 @@ portage_profile=""
 
 emerge_perl=0
 
+criu=0
+
+criu_restore=0
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -102,6 +105,16 @@ while [[ $# -gt 0 ]]; do
 
             shift
             ;;
+        --criu)
+            criu=1
+
+            shift
+            ;;
+        --criu-restore)
+            criu_restore=1
+
+            shift
+            ;;
         --)
             shift
 
@@ -120,7 +133,43 @@ fi
 packages=$(echo "$packages" | xargs echo)
 
 t_emerge() {
-    timeout "$TIMEOUT" emerge "$@";
+    if (( criu )); then
+        echo "Starting CRIU..."
+
+        if (( criu_restore )); then
+            echo "Restoring CRIU..."
+
+            criu restore --images-dir /var/criu --shell-job &
+        else
+            emerge "$@" &
+        fi
+
+        pid=$!
+
+        echo "CRIU PID: $pid"
+
+        sleep "$TIMEOUT" &
+
+        sleep_pid=$!
+
+        echo "CRIU Sleep PID: $sleep_pid"
+
+        wait -n "$pid" "$sleep_pid"
+
+        if kill -0 $pid; then
+            if (( criu )); then
+                mkdir /var/criu
+            fi
+
+            criu dump --images-dir /var/criu --shell-job --tree "$pid"
+
+            return 1
+        else
+            rm --force --recursive /var/criu
+        fi
+    else
+        timeout "$TIMEOUT" emerge "$@"
+    fi
 }
 
 write_file() {
