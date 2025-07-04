@@ -37,6 +37,8 @@ jobs:
 
       - name: Emerge
         run: |
+          export FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox"
+
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
           pid=$!
