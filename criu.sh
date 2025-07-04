@@ -13,7 +13,7 @@ wait -n "$pid" "$sleep_pid"
 if sudo kill -0 $pid; then
     mkdir /mnt/gentoo/var/lib/criu
 
-    criu dump --images-dir /mnt/gentoo/var/lib/criu --shell-job --tree "$pid"
+    criu dump --file-locks --images-dir /mnt/gentoo/var/lib/criu --shell-job --tree "$pid"
 
     exit 1
 fi
