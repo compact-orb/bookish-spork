@@ -1,11 +1,11 @@
 set -e
 
 #TIMEOUT=19800
-TIMEOUT=600
+TIMEOUT=360
 
 source /mnt/variables.sh
 
-export FEATURES="-ipc-sandbox"
+export FEATURES="-ipc-sandbox -network-sandbox"
 
 LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,criu,criu-restore
 
