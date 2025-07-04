@@ -1,4 +1,4 @@
-export FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox"
+export FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox -sandbox -usersandbox"
 
 sudo criu restore --ext-unix-sk --file-locks --images-dir /mnt/gentoo/var/lib/criu --shell-job &
 
