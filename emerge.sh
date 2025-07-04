@@ -5,6 +5,8 @@ TIMEOUT=600
 
 source /mnt/variables.sh
 
+export FEATURES="-ipc-sandbox"
+
 LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,criu,criu-restore
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
