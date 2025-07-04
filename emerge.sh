@@ -1,6 +1,7 @@
 set -e
 
-TIMEOUT=19800
+#TIMEOUT=19800
+TIMEOUT=600
 
 source /mnt/variables.sh
 
