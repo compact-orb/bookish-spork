@@ -4,7 +4,7 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,no-timeout
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -33,6 +33,8 @@ bootstrap=0
 portage_profile=""
 
 emerge_perl=0
+
+no_timeout=0
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -101,6 +103,11 @@ while [[ $# -gt 0 ]]; do
 
             shift
             ;;
+        --no-timeout)
+            no_timeout=1
+
+            shift
+            ;;
         --)
             shift
 
@@ -119,7 +126,11 @@ fi
 packages=$(echo "$packages" | xargs echo)
 
 t_emerge() {
-    timeout "$TIMEOUT" emerge "$@"
+    if (( no_timeout )); then
+        emerge "$@"
+    else
+        timeout "$TIMEOUT" emerge "$@"
+    fi    
 }
 
 write_file() {
