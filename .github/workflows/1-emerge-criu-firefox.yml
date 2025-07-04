@@ -37,7 +37,7 @@ jobs:
 
       - name: Emerge
         run: |
-          sudo criu restore --images-dir /mnt/gentoo/var/lib/criu --shell-job &
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
           pid=$!
 
@@ -47,7 +47,7 @@ jobs:
 
           wait -n "$pid" "$sleep_pid"
 
-          if kill -0 $pid; then
+          if sudo kill -0 $pid; then
             mkdir /mnt/gentoo/var/lib/criu
 
             criu dump --images-dir /mnt/gentoo/var/lib/criu --shell-job --tree "$pid"

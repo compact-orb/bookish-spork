@@ -36,7 +36,7 @@ jobs:
 
       - name: Emerge
         run: |
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh
+          sudo criu restore --images-dir /mnt/gentoo/var/lib/criu --shell-job &
 
           pid=$!
 
@@ -46,10 +46,12 @@ jobs:
 
           wait -n "$pid" "$sleep_pid"
 
-          if kill -0 $pid; then
+          if sudo kill -0 $pid; then
             sudo criu dump --images-dir /mnt/gentoo/var/lib/criu --shell-job --tree "$pid"
 
             exit 1
+          else
+            sudo rm --force --recursive /mnt/gentoo/var/lib/criu
           fi
 
       - name: Unmount Filesystems
