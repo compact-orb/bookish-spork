@@ -36,7 +36,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env pwsh bash ./criu.sh --no-timeout --packages "$PACKAGES"
+        run: sudo --preserve-env bash ./criu.sh --no-timeout --packages "$PACKAGES"
 
       - name: Unmount Filesystems
         if: always()
