@@ -1,4 +1,4 @@
-export FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox"
+export FEATURES="-ipc-sandbox -network-sandbox -pid-sandbox -sandbox -usersandbox"
 
 sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh $@ &
 
