@@ -4,7 +4,7 @@ sudo criu restore --ext-unix-sk --file-locks --images-dir /mnt/gentoo/var/lib/cr
 
 pid=$!
 
-sleep "19800" &
+sleep "600" &
 
 sleep_pid=$!
 

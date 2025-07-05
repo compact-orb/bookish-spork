@@ -1,4 +1,4 @@
-name: 1 Emerge CRIU Firefox
+name: 1 Emerge CRIU Chromium
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: www-client/firefox
+  PACKAGES: www-client/chromium
 
 jobs:
   emerge:
