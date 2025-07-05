@@ -4,7 +4,7 @@ sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh $@ &
 
 pid=$!
 
-sleep "600" &
+sleep "300" &
 
 sleep_pid=$!
 
