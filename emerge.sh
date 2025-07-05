@@ -4,7 +4,7 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,no-timeout
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,no-timeout
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -17,6 +17,10 @@ keep_going=0
 oneshot=0
 
 usepkg_exclude=""
+
+no_quiet_build=0
+
+keepwork=0
 
 update=0
 
@@ -62,6 +66,16 @@ while [[ $# -gt 0 ]]; do
             usepkg_exclude=$2
 
             shift 2
+            ;;
+        --no-quiet-build)
+            no_quiet_build=1
+
+            shift
+            ;;
+        --keepwork)
+            keepwork=1
+
+            shift
             ;;
         --update)
             update=1
@@ -136,6 +150,8 @@ t_emerge() {
 write_file() {
     printf '%s\n' "$2" > "$1"
 }
+
+(( keepwork )) && export FEATURES="keepwork"
 
 case $bootstrap in
     1)
@@ -216,6 +232,8 @@ case $bootstrap in
             (( oneshot )) && opts+=( --oneshot )
 
             [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
+
+            (( no_quiet_build )) && opts+=( --quiet-build=n )
 
             read -ra PKG_ARR <<< "$packages"
 

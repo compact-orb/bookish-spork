@@ -1,4 +1,4 @@
-name: 1 Emerge CRIU Resume
+name: 1 Emerge Chromium
 
 on:
   workflow_dispatch:
@@ -11,6 +11,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
+  PACKAGES: www-client/chromium
 
 jobs:
   emerge:
@@ -22,11 +23,8 @@ jobs:
       - name: Install PowerShell
         run: sudo --preserve-env bash ./install-powershell.sh
 
-      - name: Install CRIU
-        run: sudo --preserve-env pwsh -File ./Start-InstallCriu.ps1
-
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From -Temporary
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
@@ -35,7 +33,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env bash ./criu-restore.sh
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --keepwork --no-quiet-build --packages "$PACKAGES"
 
       - name: Unmount Filesystems
         if: always()
