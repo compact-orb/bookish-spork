@@ -140,18 +140,32 @@ fi
 packages=$(echo "$packages" | xargs echo)
 
 t_emerge() {
-    if (( no_timeout )); then
-        emerge "$@"
+    local cmd_prefix=()
+
+    local features=""
+
+    if (( ! no_timeout )); then
+        cmd_prefix=(timeout "$TIMEOUT")
+    fi
+
+    if (( keepwork )); then
+        features="FEATURES=keepwork"
+
+        if (( ! resume )); then
+            "${cmd_prefix[@]}" emerge --onlydeps "$@"
+        fi
+    fi
+
+    if [[ -n "$features" ]]; then
+        eval "${features} "'"${cmd_prefix[@]}" emerge "$@"'
     else
-        timeout "$TIMEOUT" emerge "$@"
-    fi    
+        "${cmd_prefix[@]}" emerge "$@"
+    fi
 }
 
 write_file() {
     printf '%s\n' "$2" > "$1"
 }
-
-(( keepwork )) && export FEATURES="keepwork"
 
 case $bootstrap in
     1)
