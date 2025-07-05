@@ -1,4 +1,4 @@
-name: 1 Emerge Chromium
+name: 1 Emerge Keepwork Chromium
 
 on:
   workflow_dispatch:
