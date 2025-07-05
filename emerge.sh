@@ -215,6 +215,8 @@ case $bootstrap in
 
             [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
+            (( no_quiet_build )) && opts+=( --quiet-build=n )
+
             t_emerge "--resume" "${opts[@]}"
 
             emerge --depclean
