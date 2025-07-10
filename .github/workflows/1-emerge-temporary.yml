@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: sys-apps/flatpak
-  USEPKG_EXCLUDE: sys-apps/flatpak
+  PACKAGES: net-print/cups-filters
+  USEPKG_EXCLUDE: net-print/cups-filters
 
 jobs:
   emerge:
