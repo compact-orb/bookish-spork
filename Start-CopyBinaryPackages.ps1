@@ -16,8 +16,6 @@ if ($From) {
     ./Copy-BsDirectory.ps1 -Path "/$env:CONFIG_PREFIX" -Destination "/mnt/gentoo/var/cache/binpkgs-lowerdir" -FromBs -ThrottleLimit 8
 
     mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
-
-    df # Temporary
 } elseif ($To) {
     if ($NoOverlay) {
         $binpkgsPath = "/mnt/gentoo/var/cache/binpkgs"
