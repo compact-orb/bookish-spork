@@ -171,6 +171,8 @@ case $bootstrap in
     1)
         emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
+        emerge --sync inode64
+
         locale-gen --quiet
 
         eselect --brief locale set 6
@@ -214,6 +216,8 @@ case $bootstrap in
             emerge --sync
         elif (( webrsync )); then
             emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
+
+            emerge --sync inode64
         elif (( deselect )); then
             read -ra PKG_ARR <<< "$packages"
 
