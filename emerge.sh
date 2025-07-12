@@ -187,7 +187,7 @@ case $bootstrap in
 
         rm -f /etc/portage/package.env/bootstrap
 
-        emerge --sync inode64
+        emerge --sync inode64-overlay
 
         if (( emerge_perl )); then
             emerge --buildpkg=n --oneshot dev-lang/perl
@@ -217,7 +217,9 @@ case $bootstrap in
         elif (( webrsync )); then
             emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
-            emerge --sync inode64
+            emerge --sync inode64-overlay
+
+            rm --recursive /var/db/repos/inode64 # Temporary
         elif (( deselect )); then
             read -ra PKG_ARR <<< "$packages"
 
