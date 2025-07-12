@@ -206,7 +206,7 @@ case $bootstrap in
         if (( resume )); then
             t_emerge --emptytree --resume
         else
-            t_emerge --emptytree "@world"
+            t_emerge --emptytree dev-vcs/git "@world"
         fi
 
         emerge --depclean

@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  PACKAGES: dev-vcs/git
+  USEPKG_EXCLUDE: dev-vcs/git
 
 jobs:
   bootstrap-temporary:
@@ -41,7 +41,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: always()
+        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
