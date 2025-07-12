@@ -218,8 +218,6 @@ case $bootstrap in
             emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
             emerge --sync inode64-overlay
-
-            rm --recursive /var/db/repos/inode64 # Temporary
         elif (( deselect )); then
             read -ra PKG_ARR <<< "$packages"
 
