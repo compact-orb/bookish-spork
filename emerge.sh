@@ -171,8 +171,6 @@ case $bootstrap in
     1)
         emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
-        emerge --sync inode64
-
         locale-gen --quiet
 
         eselect --brief locale set 6
@@ -185,9 +183,11 @@ case $bootstrap in
 
         write_file /etc/portage/package.use/bootstrap "*/* -pgo"
 
-        emerge --buildpkg=n llvm-core/clang-runtime
+        emerge --buildpkg=n dev-vcs/git llvm-core/clang-runtime
 
         rm -f /etc/portage/package.env/bootstrap
+
+        emerge --sync inode64
 
         if (( emerge_perl )); then
             emerge --buildpkg=n --oneshot dev-lang/perl
@@ -206,7 +206,7 @@ case $bootstrap in
         if (( resume )); then
             t_emerge --emptytree --resume
         else
-            t_emerge --emptytree dev-vcs/git "@world"
+            t_emerge --emptytree "@world"
         fi
 
         emerge --depclean
