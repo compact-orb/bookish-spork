@@ -235,7 +235,7 @@ case $bootstrap in
 
             emerge --depclean
         elif (( update )); then
-            t_emerge --deep --newuse --update "@world"
+            t_emerge --deep --newuse --update --with-bdeps=y "@world"
 
             emerge --depclean
         else
