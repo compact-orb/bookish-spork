@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: net-vpn/cloudflare-warp
-  USEPKG_EXCLUDE: net-vpn/cloudflare-warp
+  PACKAGES: games-util/steam-launcher
+  USEPKG_EXCLUDE: games-util/steam-launcher
 
 jobs:
   emerge:

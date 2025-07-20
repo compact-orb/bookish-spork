@@ -217,7 +217,7 @@ case $bootstrap in
         elif (( webrsync )); then
             emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
-            emerge --sync inode64-overlay
+            emerge --sync inode64-overlay steam-overlay
         elif (( deselect )); then
             read -ra PKG_ARR <<< "$packages"
 
