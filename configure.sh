@@ -12,4 +12,4 @@ cp --force --recursive $1/* /
 
 emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
 
-emerge --sync inode64-overlay
+emerge --sync inode64-overlay steam-overlay
