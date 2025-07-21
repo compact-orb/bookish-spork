@@ -38,15 +38,15 @@ jobs:
 
       - name: Emerge
         if: always()
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.6-r1.ebuild" --usepkg-exclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.6-r1" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Emerge
         if: always()
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.8.1.ebuild" --usepkg-exclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.8.1" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Emerge
         if: always()
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.9.ebuild" --usepkg-exclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.9" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Unmount Filesystems
         if: always()
