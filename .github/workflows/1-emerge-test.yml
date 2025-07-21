@@ -1,4 +1,4 @@
-name: 1 Emerge Temporary
+name: 1 Emerge Test
 
 on:
   workflow_dispatch:
@@ -37,7 +37,16 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "mutter-47.6-r1.ebuild mutter-47.8.1.ebuild mutter-47.9.ebuild" --usepkg-exclude "$USEPKG_EXCLUDE"
+        if: always()
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.6-r1.ebuild" --usepkg-exclude "$USEPKG_EXCLUDE"
+
+      - name: Emerge
+        if: always()
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.8.1.ebuild" --usepkg-exclude "$USEPKG_EXCLUDE"
+
+      - name: Emerge
+        if: always()
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "=mutter-47.9.ebuild" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Unmount Filesystems
         if: always()
