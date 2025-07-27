@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: x11-wm/mutter
-  USEPKG_EXCLUDE: x11-wm/mutter
+  PACKAGES: llvm-runtimes/libunwind sys-kernel/gentoo-kernel
+  USEPKG_EXCLUDE: sys-kernel/gentoo-kernel
 
 jobs:
   emerge:
