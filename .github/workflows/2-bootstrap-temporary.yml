@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: dev-vcs/git
-  USEPKG_EXCLUDE: dev-vcs/git
+  PACKAGES: dev-lang/perl
+  USEPKG_EXCLUDE: dev-lang/perl
 
 jobs:
   bootstrap-temporary:
@@ -27,22 +27,22 @@ jobs:
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 
-      - name: Set Up Binary Packages
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
+#      - name: Set Up Binary Packages
+#        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --oneshot --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Unmount Filesystems
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
-      - name: Upload Gentoo Binary Packages
-        if: success() || failure()
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
+#      - name: Upload Gentoo Binary Packages
+#        if: success() || failure()
+#        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To
