@@ -10,6 +10,4 @@ rm --force --recursive /etc/kernel/config.d /etc/portage/env /etc/portage/packag
 
 cp --force --recursive $1/* /
 
-emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
-
-emerge --sync inode64-overlay steam-overlay
+emerge --sync
