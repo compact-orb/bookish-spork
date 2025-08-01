@@ -164,8 +164,6 @@ case $bootstrap in
     1)
         emerge-webrsync
 
-        emerge --sync
-
         locale-gen --quiet
 
         eselect --brief locale set 6
@@ -181,6 +179,8 @@ case $bootstrap in
         emerge --buildpkg=n dev-vcs/git llvm-core/clang-runtime
 
         rm -f /etc/portage/package.env/bootstrap
+
+        emerge --sync
 
         if (( emerge_perl )); then
             emerge --buildpkg=n --oneshot dev-lang/perl
