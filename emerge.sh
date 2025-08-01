@@ -145,14 +145,14 @@ t_emerge() {
         features="FEATURES=keepwork"
 
         if (( ! resume )); then
-            "${cmd_prefix[@]}" emerge --onlydeps "$@"
+            "${cmd_prefix[@]}" emerge --backtrack=1024 --onlydeps "$@"
         fi
     fi
 
     if [[ -n "$features" ]]; then
         eval "${features} "'"${cmd_prefix[@]}" emerge "$@"'
     else
-        "${cmd_prefix[@]}" emerge "$@"
+        "${cmd_prefix[@]}" emerge --backtrack=1024 "$@"
     fi
 }
 
