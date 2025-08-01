@@ -176,11 +176,13 @@ case $bootstrap in
 
         write_file /etc/portage/package.use/bootstrap "*/* -pgo"
 
-        emerge --buildpkg=n dev-vcs/git llvm-core/clang-runtime
-
-        rm -f /etc/portage/package.env/bootstrap
+        emerge --buildpkg=n dev-vcs/git
 
         emerge --sync
+
+        emerge --buildpkg=n llvm-core/clang-runtime
+
+        rm -f /etc/portage/package.env/bootstrap
 
         if (( emerge_perl )); then
             emerge --buildpkg=n --oneshot dev-lang/perl
