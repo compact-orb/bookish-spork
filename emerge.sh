@@ -4,7 +4,7 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,webrsync,bootstrap:,portage-profile:,emerge-perl,no-timeout
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,bootstrap:,portage-profile:,emerge-perl,no-timeout
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -29,8 +29,6 @@ resume=0
 deselect=0
 
 sync_flag=0
-
-webrsync=0
 
 bootstrap=0
 
@@ -94,11 +92,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --sync)
             sync_flag=1
-
-            shift
-            ;;
-        --webrsync)
-            webrsync=1
 
             shift
             ;;
@@ -169,7 +162,9 @@ write_file() {
 
 case $bootstrap in
     1)
-        emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
+        emerge-webrsync
+
+        emerge --sync
 
         locale-gen --quiet
 
@@ -186,8 +181,6 @@ case $bootstrap in
         emerge --buildpkg=n dev-vcs/git llvm-core/clang-runtime
 
         rm -f /etc/portage/package.env/bootstrap
-
-        emerge --sync inode64-overlay
 
         if (( emerge_perl )); then
             emerge --buildpkg=n --oneshot dev-lang/perl
@@ -214,10 +207,6 @@ case $bootstrap in
     0)
         if   (( sync_flag )); then
             emerge --sync
-        elif (( webrsync )); then
-            emerge-webrsync --revert="$PORTAGE_SNAPSHOT_DATE" --quiet
-
-            emerge --sync inode64-overlay steam-overlay
         elif (( deselect )); then
             read -ra PKG_ARR <<< "$packages"
 
