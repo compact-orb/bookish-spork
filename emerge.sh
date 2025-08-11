@@ -172,32 +172,21 @@ case $bootstrap in
             eselect --brief profile set "$portage_profile"
         fi
 
-        write_file /etc/portage/package.env/bootstrap  "*/* gcc.conf"
-
         write_file /etc/portage/package.use/bootstrap "*/* -pgo"
 
         emerge --buildpkg=n dev-vcs/git
 
         emerge --sync
 
-        emerge --buildpkg=n llvm-core/clang-runtime
-
-        rm -f /etc/portage/package.env/bootstrap
-
         if (( emerge_perl )); then
             emerge --buildpkg=n --oneshot dev-lang/perl
         fi
-        ;;
-    2)
-        if (( resume )); then
-            t_emerge --buildpkg=n --emptytree --resume
-        else
-            t_emerge --buildpkg=n --emptytree "@system"
-        fi
+
+        t_emerge --buildpkg=n --emptytree "@system"
 
         rm -f /etc/portage/package.use/bootstrap
         ;;
-    3)
+    2)
         if (( resume )); then
             t_emerge --emptytree --resume
         else
