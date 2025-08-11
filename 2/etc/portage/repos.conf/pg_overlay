@@ -1,5 +1,0 @@
-[pg_overlay]
-location = /var/db/repos/pg_overlay
-sync-type = git
-sync-uri = https://github.com/gentoo-mirror/pg_overlay
-priority = 100

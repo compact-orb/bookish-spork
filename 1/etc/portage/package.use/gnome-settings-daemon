@@ -1,5 +1,0 @@
-# required by gnome-base/gnome-control-center
-
-# required by gnome-base/gnome-light
-
-gnome-base/gnome-settings-daemon input_devices_wacom

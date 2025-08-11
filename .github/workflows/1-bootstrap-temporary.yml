@@ -11,9 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: media-libs/freetype
-  USEPKG_EXCLUDE: media-libs/freetype
-  USE: -harfbuzz
+  PACKAGES: 
+  USEPKG_EXCLUDE: 
 
 jobs:
   bootstrap-temporary:
@@ -28,8 +27,8 @@ jobs:
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 
-#      - name: Set Up Binary Packages
-#        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
+      - name: Set Up Binary Packages
+        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
@@ -41,9 +40,9 @@ jobs:
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
-#      - name: Upload Gentoo Binary Packages
-#        if: success() || failure()
-#        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
+      - name: Upload Gentoo Binary Packages
+        if: success() || failure()
+        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To
