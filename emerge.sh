@@ -221,7 +221,7 @@ case $bootstrap in
         elif (( update )); then
             t_emerge --deep --newuse --update --with-bdeps=y "@world"
 
-            emerge --depclean
+            emerge --depclean --with-bdeps=y
         else
             declare -a opts
 
