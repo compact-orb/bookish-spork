@@ -28,6 +28,8 @@ BINPKG_COMPRESS="zstd"
 BINPKG_COMPRESS_FLAGS="-19 -T8 --long"
 '@
 
+    New-Item -Path /mnt/gentoo/etc/portage/repos.conf -ItemType Directory
+
     Set-Content -Path /mnt/gentoo/etc/repos.conf/gentoo.conf -Value @"
 [gentoo]
 sync-uri = rsync://$env:RSYNC_MIRROR/gentoo-portage
