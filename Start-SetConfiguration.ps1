@@ -27,6 +27,11 @@ EMERGE_DEFAULT_OPTS="--backtrack=1024 --buildpkg --quiet-build --usepkg --with-b
 BINPKG_COMPRESS="zstd"
 BINPKG_COMPRESS_FLAGS="-19 -T8 --long"
 '@
+
+    Set-Content -Path /mnt/gentoo/etc/repos.conf/gentoo.conf -Value @"
+[gentoo]
+sync-uri = rsync://$env:RSYNC_MIRROR/gentoo-portage
+"@
 }
 
 chroot /mnt/gentoo env-update
