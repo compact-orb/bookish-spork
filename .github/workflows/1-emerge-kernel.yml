@@ -13,7 +13,6 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  RSYNC_MIRROR: ${{ secrets.RSYNC_MIRROR }}
   PACKAGES: sys-kernel/gentoo-kernel
 
 jobs:
