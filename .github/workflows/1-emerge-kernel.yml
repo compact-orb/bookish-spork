@@ -2,6 +2,8 @@ name: 1 Emerge Kernel
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: 15 7 */2 * *
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
