@@ -13,7 +13,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: net-libs/nodejs
+  PACKAGES: www-servers/nginx
 
 jobs:
   emerge:
@@ -46,7 +46,7 @@ jobs:
           rm -rf /tmp/phoronix-test-suite-10.8.4.tar.gz /tmp/phoronix-test-suite
           sudo mkdir /root/.phoronix-test-suite
           sudo cp ./user-config.xml /root/.phoronix-test-suite
-          sudo phoronix-test-suite batch-benchmark node-web-tooling
+          sudo phoronix-test-suite batch-benchmark nginx
           ls /var/tmp/pgo
 
       - name: Emerge and Use PGO
