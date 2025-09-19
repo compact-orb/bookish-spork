@@ -280,10 +280,10 @@ case $bootstrap in
 
                     opts+=( --buildpkg=n)
                 else
-                    exit 1
+                    exit 12
                 fi
             else
-                exit 1
+                exit 11
             fi
 
             pgo_used=0
@@ -296,10 +296,10 @@ case $bootstrap in
 
                     pgo_used=1
                 else
-                    exit 1
+                    exit 14
                 fi
             else
-                exit 1
+                exit 13
             fi
 
             t_emerge "${opts[@]}" "${PKG_ARR[@]}"
