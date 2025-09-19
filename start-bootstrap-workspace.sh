@@ -16,6 +16,9 @@ sudo --preserve-env bash ./install-powershell.sh
 # Set Up Gentoo
 sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 
+# Set Up Binary Packages
+sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
+
 # Mount Filesystems
 sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
