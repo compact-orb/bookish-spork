@@ -1,4 +1,4 @@
-name: 1 Emerge Other
+name: 1 Emerge PGO Test
 
 on:
   workflow_dispatch:
