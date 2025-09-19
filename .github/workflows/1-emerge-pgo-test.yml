@@ -51,7 +51,6 @@ jobs:
           sudo bash /tmp/phoronix-test-suite/install-sh
           cd -
           rm -rf /tmp/phoronix-test-suite-10.8.4.tar.gz /tmp/phoronix-test-suite
-          sudo mkdir /root/.phoronix-test-suite
           sudo phoronix-test-suite batch-benchmark nginx
           ls /var/tmp/pgo
 
