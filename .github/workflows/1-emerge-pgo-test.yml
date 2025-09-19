@@ -35,7 +35,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge and Generate PGO
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --pgo-generate --no-quiet-build
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --pgo-generate --no-quiet-build --no-pgo-update-check
 
       - name: Run Benchmarks
         run: |
@@ -50,7 +50,7 @@ jobs:
           ls /var/tmp/pgo
 
       - name: Emerge and Use PGO
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --pgo-use --no-quiet-build
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --pgo-use --no-quiet-build --no-pgo-update-check
 
       - name: Unmount Filesystems
         if: always()
