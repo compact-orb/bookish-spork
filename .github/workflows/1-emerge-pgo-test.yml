@@ -13,7 +13,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: app-admin/sudo app-arch/7zip app-misc/jq app-misc/screen app-shells/bash-completion dev-db/mariadb dev-lang/php dev-lang/rust-bin dev-libs/mimalloc net-misc/aria2 net-misc/mosh net-vpn/wireguard-tools sys-block/io-scheduler-udev-rules sys-kernel/installkernel sys-kernel/linux-firmware
+  PACKAGES: net-libs/nodejs
 
 jobs:
   emerge:
@@ -34,16 +34,30 @@ jobs:
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
-      - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
+      - name: Emerge and Generate PGO
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --pgo-generate
+
+      - name: Run Benchmarks
+        run: |
+          aria2c --dir /tmp https://github.com/phoronix-test-suite/phoronix-test-suite/releases/download/v10.8.4/phoronix-test-suite-10.8.4.tar.gz
+          tar -xf /tmp/phoronix-test-suite-10.8.4.tar.gz -C /tmp
+          sudo bash /tmp/phoronix-test-suite/install-sh
+          rm -rf /tmp/phoronix-test-suite-10.8.4.tar.gz /tmp/phoronix-test-suite
+          sudo mkdir /root/.phoronix-test-suite
+          sudo cp ./user-config.xml /root/.phoronix-test-suite
+          sudo phoronix-test-suite batch-benchmark node-web-tooling
+          ls /var/tmp/pgo
+
+      - name: Emerge and Use PGO
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --pgo-use
 
       - name: Unmount Filesystems
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
-      - name: Upload Gentoo Binary Packages
-        if: always()
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
+      #- name: Upload Gentoo Binary Packages
+      #  if: always()
+      #  run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
         if: failure()

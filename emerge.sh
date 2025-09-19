@@ -4,7 +4,7 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,bootstrap:,portage-profile:,emerge-perl,no-timeout
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,pgo-generate,pgo-use,no-pgo-update-check,update,resume,deselect,sync,bootstrap:,portage-profile:,emerge-perl,no-timeout
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -21,6 +21,12 @@ usepkg_exclude=""
 no_quiet_build=0
 
 keepwork=0
+
+pgo_generate=0
+
+pgo_use=0
+
+no_pgo_update_check=0
 
 update=0
 
@@ -72,6 +78,21 @@ while [[ $# -gt 0 ]]; do
             ;;
         --keepwork)
             keepwork=1
+
+            shift
+            ;;
+        --pgo-generate)
+            pgo_generate=1
+
+            shift
+            ;;
+        --pgo-use)
+            pgo_use=1
+
+            shift
+            ;;
+        --no-pgo-update-check)
+            no_pgo_update_check=1
 
             shift
             ;;
@@ -160,6 +181,20 @@ write_file() {
     printf '%s\n' "$2" > "$1"
 }
 
+has_src_update() {
+    local emerge
+
+    if ! emerge=$(emerge --pretend --quiet --update --verbose $1 2>/dev/null); then
+        return 2
+    fi
+
+    if grep --extended-regexp --quiet '^\[ebuild\s+N\s+\]' <<<"${emerge}"; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 case $bootstrap in
     1)
         emerge-webrsync
@@ -237,7 +272,39 @@ case $bootstrap in
 
             read -ra PKG_ARR <<< "$packages"
 
+            if pgo_generate && (( ${#PKG_ARR[@]} == 1 )); then
+                if no_pgo_update_check || has_src_update "${PKG_ARR[@]}"; then
+                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"" > /etc/portage/env/pgo.conf
+
+                    echo "${PKG_ARR[@]} pgo.conf" >> /etc/portage/package.env/pgo
+
+                    opts+=( --buildpkg=n)
+                else
+                    exit 1
+                fi
+            else
+                exit 1
+            fi
+
+            pgo_used=0
+
+            if pgo_use && (( ${#PKG_ARR[@]} == 1 )); then
+                if no_pgo_update_check || has_src_update "${PKG_ARR[@]}"; then
+                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-use=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-use=/var/tmp/pgo\"" > /etc/portage/env/pgo.conf
+
+                    unset "opts[-1]"
+
+                    pgo_used=1
+                else
+                    exit 1
+                fi
+            else
+                exit 1
+            fi
+
             t_emerge "${opts[@]}" "${PKG_ARR[@]}"
+
+            (( pgo_used )) && rm --force --recursive /etc/portage/env/pgo.conf /etc/portage/package.env/pgo /var/tmp/pgo
 
             emerge --depclean
         fi
