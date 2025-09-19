@@ -48,6 +48,7 @@ jobs:
           cd -
           rm -rf /tmp/phoronix-test-suite-10.8.4.tar.gz /tmp/phoronix-test-suite
           sudo mkdir /root/.phoronix-test-suite
+          cp ./user-config.xml ~/.phoronix-test-suite
           sudo cp ./user-config.xml /root/.phoronix-test-suite
           sudo phoronix-test-suite batch-benchmark nginx
           ls /var/tmp/pgo
