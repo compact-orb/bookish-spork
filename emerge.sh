@@ -274,7 +274,7 @@ case $bootstrap in
 
             if (( pgo_generate )) && (( ${#PKG_ARR[@]} == 1 )); then
                 if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then
-                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"" > /etc/portage/env/pgo.conf
+                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
 
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
 
@@ -288,7 +288,7 @@ case $bootstrap in
 
             if (( pgo_use )) && (( ${#PKG_ARR[@]} == 1 )); then
                 if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then
-                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-use=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-use=/var/tmp/pgo -fprofile-correction\"" > /etc/portage/env/pgo.conf
+                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-use=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-use=/var/tmp/pgo -fprofile-correction\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
 
                     unset "opts[-1]"
 
