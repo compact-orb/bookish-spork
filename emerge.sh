@@ -276,7 +276,7 @@ case $bootstrap in
                 if (( no_pgo_update_check )) || (( has_src_update "${PKG_ARR[@]}" )); then
                     echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"" > /etc/portage/env/pgo.conf
 
-                    echo "${PKG_ARR[@]} pgo.conf" >> /etc/portage/package.env/pgo
+                    echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
 
                     opts+=( --buildpkg=n)
                 else
