@@ -282,8 +282,6 @@ case $bootstrap in
                 else
                     exit 12
                 fi
-            else
-                exit 11
             fi
 
             pgo_used=0
@@ -298,8 +296,6 @@ case $bootstrap in
                 else
                     exit 14
                 fi
-            else
-                exit 13
             fi
 
             t_emerge "${opts[@]}" "${PKG_ARR[@]}"
