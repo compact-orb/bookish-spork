@@ -38,12 +38,12 @@ jobs:
 
       - name: Run Benchmarks to Generate PGO Profile
         run: |
-          sudo git clone https://github.com/Whileone-Techsoft/JetStream-Node.git /mnt/gentoo/tmp/JetStream-Node
+          sudo --preserve-env git clone https://github.com/Whileone-Techsoft/JetStream-Node.git /mnt/gentoo/tmp/JetStream-Node
           cd /mnt/gentoo/tmp/JetStream-Node
-          git checkout jetstream-on-node-js-v2
+          sudo --preserve-env git checkout jetstream-on-node-js-v2
           cd -
           sudo --preserve-env chroot /mnt/gentoo bash -c "cd /tmp/JetStream-Node; npm run jetstream-node all"
-          sudo ls /mnt/gentoo/var/tmp/pgo
+          sudo --preserve-env ls /mnt/gentoo/var/tmp/pgo
 
       - name: Emerge and Use PGO Profile
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-use --no-pgo-update-check
