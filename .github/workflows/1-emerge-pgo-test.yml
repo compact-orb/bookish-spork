@@ -35,13 +35,13 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge without PGO
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --no-quiet-build --no-pgo-update-check --usepkg-exclude "$PACKAGES"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES"
 
       - name: Run Benchmarks without PGO
         run: |
-          sudo mkdir /mnt/gentoo/var/tmp/pgo
+          sudo mkdir -p /mnt/gentoo/var/tmp/pgo
           sudo git clone https://github.com/Whileone-Techsoft/JetStream-Node.git /mnt/gentoo/tmp/JetStream-Node
-          sudo chroot /mnt/gentoo bash -c "cd /tmp/JetStream-Node; npm run jetstream-node all"
+          sudo --preserve-env chroot /mnt/gentoo bash -c "emerge dev-vcs/git; cd /tmp/JetStream-Node; git checkout jetstream-on-node-js-v2; npm run jetstream-node all"
           sudo ls /mnt/gentoo/var/tmp/pgo
 
       - name: Emerge and Generate PGO
@@ -49,7 +49,7 @@ jobs:
 
       - name: Run Benchmarks to Generate PGO
         run: |
-          sudo chroot /mnt/gentoo bash -c "cd /tmp/JetStream-Node; npm run jetstream-node all"
+          sudo --preserve-env chroot /mnt/gentoo bash -c "cd /tmp/JetStream-Node; npm run jetstream-node all"
           sudo ls /mnt/gentoo/var/tmp/pgo
 
       - name: Emerge and Use PGO
@@ -57,7 +57,7 @@ jobs:
 
       - name: Run Benchmarks with PGO
         run: |
-          sudo chroot /mnt/gentoo bash -c "cd /tmp/JetStream-Node; npm run jetstream-node all"
+          sudo --preserve-env chroot /mnt/gentoo bash -c "cd /tmp/JetStream-Node; npm run jetstream-node all"
           sudo ls /mnt/gentoo/var/tmp/pgo
 
       - name: Unmount Filesystems
