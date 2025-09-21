@@ -282,7 +282,7 @@ case $bootstrap in
 
                     mkdir /var/tmp/pgo
                 else
-                    exit 12
+                    exit 10
                 fi
             fi
 
@@ -292,11 +292,9 @@ case $bootstrap in
                 if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then
                     echo -e "CFLAGS=\"\${CFLAGS} -fprofile-use=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-use=/var/tmp/pgo -fprofile-correction\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
 
-                    unset "opts[-1]"
-
                     pgo_used=1
                 else
-                    exit 14
+                    exit 11
                 fi
             fi
 
