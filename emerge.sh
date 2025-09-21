@@ -279,6 +279,8 @@ case $bootstrap in
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
 
                     opts+=( --buildpkg=n)
+
+                    mkdir /var/tmp/pgo
                 else
                     exit 12
                 fi
