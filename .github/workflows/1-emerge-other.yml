@@ -13,7 +13,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 1
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: app-admin/sudo app-arch/7zip app-benchmarks/wrk app-misc/jq app-misc/screen app-shells/bash-completion dev-db/mariadb dev-lang/php dev-lang/rust-bin dev-libs/mimalloc net-libs/nodejs net-misc/aria2 net-misc/mosh net-vpn/wireguard-tools sys-block/io-scheduler-udev-rules sys-kernel/installkernel sys-kernel/linux-firmware
+  PACKAGES: app-admin/sudo app-arch/7zip app-benchmarks/wrk app-misc/jq app-misc/screen app-shells/bash-completion dev-db/mariadb dev-lang/php dev-lang/rust-bin dev-libs/mimalloc net-misc/aria2 net-misc/mosh net-vpn/wireguard-tools sys-block/io-scheduler-udev-rules sys-kernel/installkernel sys-kernel/linux-firmware
 
 jobs:
   emerge:
