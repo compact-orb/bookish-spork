@@ -35,7 +35,7 @@ jobs:
 
         # To Do: Somehow make it not fail when a newer version is not available
       - name: Emerge and Generate PGO Profile
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-generate --no-pgo-update-chec
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-generate
 
       - name: Run Benchmarks to Generate PGO Profile
         run: |
