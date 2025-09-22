@@ -2,6 +2,7 @@ name: 1 Emerge Node.js
 
 on:
   workflow_dispatch:
+  schedule:
     - cron: 15 21 */2 * *
 
 env:
