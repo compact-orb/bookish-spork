@@ -2,7 +2,7 @@ name: 1 Emerge Node.js
 
 on:
   workflow_dispatch:
-  - cron: 15 21 */2 * *
+    - cron: 15 21 */2 * *
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
