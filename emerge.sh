@@ -188,8 +188,6 @@ has_src_update() {
         return 2
     fi
 
-    echo $emerge
-
     if grep --extended-regexp --quiet '^\[ebuild\s+N\s+\]' <<<"${emerge}"; then
         return 0
     else
