@@ -280,7 +280,7 @@ case $bootstrap in
 
                     opts+=( --buildpkg=n)
 
-                    opts+=( --quiet-build=n )
+                    opts+=( --usepkg-exclude "$packages" )
 
                     mkdir /var/tmp/pgo
                 else
