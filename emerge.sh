@@ -246,7 +246,7 @@ case $bootstrap in
 
             (( oneshot )) && opts+=( --oneshot )
 
-            [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
+            [[ -n $usepkg_exclude && $pgo_generate -eq 0 ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
             (( no_quiet_build )) && opts+=( --quiet-build=n )
 
