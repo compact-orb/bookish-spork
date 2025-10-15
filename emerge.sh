@@ -184,6 +184,8 @@ write_file() {
 has_src_update() {
     local emerge
 
+    unset opts[-1]
+
     if ! emerge=$(emerge --pretend --quiet --update --verbose $1 2>/dev/null); then
         return 2
     fi
@@ -278,7 +280,7 @@ case $bootstrap in
 
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
 
-                    unset opts[-1]
+                    [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
                     opts+=( --buildpkg=n)
 
