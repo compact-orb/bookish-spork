@@ -184,7 +184,7 @@ write_file() {
 has_src_update() {
     local emerge
 
-    if ! emerge=$(emerge --pretend --quiet --update --verbose $1 2>/dev/null); then
+    if ! emerge=$(emerge --binpkg-respect-use=n --pretend --quiet --update --verbose $1 2>/dev/null); then
         return 2
     fi
 
