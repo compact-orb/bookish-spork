@@ -266,11 +266,7 @@ case $bootstrap in
 
             (( oneshot )) && opts+=( --oneshot )
 
-            [[ -n $usepkg_exclude && $pgo_generate -eq 0 ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
-
-            echo test test
-
-            printf '%s\n' "${opts[@]}"
+            [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
             (( no_quiet_build )) && opts+=( --quiet-build=n )
 
@@ -283,6 +279,8 @@ case $bootstrap in
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
 
                     opts+=( --buildpkg=n)
+
+                    opts+=( --quiet-build=n )
 
                     mkdir /var/tmp/pgo
                 else
