@@ -278,7 +278,7 @@ case $bootstrap in
 
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
 
-                    opts+=( --buildpkg=n)
+                    opts+=( --buildpkg-exclude "$packages" )
 
                     mkdir /var/tmp/pgo
                 else
