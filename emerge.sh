@@ -270,7 +270,7 @@ case $bootstrap in
 
             echo test test
 
-            echo "${opts[@]}"
+            echo -- "${opts[@]}"
 
             (( no_quiet_build )) && opts+=( --quiet-build=n )
 
