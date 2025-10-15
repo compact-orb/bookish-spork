@@ -266,9 +266,9 @@ case $bootstrap in
 
             (( oneshot )) && opts+=( --oneshot )
 
-            [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
-
             (( no_quiet_build )) && opts+=( --quiet-build=n )
+
+            [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
             read -ra PKG_ARR <<< "$packages"
 
@@ -277,6 +277,8 @@ case $bootstrap in
                     echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
 
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
+
+                    unset opts[-1]
 
                     opts+=( --buildpkg=n)
 
