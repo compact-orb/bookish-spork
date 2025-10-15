@@ -268,6 +268,8 @@ case $bootstrap in
 
             [[ -n $usepkg_exclude && $pgo_generate -eq 0 ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
+            echo test test
+
             echo "${opts[@]}"
 
             (( no_quiet_build )) && opts+=( --quiet-build=n )
