@@ -184,8 +184,6 @@ write_file() {
 has_src_update() {
     local emerge
 
-    unset opts[-1]
-
     if ! emerge=$(emerge --pretend --quiet --update --verbose $1 2>/dev/null); then
         return 2
     fi
@@ -279,8 +277,6 @@ case $bootstrap in
                     echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
 
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
-
-                    [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
                     opts+=( --buildpkg=n)
 
