@@ -1,4 +1,3 @@
-# Broken: Does not update dependencies unless it has an update itself
 name: 1 Emerge Node.js
 
 on:
@@ -50,6 +49,9 @@ jobs:
 
       - name: Emerge and Use PGO Profile
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-use --no-pgo-update-check
+
+      - name: Emerge
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
       - name: Unmount Filesystems
         if: always()
