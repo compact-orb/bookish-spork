@@ -34,8 +34,8 @@ jobs:
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
-        # To Do: Somehow make it not fail when a newer version is not available
       - name: Emerge and Generate PGO Profile
+        id: emerge-pgo-generate
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-generate
 
       - name: Run Benchmarks to Generate PGO Profile
@@ -51,6 +51,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-use --no-pgo-update-check
 
       - name: Emerge
+        if: ${{ success() || steps.emerge-pgo-generate.outcome == failure }} 
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
       - name: Unmount Filesystems
@@ -61,6 +62,6 @@ jobs:
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
-      - name: Upload Gentoo
-        if: failure()
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Temporary
+#      - name: Upload Gentoo
+#        if: failure()
+#        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Temporary
