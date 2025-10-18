@@ -35,7 +35,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge and Generate PGO Profile
-        id: emerge-pgo-generate
+        id: emerge_pgo_generate
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-generate
 
       - name: Run Benchmarks to Generate PGO Profile
@@ -51,7 +51,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-use --no-pgo-update-check
 
       - name: Emerge
-        if: ${{ success() || steps.emerge-pgo-generate.outcome == "failure" }} 
+        if: ${{ success() || steps.emerge_pgo_generate.outcome == failure }} 
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
       - name: Unmount Filesystems
