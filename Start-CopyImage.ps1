@@ -21,14 +21,12 @@ if ($From) {
         $fileName = "$env:CONFIG_PREFIX.tar.zst"
     }
 
-    aria2c --dir=/tmp --header="accept: */*" --header="accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName
-
     New-Item -Path /mnt/gentoo -ItemType Directory
 
     if ($Bootstrap) {
-        tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --xattrs-include="*.*"
+        curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --output-dir /tmp --remote-name "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
     } else {
-        tar --directory=/mnt/gentoo --extract --file=/tmp/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+        curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --output-dir /tmp --remote-name "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" | ar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
     }
 
     Remove-Item -Path /tmp/$fileName
