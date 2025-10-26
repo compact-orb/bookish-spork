@@ -97,6 +97,10 @@ function ToBs {
                 Start-Sleep -Seconds $using:RetryIntervalSec
 
                 $attempt++
+
+                if ($attempt -ge $using:MaximumRetryCount) {
+                    exit 1
+                }
             }
         }
     }
