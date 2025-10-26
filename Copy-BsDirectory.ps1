@@ -36,7 +36,7 @@ function FromBs {
             $httpResponse = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$Path/" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method GET
 
             $httpResponse | ForEach-Object -Parallel {
-                . $using:PSCommandPath -Path $using:Path -Destination $using:Destination -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -ThrottleLimit $using:ThrottleLimit -NoExecute
+                . $using:PSCommandPath -Path $using:Path -Destination $using:Destination -FromBs -MaximumRetryCount $using:MaximumRetryCount -RetryIntervalSec $using:RetryIntervalSec -NoExecute
 
                 if ($_.IsDirectory) {
                     New-Item -Path "$Destination/$($_.ObjectName)" -ItemType Directory | Out-Null
@@ -44,8 +44,6 @@ function FromBs {
                     FromBs -Path "$Path/$($_.ObjectName)" -Destination "$Destination/$($_.ObjectName)"
                 } elseif (($null -ne $_.IsDirectory) -and (-not $_.IsDirectory)) {
                     try {
-                        Write-Host -Object "Copying $($_.ObjectName)..."
-
                         Invoke-WebRequest -Uri "https://$($env:BUNNY_STORAGE_ENDPOINT)/$Path/$($_.ObjectName)" -Headers @{ accept='*/*'; accesskey=$env:BUNNY_STORAGE_ACCESS_KEY } -OutFile (Join-Path -Path $Destination -ChildPath $_.ObjectName)
 
                         Write-Host -Object "Copied $($_.ObjectName)"
