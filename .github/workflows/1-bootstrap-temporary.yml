@@ -21,6 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Display Runner Info
+        run: bash ./runnerinfo.sh
+
       - name: Install PowerShell
         run: sudo --preserve-env bash ./install-powershell.sh
 

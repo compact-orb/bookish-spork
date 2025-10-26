@@ -6,7 +6,6 @@
 # BUNNY_STORAGE_ZONE_NAME
 # CONFIG_PREFIX
 # POWERSHELL_7_ARCHITECTURE
-# You will also need to install aria2
 
 set -e
 
