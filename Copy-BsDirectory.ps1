@@ -65,6 +65,10 @@ function FromBs {
             Start-Sleep -Seconds $RetryIntervalSec
 
             $attempt++
+
+            if ($attempt -ge $MaximumRetryCount) {
+                exit 1
+            }
         }
     }
 }
