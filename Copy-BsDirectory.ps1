@@ -44,6 +44,8 @@ function FromBs {
                     FromBs -Path "$Path/$($_.ObjectName)" -Destination "$Destination/$($_.ObjectName)"
                 } elseif (($null -ne $_.IsDirectory) -and (-not $_.IsDirectory)) {
                     try {
+                        Write-Host -Object "Copying $($_.ObjectName)..."
+
                         Invoke-WebRequest -Uri "https://$($env:BUNNY_STORAGE_ENDPOINT)/$Path/$($_.ObjectName)" -Headers @{ accept='*/*'; accesskey=$env:BUNNY_STORAGE_ACCESS_KEY } -OutFile (Join-Path -Path $Destination -ChildPath $_.ObjectName)
 
                         Write-Host -Object "Copied $($_.ObjectName)"
