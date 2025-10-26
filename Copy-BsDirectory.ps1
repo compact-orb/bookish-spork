@@ -13,8 +13,6 @@ param(
 
     [Int32]$RetryIntervalSec = 4,
 
-    [Int32]$ThrottleLimit = 1,
-
     [switch]$NoExecute
 )
 
@@ -53,7 +51,7 @@ function FromBs {
                         Write-Host -Object "Failed to copy $($_.ObjectName)"
                     }
                 }
-            } -ThrottleLimit $ThrottleLimit
+            }
 
             break
         } catch {
@@ -97,7 +95,7 @@ function ToBs {
                 $attempt++
             }
         }
-    } -ThrottleLimit $ThrottleLimit
+    }
 }
 
 if (-not $NoExecute) {
