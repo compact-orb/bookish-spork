@@ -184,7 +184,7 @@ write_file() {
 has_src_update() {
     local emerge
 
-    if ! emerge=$(emerge --nodeps --pretend --verbose $1 2>/dev/null); then
+    if ! emerge=$(emerge --nodeps --pretend --verbose --with-bdeps=n $1 2>/dev/null); then
         return 2
     fi
 
@@ -281,9 +281,6 @@ case $bootstrap in
 
             read -ra PKG_ARR <<< "$packages"
 
-            #Temprorary
-            echo Mogus "${PKG_ARR[@]}"
-
             if (( pgo_generate)) || (( pgo_use)); then
                 if [ -f /tmp/emerge_has_src_update_false ]; then
                     echo "No update. skipping PGO step."
@@ -294,6 +291,8 @@ case $bootstrap in
 
             if (( pgo_generate )) && (( ${#PKG_ARR[@]} == 1 )); then
                 if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then
+                    echo "Building with PGO"
+
                     echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
 
                     echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
@@ -310,6 +309,8 @@ case $bootstrap in
 
             if (( pgo_use )) && (( ${#PKG_ARR[@]} == 1 )); then
                 if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then
+                    echo "Building with PGO"
+
                     echo -e "CFLAGS=\"\${CFLAGS} -fprofile-use=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-use=/var/tmp/pgo -fprofile-correction\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
 
                     pgo_used=1
