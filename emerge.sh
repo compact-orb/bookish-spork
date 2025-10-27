@@ -191,7 +191,11 @@ has_src_update() {
     if grep --extended-regexp --quiet '^\[ebuild\s+N\s+\]' <<<"${emerge}"; then
         return 0
     else
-        return 1
+        echo > /tmp/emerge_has_src_update_false
+
+        echo "No update. skipping PGO step."
+
+        exit
     fi
 }
 
@@ -271,6 +275,14 @@ case $bootstrap in
             (( no_quiet_build )) && opts+=( --quiet-build=n )
 
             read -ra PKG_ARR <<< "$packages"
+
+            if (( pgo_generate)) || (( pgo_use)); then
+                if [ -f /tmp/emerge_has_src_update_false ]; then
+                    echo "No update. skipping PGO step."
+
+                    exit
+                fi
+            fi
 
             if (( pgo_generate )) && (( ${#PKG_ARR[@]} == 1 )); then
                 if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then

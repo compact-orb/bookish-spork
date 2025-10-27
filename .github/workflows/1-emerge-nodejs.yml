@@ -54,7 +54,6 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$PACKAGES" --pgo-use --no-pgo-update-check
 
       - name: Emerge
-        if: ${{ success() || steps.emerge_pgo_generate.outcome == 'failure' }} 
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
       - name: Unmount Filesystems
@@ -65,6 +64,6 @@ jobs:
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
-#      - name: Upload Gentoo
-#        if: failure()
-#        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Temporary
+      - name: Upload Gentoo
+        if: failure()
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Temporary
