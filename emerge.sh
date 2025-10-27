@@ -188,7 +188,12 @@ has_src_update() {
         return 2
     fi
 
-    if grep --extended-regexp --quiet '^\[ebuild\s+N\s+\]' <<<"${emerge}"; then
+    # Escape regex metacharacters in the package name
+    local pkg_re
+    pkg_re=$(printf '%s' "$1" | sed --expression='s/[][(){}.^$*+?|\\]/\\&/g')
+
+    # Match: start, [ebuild  N  ], optional spaces, then the package name (with optional version), e.g. cat/pkg-1.2.3
+    if grep --extended-regexp --quiet "^\[ebuild[[:space:]]+N[[:space:]]+\][[:space:]]*$pkg_re[^[:space:]]*" <<<"${emerge}"; then
         return 0
     else
         echo > /tmp/emerge_has_src_update_false
@@ -275,6 +280,9 @@ case $bootstrap in
             (( no_quiet_build )) && opts+=( --quiet-build=n )
 
             read -ra PKG_ARR <<< "$packages"
+
+            #Temprorary
+            echo Mogus "${PKG_ARR[@]}"
 
             if (( pgo_generate)) || (( pgo_use)); then
                 if [ -f /tmp/emerge_has_src_update_false ]; then
