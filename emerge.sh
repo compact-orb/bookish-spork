@@ -192,8 +192,8 @@ has_src_update() {
     local pkg_re
     pkg_re=$(printf '%s' "$1" | sed --expression='s/[][(){}.^$*+?|\\]/\\&/g')
 
-    # Match: start, [ebuild  N  ], optional spaces, then the package name (with optional version), e.g. cat/pkg-1.2.3
-    if grep --extended-regexp --quiet "^\[ebuild[[:space:]]+N[[:space:]]+\][[:space:]]*$pkg_re[^[:space:]]*" <<<"${emerge}"; then
+    # Match: start, [ebuild  N  ], then the package name (with optional version), e.g. cat/pkg-1.2.3
+    if grep --extended-regexp --quiet "^\[ebuild[[:space:]]+N[[:space:]]+\][[:space:]]$pkg_re[^[:space:]]*" <<<"${emerge}"; then
         return 0
     else
         echo > /tmp/emerge_has_src_update_false
