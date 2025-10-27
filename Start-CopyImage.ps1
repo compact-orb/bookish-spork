@@ -41,7 +41,13 @@ if ($From) {
         Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/tmp/* -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    tar --create --directory=/mnt/gentoo --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" . | curl --data-binary `@- --fail --header "accept: application/json" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --header "content-type: application/octet-stream" --request PUT --show-error --silent "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName"
+    Measure-Command -Expression {
+        tar --create --directory=/mnt/gentoo --file=/tmp/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
+    }
+
+    Measure-Command -Expression {
+        Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY} -Method PUT -ContentType "application/octet-stream" -InFile /tmp/$fileName
+    }
 } else {
     exit 1
 }
