@@ -184,7 +184,7 @@ write_file() {
 has_src_update() {
     local emerge
 
-    if ! emerge=$(emerge --nodeps --pretend --verbose --with-bdeps=n $1 2>/dev/null); then
+    if ! emerge=$(emerge --nodeps --pretend --with-bdeps=n $1 2>/dev/null); then
         return 2
     fi
 

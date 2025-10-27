@@ -23,7 +23,7 @@ if (-not $Endpoint) {
 
 MAKEOPTS="--jobs=8 --load-average=9"
 
-EMERGE_DEFAULT_OPTS="--backtrack=1024 --buildpkg --quiet-build --usepkg --with-bdeps=y"
+EMERGE_DEFAULT_OPTS="--backtrack=1024 --buildpkg --quiet-build --usepkg --verbose --with-bdeps=y"
 BINPKG_COMPRESS="zstd"
 BINPKG_COMPRESS_FLAGS="-19 -T8 --long"
 '@
