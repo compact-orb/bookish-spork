@@ -2,7 +2,7 @@ name: 1 Emerge Other
 
 on:
   workflow_dispatch:
-  schedule:
+  # schedule:
     # - cron: 45 13 */2 * *
 
 env:
