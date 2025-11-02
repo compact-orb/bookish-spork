@@ -3,7 +3,7 @@ name: 1 Bootstrap Update
 on:
   workflow_dispatch:
   schedule:
-    - cron: 45 0 */2 * *
+    # - cron: 45 0 */2 * *
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}

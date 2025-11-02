@@ -4,7 +4,7 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,pgo-generate,pgo-use,no-pgo-update-check,update,resume,deselect,sync,bootstrap:,portage-profile:,emerge-perl,no-timeout
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,bootstrap:,portage-profile:,emerge-perl,no-timeout
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -21,12 +21,6 @@ usepkg_exclude=""
 no_quiet_build=0
 
 keepwork=0
-
-pgo_generate=0
-
-pgo_use=0
-
-no_pgo_update_check=0
 
 update=0
 
@@ -78,21 +72,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --keepwork)
             keepwork=1
-
-            shift
-            ;;
-        --pgo-generate)
-            pgo_generate=1
-
-            shift
-            ;;
-        --pgo-use)
-            pgo_use=1
-
-            shift
-            ;;
-        --no-pgo-update-check)
-            no_pgo_update_check=1
 
             shift
             ;;
@@ -181,29 +160,6 @@ write_file() {
     printf '%s\n' "$2" > "$1"
 }
 
-has_src_update() {
-    local emerge
-
-    if ! emerge=$(emerge --nodeps --pretend --with-bdeps=n $1 2>/dev/null); then
-        return 2
-    fi
-
-    # Escape regex metacharacters in the package name
-    local pkg_re
-    pkg_re=$(printf '%s' "$1" | sed --expression='s/[][(){}.^$*+?|\\]/\\&/g')
-
-    # Match: start, [ebuild  N  ], then the package name (with optional version), e.g. cat/pkg-1.2.3
-    if grep --extended-regexp --quiet "^\[ebuild[[:space:]]+N[[:space:]]+\][[:space:]]$pkg_re[^[:space:]]*" <<<"${emerge}"; then
-        return 0
-    else
-        echo > /tmp/emerge_has_src_update_false
-
-        echo "No update. skipping PGO step."
-
-        exit
-    fi
-}
-
 case $bootstrap in
     1)
         emerge-webrsync
@@ -275,53 +231,13 @@ case $bootstrap in
 
             (( oneshot )) && opts+=( --oneshot )
 
-            [[ -n $usepkg_exclude && $pgo_generate == 0 ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
+            [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
             (( no_quiet_build )) && opts+=( --quiet-build=n )
 
             read -ra PKG_ARR <<< "$packages"
 
-            if (( pgo_generate)) || (( pgo_use)); then
-                if [ -f /tmp/emerge_has_src_update_false ]; then
-                    echo "No update. skipping PGO step."
-
-                    exit
-                fi
-            fi
-
-            if (( pgo_generate )) && (( ${#PKG_ARR[@]} == 1 )); then
-                if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then
-                    echo "Building with PGO"
-
-                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-generate=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-generate=/var/tmp/pgo\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
-
-                    echo "${PKG_ARR[*]} pgo.conf" >> /etc/portage/package.env/pgo
-
-                    opts+=( --buildpkg-exclude "$packages" )
-
-                    mkdir /var/tmp/pgo
-                else
-                    exit 10
-                fi
-            fi
-
-            pgo_used=0
-
-            if (( pgo_use )) && (( ${#PKG_ARR[@]} == 1 )); then
-                if (( no_pgo_update_check )) || has_src_update "${PKG_ARR[@]}"; then
-                    echo "Building with PGO"
-
-                    echo -e "CFLAGS=\"\${CFLAGS} -fprofile-use=/var/tmp/pgo\"\nCXXFLAGS=\"\${CXXFLAGS} -fprofile-use=/var/tmp/pgo -fprofile-correction\"\nLDFLAGS=\"\${LDFLAGS} -fprofile-arcs\"" > /etc/portage/env/pgo.conf
-
-                    pgo_used=1
-                else
-                    exit 11
-                fi
-            fi
-
             t_emerge "${opts[@]}" "${PKG_ARR[@]}"
-
-            (( pgo_used )) && rm --force --recursive /etc/portage/env/pgo.conf /etc/portage/package.env/pgo /var/tmp/pgo
 
             emerge --depclean
         fi
