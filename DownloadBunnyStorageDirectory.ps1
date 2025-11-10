@@ -25,7 +25,7 @@ do {
                 New-Item -Path "$using:Destination$($Path.Substring($using:Path.Length))$($_.ObjectName)" -ItemType Directory | Out-Null
 
                 "$($Path)$($_.ObjectName)"
-            } elseif (-not $_.IsDirectory) {
+            } else {
                 Write-Host -Object "Downloading $($_.Path)$($_.ObjectName) to $using:Destination$($Path.Substring($using:Path.Length))$($_.ObjectName)"
 
                 Invoke-WebRequest -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$($_.Path)$($_.ObjectName)" -Headers @{ accept='*/*'; accesskey=$using:env:BUNNY_STORAGE_ACCESS_KEY } -OutFile "$using:Destination$($Path.Substring($using:Path.Length))$($_.ObjectName)"
