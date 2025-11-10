@@ -12,10 +12,12 @@ $ErrorActionPreference = "Stop"
 
 $PSNativeCommandUseErrorActionPreference = $true
 
-$currentPaths = $Path
+$directories = $Path
+
+$files = @()
 
 do {
-    $currentPaths = $currentPaths | ForEach-Object -Parallel {
+    $directories = $directories | ForEach-Object -Parallel {
         $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$_/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
 
         $response | ForEach-Object {
@@ -24,12 +26,31 @@ do {
             if ($_.IsDirectory) {
                 New-Item -Path "$using:Destination$($Path.Substring($using:Path.Length))$($_.ObjectName)" -ItemType Directory | Out-Null
 
-                "$($Path)$($_.ObjectName)"
+                [PSCustomObject]@{
+                    isDirectory = $true;
+                    Path        = "$($Path)$($_.ObjectName)"
+                }
             } else {
-                Write-Host -Object "Downloading $($_.Path)$($_.ObjectName) to $using:Destination$($Path.Substring($using:Path.Length))$($_.ObjectName)"
-
-                Invoke-WebRequest -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$($_.Path)$($_.ObjectName)" -Headers @{ accept='*/*'; accesskey=$using:env:BUNNY_STORAGE_ACCESS_KEY } -OutFile "$using:Destination$($Path.Substring($using:Path.Length))$($_.ObjectName)"
+                [PSCustomObject]@{
+                    isDirectory = $false;
+                    Path        = "$($Path)$($_.ObjectName)"
+                }
             }
         }
+    } -ThrottleLimit $ThrottleLimit | ForEach-Object {
+        if ($_.isDirectory) {
+            $_.Path
+        }
+        else {
+            $files += $_.Path
+        }
+    }
+} while (![string]::IsNullOrWhiteSpace($directories))
+
+if (![string]::IsNullOrWhiteSpace($files)) {
+    $files | ForEach-Object -Parallel {
+        Write-Host -Object "Downloading $_ to $using:Destination$($_.Substring($using:Path.Length))"
+
+        Invoke-WebRequest -Uri "https://$env:BUNNY_STORAGE_ENDPOINT$_" -Headers @{ accept='*/*'; accesskey=$using:env:BUNNY_STORAGE_ACCESS_KEY } -OutFile "$using:Destination$($_.Substring($using:Path.Length))"
     } -ThrottleLimit $ThrottleLimit
-} while (![string]::IsNullOrWhiteSpace($currentPaths))
+}
