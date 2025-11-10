@@ -16,7 +16,7 @@ $currentPaths = $Path
 
 do {
     $currentPaths = $currentPaths | ForEach-Object -Parallel {
-        $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$_/" -Headers @{"accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY} -Method GET
+        $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$_/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
 
         $response | ForEach-Object {
             $Path = $_.Path
