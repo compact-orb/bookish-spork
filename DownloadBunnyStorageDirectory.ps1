@@ -27,18 +27,18 @@ do {
                 New-Item -Path "$using:Destination$($Path.Substring($using:Path.Length))$($_.ObjectName)" -ItemType Directory | Out-Null
 
                 [PSCustomObject]@{
-                    isDirectory = $true;
+                    IsDirectory = $true;
                     Path        = "$($Path)$($_.ObjectName)"
                 }
             } else {
                 [PSCustomObject]@{
-                    isDirectory = $false;
+                    IsDirectory = $false;
                     Path        = "$($Path)$($_.ObjectName)"
                 }
             }
         }
     } -ThrottleLimit $ThrottleLimit | ForEach-Object {
-        if ($_.isDirectory) {
+        if ($_.IsDirectory) {
             $_.Path
         }
         else {
