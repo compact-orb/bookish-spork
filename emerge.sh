@@ -162,27 +162,31 @@ write_file() {
 
 case $bootstrap in
     1)
-        emerge-webrsync
+        if (( resume )); then
+            t_emerge --buildpkg=n --emptytree --resume
+        else
+            emerge-webrsync
 
-        locale-gen --quiet
+            locale-gen --quiet
 
-        eselect --brief locale set 6
+            eselect --brief locale set 6
 
-        if [[ -n $portage_profile ]]; then
-            eselect --brief profile set "$portage_profile"
+            if [[ -n $portage_profile ]]; then
+                eselect --brief profile set "$portage_profile"
+            fi
+
+            write_file /etc/portage/package.use/bootstrap "*/* -pgo"
+
+            emerge --buildpkg=n dev-vcs/git
+
+            emerge --sync
+
+            if (( emerge_perl )); then
+                emerge --buildpkg=n --oneshot dev-lang/perl
+            fi
+
+            t_emerge --buildpkg=n --emptytree "@system"
         fi
-
-        write_file /etc/portage/package.use/bootstrap "*/* -pgo"
-
-        emerge --buildpkg=n dev-vcs/git
-
-        emerge --sync
-
-        if (( emerge_perl )); then
-            emerge --buildpkg=n --oneshot dev-lang/perl
-        fi
-
-        t_emerge --buildpkg=n --emptytree "@system"
 
         rm -f /etc/portage/package.use/bootstrap
         ;;
