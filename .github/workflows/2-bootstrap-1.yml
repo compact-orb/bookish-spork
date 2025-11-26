@@ -1,0 +1,46 @@
+name: 2 Bootstrap 1
+
+on:
+  workflow_dispatch:
+
+env:
+  BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
+  BUNNY_STORAGE_CDN: ${{ secrets.BUNNY_STORAGE_CDN }}
+  BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
+  BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
+  BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
+  CONFIG_PREFIX: 2
+  POWERSHELL_7_ARCHITECTURE: x64
+  RSYNC_MIRROR: ${{ secrets.RSYNC_MIRROR }}
+
+jobs:
+  bootstrap-1:
+    name: Bootstrap 1
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Display Runner Info
+        run: bash ./runnerinfo.sh
+
+      - name: Install PowerShell
+        run: sudo --preserve-env bash ./install-powershell.sh
+
+      - name: Set Up Gentoo
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From -Bootstrap
+
+      - name: Configure Gentoo
+        run: sudo --preserve-env pwsh -File ./Start-SetConfiguration.ps1
+
+      - name: Mount Filesystems
+        run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
+
+      - name: Emerge
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd --emerge-perl
+
+      - name: Unmount Filesystems
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
+
+      - name: Upload Gentoo
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To

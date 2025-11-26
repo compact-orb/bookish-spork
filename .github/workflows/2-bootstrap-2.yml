@@ -1,9 +1,7 @@
-name: 1 Emerge Other
+name: 2 Bootstrap 2
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 45 13 */2 * *
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
@@ -11,13 +9,12 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 1
+  CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: app-admin/sudo app-arch/7zip app-benchmarks/wrk app-misc/jq app-misc/screen app-shells/bash-completion app-shells/pwsh dev-db/mariadb dev-lang/php dev-lang/rust-bin dev-libs/mimalloc net-libs/nodejs net-misc/aria2 net-misc/mosh net-vpn/wireguard-tools sys-apps/zram-generator sys-block/io-scheduler-udev-rules sys-kernel/installkernel sys-kernel/linux-firmware
 
 jobs:
-  emerge:
-    name: Emerge
+  bootstrap-2:
+    name: Bootstrap 2
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -31,23 +28,19 @@ jobs:
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 
-      - name: Set Up Binary Packages
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
-
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 2
 
       - name: Unmount Filesystems
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: always()
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
+        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To -NoOverlay
 
       - name: Upload Gentoo
-        if: failure()
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Temporary
+        if: success() || failure()
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To
