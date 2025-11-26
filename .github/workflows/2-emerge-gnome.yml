@@ -1,4 +1,4 @@
-name: 2 Emerge Other
+name: 2 Emerge GNOME
 
 on:
   workflow_dispatch:
