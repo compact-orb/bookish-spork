@@ -1,4 +1,4 @@
-name: 2 Bootstrap 2 Resume
+name: 2 Bootstrap 1 Resume
 
 on:
   workflow_dispatch:
@@ -37,9 +37,6 @@ jobs:
       - name: Unmount Filesystems
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
-
-      - name: Upload Gentoo Binary Packages
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To -NoOverlay
 
       - name: Upload Gentoo
         if: success() || failure()
