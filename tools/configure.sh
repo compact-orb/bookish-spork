@@ -6,7 +6,7 @@ fi
 
 source ./variables.sh
 
-rm --force --recursive /etc/kernel/config.d /etc/portage/env /etc/portage/package.env /etc/portage/package.use /etc/portage/patches
+rm --force --recursive /etc/kernel/config.d /etc/portage/env /etc/portage/package.env /etc/portage/package.unmask /etc/portage/package.use /etc/portage/patches
 
 cp --force --recursive $1/* /
 
