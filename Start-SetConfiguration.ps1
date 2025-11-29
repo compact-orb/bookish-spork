@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 
 $PSNativeCommandUseErrorActionPreference = $true
 
-Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/binrepos.conf, /mnt/gentoo/etc/portage/env, /mnt/gentoo/etc/portage/package.env, /mnt/gentoo/etc/portage/package.use, /mnt/gentoo/etc/portage/patches, /mnt/gentoo/etc/portage/repos.conf -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/binrepos.conf, /mnt/gentoo/etc/portage/env, /mnt/gentoo/etc/portage/package.env, /mnt/gentoo/etc/portage/package.use, /mnt/gentoo/etc/portage/package.unmask, /mnt/gentoo/etc/portage/patches, /mnt/gentoo/etc/portage/repos.conf -Recurse -Force -ErrorAction SilentlyContinue
 
 Copy-Item -Path $env:CONFIG_PREFIX/* -Destination /mnt/gentoo -Recurse -Force
 
