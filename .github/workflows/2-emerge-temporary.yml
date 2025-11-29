@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: gnome-base/gvfs media-video/vlc
-  USEPKG_EXCLUDE: gnome-base/gvfs media-video/vlc
+  PACKAGES: sys-boot/plymouth
+  USEPKG_EXCLUDE: sys-boot/plymouth
 
 jobs:
   emerge:
