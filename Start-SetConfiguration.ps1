@@ -37,6 +37,10 @@ $env:REDESIGNED_BROCCOLI_SSH_KEY | base64 --decode | Set-Content -Path "/mnt/gen
 
 chmod 600 "/mnt/gentoo/root/.ssh/redesigned-broccoli"
 
+$env:KNOWN_HOSTS | base64 --decode | Set-Content -Path "/mnt/gentoo/root/.ssh/known_hosts"
+
+chmod 600 "/mnt/gentoo/root/.ssh/known_hosts"
+
 Set-Content -Path "/mnt/gentoo/root/.ssh/config" -Value @'
 Host github.com
     IdentityFile ~/.ssh/redesigned-broccoli
