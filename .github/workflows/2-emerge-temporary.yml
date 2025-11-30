@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: dev-util/github-cli
-  USEPKG_EXCLUDE: dev-util/github-cli
+  PACKAGES: dev-embedded/arduino
+  USEPKG_EXCLUDE: dev-embedded/arduino
 
 jobs:
   emerge:
