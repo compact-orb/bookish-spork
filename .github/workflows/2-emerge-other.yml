@@ -13,7 +13,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: app-admin/sudo app-arch/7zip app-arch/unzip app-shells/bash-completion app-shells/pwsh dev-libs/mimalloc dev-util/android-tools media-fonts/fonts-meta media-libs/libva-intel-media-driver media-video/vlc net-misc/aria2 net-misc/mosh net-print/cups-meta net-vpn/wireguard-tools net-print/cups-filters net-print/gutenprint sys-apps/flatpak sys-apps/zram-generator sys-firmware/intel-microcode sys-firmware/sof-firmware sys-fs/exfatprogs sys-fs/f2fs-tools sys-fs/fuse:0 sys-block/io-scheduler-udev-rules sys-boot/plymouth sys-kernel/installkernel sys-kernel/linux-firmware www-client/firefox-bin www-client/microsoft-edge
+  PACKAGES: app-admin/sudo app-arch/7zip app-arch/unzip app-shells/bash-completion app-shells/pwsh dev-libs/mimalloc dev-util/android-tools media-fonts/fonts-meta media-libs/libva-intel-media-driver media-video/vlc net-misc/aria2 net-misc/mosh net-print/cups-meta net-vpn/wireguard-tools net-print/cups-filters net-print/gutenprint sys-apps/flatpak sys-apps/zram-generator sys-firmware/intel-microcode sys-firmware/sof-firmware sys-fs/exfatprogs sys-fs/f2fs-tools sys-fs/fuse:0 sys-block/io-scheduler-udev-rules sys-boot/plymouth sys-kernel/installkernel sys-kernel/linux-firmware www-client/firefox-bin www-client/google-chrome www-client/microsoft-edge
 
 jobs:
   emerge:
