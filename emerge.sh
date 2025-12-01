@@ -169,13 +169,13 @@ case $bootstrap in
 
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
 
-        emerge --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
+        emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
-        emerge --deep --oneshot sys-apps/portage
+        emerge --buildpkg=n --deep --oneshot sys-apps/portage
 
         mv /tmp/emerge.conf.backup /etc/python-exec/emerge.conf
 
-        emerge --oneshot dev-lang/perl
+        emerge --buildpkg=n --oneshot dev-lang/perl
 
         emerge --sync
 
