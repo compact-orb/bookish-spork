@@ -4,7 +4,7 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,bootstrap:,portage-profile:,emerge-perl,no-timeout
+LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,bootstrap:,portage-profile:,no-timeout
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -33,8 +33,6 @@ sync_flag=0
 bootstrap=0
 
 portage_profile=""
-
-emerge_perl=0
 
 no_timeout=0
 
@@ -105,11 +103,6 @@ while [[ $# -gt 0 ]]; do
 
             shift 2
             ;;
-        --emerge-perl)
-            emerge_perl=1
-
-            shift
-            ;;
         --no-timeout)
             no_timeout=1
 
@@ -176,9 +169,7 @@ case $bootstrap in
 
         emerge --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
-        if (( emerge_perl )); then
-            emerge --oneshot dev-lang/perl
-        fi
+        emerge --oneshot dev-lang/perl
 
         emerge --getbinpkgonly --oneshot dev-lang/rust-bin
 
