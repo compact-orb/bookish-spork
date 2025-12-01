@@ -162,37 +162,23 @@ write_file() {
 
 case $bootstrap in
     1)
-        if (( resume )); then
-            t_emerge --buildpkg=n --emptytree --resume
-        else
-            emerge-webrsync
+        emerge-webrsync
 
-            locale-gen --quiet
-
-            eselect --brief locale set 6
-
-            if [[ -n $portage_profile ]]; then
-                eselect --brief profile set "$portage_profile"
-            fi
-
-            write_file /etc/portage/package.env/bootstrap "*/* gcc.conf"
-
-            write_file /etc/portage/package.use/bootstrap "*/* -pgo"
-
-            emerge --buildpkg=n dev-lang/rust dev-vcs/git
-
-            emerge --sync
-
-            if (( emerge_perl )); then
-                emerge --buildpkg=n --oneshot dev-lang/perl
-            fi
-
-            TIMEOUT=16200
-
-            t_emerge --buildpkg=n --emptytree "@system"
+        if [[ -n $portage_profile ]]; then
+            eselect --brief profile set "$portage_profile"
         fi
 
-        rm -f /etc/portage/package.env/bootstrap /etc/portage/package.use/bootstrap
+        write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
+
+        emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/rust dev-vcs/git
+
+        emerge --sync
+
+        if (( emerge_perl )); then
+            emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/perl
+        fi
+
+        rm /etc/portage/binrepos.conf/bootstrap.conf
         ;;
     2)
         if (( resume )); then
