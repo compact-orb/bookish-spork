@@ -187,6 +187,8 @@ case $bootstrap in
                 emerge --buildpkg=n --oneshot dev-lang/perl
             fi
 
+            TIMEOUT=16200
+
             t_emerge --buildpkg=n --emptytree "@system"
         fi
 
