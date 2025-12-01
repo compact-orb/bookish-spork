@@ -172,9 +172,9 @@ case $bootstrap in
 
         write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
 
-        emerge --deep --getbinpkg dev-vcs/git llvm-core/clang
+        emerge --deep --getbinpkg=y dev-vcs/git llvm-core/clang
 
-        emerge --getbinpkg --oneshot dev-lang/rust-bin
+        emerge --getbinpkg=y --oneshot dev-lang/rust-bin
 
         emerge dev-lang/rust
 
