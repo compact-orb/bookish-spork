@@ -150,7 +150,7 @@ t_emerge() {
 }
 
 write_file() {
-    printf '%s\n' "$2" > "$1"
+    printf '%b\n' "$2" > "$1"
 }
 
 case $bootstrap in
@@ -163,7 +163,7 @@ case $bootstrap in
 
         mkdir /etc/portage/binrepos.conf
 
-        write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
+        write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = https://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
 
         mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
 
