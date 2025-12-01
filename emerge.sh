@@ -165,7 +165,11 @@ case $bootstrap in
 
         write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
 
-        emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/rust dev-vcs/git llvm-core/clang
+        emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
+
+        emerge --deep --oneshot sys-apps/portage
+
+        write_file /etc/python-exec/emerge.conf "pypy3"
 
         emerge --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
