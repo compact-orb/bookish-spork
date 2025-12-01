@@ -22,7 +22,7 @@ if (-not $Endpoint) {
 
     Add-Content -Path /mnt/gentoo/etc/portage/make.conf -Value @'
 
-MAKEOPTS="--jobs=4 --load-average=4"
+MAKEOPTS="--jobs=4"
 
 EMERGE_DEFAULT_OPTS="--backtrack=1024 --buildpkg --quiet-build --usepkg --verbose --with-bdeps=y"
 BINPKG_COMPRESS="zstd"
