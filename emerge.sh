@@ -163,11 +163,11 @@ case $bootstrap in
 
         mkdir /etc/portage/binrepos.conf
 
-        write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = https://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
+        write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
 
         mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
 
-        emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
+        FEATURES="binpkg-request-signature" emerge --getbinpkgonly dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
 
         emerge --deep --oneshot sys-apps/portage
 
