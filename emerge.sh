@@ -185,7 +185,7 @@ case $bootstrap in
                 emerge --buildpkg=n --oneshot dev-lang/perl
             fi
 
-            t_emerge --buildpkg=n --emptytree "@system"
+            t_emerge --buildpkg=n --emptytree "@system dev-lang/rust"
         fi
 
         rm -f /etc/portage/package.use/bootstrap
