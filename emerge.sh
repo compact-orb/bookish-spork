@@ -167,13 +167,13 @@ case $bootstrap in
 
         mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
 
-        FEATURES="binpkg-request-signature" emerge --getbinpkgonly dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
+        FEATURES="binpkg-request-signature" emerge --getbinpkg dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
+
+        emerge --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
         emerge --deep --oneshot sys-apps/portage
 
         mv /tmp/emerge.conf.backup /etc/python-exec/emerge.conf
-
-        emerge --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
         emerge --oneshot dev-lang/perl
 
