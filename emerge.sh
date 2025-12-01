@@ -168,6 +168,8 @@ case $bootstrap in
             eselect --brief profile set "$portage_profile"
         fi
 
+        mkdir /etc/portage/binrepos.conf
+
         write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
 
         emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/rust dev-vcs/git
@@ -179,6 +181,8 @@ case $bootstrap in
         fi
 
         rm /etc/portage/binrepos.conf/bootstrap.conf
+
+        rmdir /etc/portage/binrepos.conf
         ;;
     2)
         if (( resume )); then
