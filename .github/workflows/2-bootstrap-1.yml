@@ -44,5 +44,4 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo
-        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To
