@@ -175,6 +175,8 @@ case $bootstrap in
                 eselect --brief profile set "$portage_profile"
             fi
 
+            write_file /etc/portage/package.env/bootstrap "*/* gcc.conf"
+
             write_file /etc/portage/package.use/bootstrap "*/* -pgo"
 
             emerge --buildpkg=n dev-vcs/git
@@ -188,7 +190,7 @@ case $bootstrap in
             t_emerge --buildpkg=n --emptytree "@system dev-lang/rust"
         fi
 
-        rm -f /etc/portage/package.use/bootstrap
+        rm -f /etc/portage/package.env/bootstrap /etc/portage/package.use/bootstrap
         ;;
     2)
         if (( resume )); then
