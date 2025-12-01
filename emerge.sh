@@ -172,7 +172,13 @@ case $bootstrap in
 
         write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
 
-        emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/rust dev-vcs/git
+        emerge --binpkg-respect-use=n --getbinpkgonly dev-vcs/git
+
+        emerge --binpkg-respect-use=n --getbinpkgonly --oneshot dev-lang/rust-bin
+
+        emerge dev-lang/rust
+
+        emerge --unmerge dev-lang/rust-bin
 
         emerge --sync
 
@@ -185,7 +191,7 @@ case $bootstrap in
         rmdir /etc/portage/binrepos.conf
         ;;
     2)
-        if (( resume )); then
+        if (( resume )); then  
             t_emerge --emptytree --resume
         else
             t_emerge --emptytree "@world"
