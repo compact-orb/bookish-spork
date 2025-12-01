@@ -172,19 +172,21 @@ case $bootstrap in
 
         write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
 
-        emerge --deep --getbinpkg=y dev-vcs/git llvm-core/clang
+        emerge --getbinpkgonly dev-vcs/git llvm-core/clang
 
-        emerge --getbinpkg=y --oneshot dev-lang/rust-bin
+        emerge --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
+
+        if (( emerge_perl )); then
+            emerge --oneshot dev-lang/perl
+        fi
+
+        emerge --getbinpkgonly --oneshot dev-lang/rust-bin
 
         emerge dev-lang/rust
 
         emerge --unmerge dev-lang/rust-bin
 
         emerge --sync
-
-        if (( emerge_perl )); then
-            emerge --oneshot dev-lang/perl
-        fi
 
         rm /etc/portage/binrepos.conf/bootstrap.conf
 
