@@ -182,6 +182,8 @@ case $bootstrap in
         rm /etc/portage/binrepos.conf/bootstrap.conf
 
         rmdir /etc/portage/binrepos.conf
+
+        rm --force --recursive /var/cache/binpkgs/*
         ;;
     2)
         if (( resume )); then
