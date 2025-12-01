@@ -12,20 +12,21 @@ Copy-Item -Path $env:CONFIG_PREFIX/* -Destination /mnt/gentoo -Recurse -Force
 
 if (-not $Endpoint) {
     Set-Content -Path /mnt/gentoo/etc/portage/make.conf -Value (Get-Content -Path /mnt/gentoo/etc/portage/make.conf | ForEach-Object {
-        if ($_ -match "^EMERGE_DEFAULT_OPTS=") {
-            "# $_"
-        } else {
-            $_
-        }
-    })
+            if ($_ -match "^EMERGE_DEFAULT_OPTS=") {
+                "# $_"
+            }
+            else {
+                $_
+            }
+        })
 
     Add-Content -Path /mnt/gentoo/etc/portage/make.conf -Value @'
 
-MAKEOPTS="--jobs=8 --load-average=9"
+MAKEOPTS="--jobs=4 --load-average=4"
 
 EMERGE_DEFAULT_OPTS="--backtrack=1024 --buildpkg --quiet-build --usepkg --verbose --with-bdeps=y"
 BINPKG_COMPRESS="zstd"
-BINPKG_COMPRESS_FLAGS="-19 -T8 --long"
+BINPKG_COMPRESS_FLAGS="-19 -T4 --long"
 '@
 }
 
