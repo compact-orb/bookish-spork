@@ -179,7 +179,7 @@ case $bootstrap in
 
             write_file /etc/portage/package.use/bootstrap "*/* -pgo"
 
-            emerge --buildpkg=n dev-vcs/git
+            emerge --buildpkg=n dev-lang/rust dev-vcs/git
 
             emerge --sync
 
@@ -187,7 +187,7 @@ case $bootstrap in
                 emerge --buildpkg=n --oneshot dev-lang/perl
             fi
 
-            t_emerge --buildpkg=n --emptytree "@system dev-lang/rust"
+            t_emerge --buildpkg=n --emptytree "@system"
         fi
 
         rm -f /etc/portage/package.env/bootstrap /etc/portage/package.use/bootstrap

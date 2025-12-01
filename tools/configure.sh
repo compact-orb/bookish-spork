@@ -1,7 +1,9 @@
 set -e
 
 if [ -z "$1" ]; then
-  exit 1
+    echo "Please specify a configuration prefix."
+
+    exit 1
 fi
 
 source ./variables.sh
