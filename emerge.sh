@@ -169,6 +169,8 @@ case $bootstrap in
 
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
 
+        eselect rust set $(eselect rust list | grep "rust-" | grep --invert-match "bin" | tail --lines=1 | awk '{print $2}')
+
         emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
         emerge --buildpkg=n --deep --oneshot sys-apps/portage
