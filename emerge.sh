@@ -191,6 +191,8 @@ case $bootstrap in
         if (( resume )); then
             eselect rust set $(eselect rust list | grep "rust-" | grep --invert-match "bin" | tail --lines=1 | awk '{print $2}')
 
+            eselect rust list
+
             t_emerge --emptytree --resume
         else
             t_emerge --emptytree "@world"
