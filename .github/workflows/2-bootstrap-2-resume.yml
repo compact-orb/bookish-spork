@@ -13,8 +13,8 @@ env:
   POWERSHELL_7_ARCHITECTURE: x64
 
 jobs:
-  bootstrap-1-resume:
-    name: Bootstrap 1 Resume
+  bootstrap-2-resume:
+    name: Bootstrap 2 Resume
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
