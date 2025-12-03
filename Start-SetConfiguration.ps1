@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 
 $PSNativeCommandUseErrorActionPreference = $true
 
-Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/binrepos.conf, /mnt/gentoo/etc/portage/env, /mnt/gentoo/etc/portage/package.accept_keywords, /mnt/gentoo/etc/portage/package.env, /mnt/gentoo/etc/portage/package.mask, /mnt/gentoo/etc/portage/package.unmask, /mnt/gentoo/etc/portage/package.use, /mnt/gentoo/etc/portage/patches, /mnt/gentoo/etc/portage/profile/use.mask, /mnt/gentoo/etc/portage/repos.conf, /mnt/gentoo/etc/python-exec/emerge.conf, /mnt/gentoo/root/.ssh -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/bashrc, /mnt/gentoo/etc/portage/binrepos.conf, /mnt/gentoo/etc/portage/env, /mnt/gentoo/etc/portage/package.accept_keywords, /mnt/gentoo/etc/portage/package.env, /mnt/gentoo/etc/portage/package.mask, /mnt/gentoo/etc/portage/package.unmask, /mnt/gentoo/etc/portage/package.use, /mnt/gentoo/etc/portage/patches, /mnt/gentoo/etc/portage/profile/use.mask, /mnt/gentoo/etc/portage/repos.conf, /mnt/gentoo/etc/python-exec/emerge.conf, /mnt/gentoo/root/.ssh -Recurse -Force -ErrorAction SilentlyContinue
 
 Copy-Item -Path $env:CONFIG_PREFIX/* -Destination /mnt/gentoo -Recurse -Force
 
