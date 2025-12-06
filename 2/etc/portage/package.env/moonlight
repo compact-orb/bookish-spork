@@ -1,1 +1,1 @@
-net-misc/moonlight no-lto.conf
+net-misc/moonlight gcc.conf
