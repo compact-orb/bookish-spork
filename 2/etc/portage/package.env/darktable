@@ -1,1 +1,1 @@
-media-gfx/darktable gcc.conf
+media-gfx/darktable no-lto.conf
