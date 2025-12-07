@@ -1,0 +1,24 @@
+# AI generated patch
+--- a/app/main.cpp
++++ b/app/main.cpp
+@@ -33,6 +33,10 @@
+ #endif
+ 
++#if defined(Q_OS_LINUX)
++#include <dlfcn.h>
++#endif
++
+ #include "cli/listapps.h"
+ #include "cli/quitstream.h"
+ #include "cli/startstream.h"
+@@ -323,6 +327,11 @@
+ int main(int argc, char *argv[])
+ {
++    // Hack to prevent Intel Vulkan driver from being unloaded and crashing glibc
++#if defined(Q_OS_LINUX)
++    dlopen("libvulkan_intel.so", RTLD_LAZY | RTLD_NODELETE);
++#endif
++
+     SDL_SetMainReady();
+ 
+     // Set the app version for the QCommandLineParser's showVersion() command
