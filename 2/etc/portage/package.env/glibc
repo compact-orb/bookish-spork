@@ -1,1 +1,1 @@
-sys-libs/glibc gcc.conf
+sys-libs/glibc gcc.conf debug-gcc.conf

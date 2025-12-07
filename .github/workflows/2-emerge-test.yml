@@ -13,8 +13,8 @@ env:
   POWERSHELL_7_ARCHITECTURE: x64
   KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
   REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
-  PACKAGES: media-libs/libva-intel-media-driver
-  USEPKG_EXCLUDE: media-libs/libva-intel-media-driver
+  PACKAGES: sys-libs/glibc media-libs/libsdl2 media-video/ffmpeg
+  USEPKG_EXCLUDE: sys-libs/glibc media-libs/libsdl2 media-video/ffmpeg
 
 jobs:
   emerge:
