@@ -1,4 +1,4 @@
-name: 2 Emerge Temporary
+name: 2 Emerge Test
 
 on:
   workflow_dispatch:
@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: net-misc/moonlight
-  USEPKG_EXCLUDE: net-misc/moonlight
+  PACKAGES: media-libs/libva-intel-media-driver
+  USEPKG_EXCLUDE: media-libs/libva-intel-media-driver
 
 jobs:
   emerge:
@@ -29,6 +29,9 @@ jobs:
 
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
+
+      - name: Configure Gentoo
+        run: sudo --preserve-env pwsh -File ./Start-SetConfiguration.ps1
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
