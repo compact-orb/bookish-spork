@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: media-libs/libsdl2 media-video/ffmpeg net-misc/moonlight media-libs/libva-intel-media-driver
-  USEPKG_EXCLUDE: media-libs/libsdl2 media-video/ffmpeg net-misc/moonlight media-libs/libva-intel-media-driver
+  PACKAGES: net-misc/moonlight
+  USEPKG_EXCLUDE: net-misc/moonlight
 
 jobs:
   emerge:

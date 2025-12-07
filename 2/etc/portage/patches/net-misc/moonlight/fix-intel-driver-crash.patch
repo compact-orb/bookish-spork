@@ -1,21 +1,20 @@
 # AI generated patch
 --- a/app/main.cpp
 +++ b/app/main.cpp
-@@ -33,6 +33,10 @@
+@@ -30,6 +30,7 @@
+ #include <Windows.h>
+ #elif defined(Q_OS_LINUX)
+ #include <openssl/ssl.h>
++#include <dlfcn.h>
  #endif
  
-+#if defined(Q_OS_LINUX)
-+#include <dlfcn.h>
-+#endif
-+
  #include "cli/listapps.h"
- #include "cli/quitstream.h"
- #include "cli/startstream.h"
-@@ -323,6 +327,11 @@
+@@ -292,6 +293,11 @@
+ 
  int main(int argc, char *argv[])
  {
-+    // Hack to prevent Intel Vulkan driver from being unloaded and crashing glibc
 +#if defined(Q_OS_LINUX)
++    // Hack to prevent Intel Vulkan driver from being unloaded and crashing glibc
 +    dlopen("libvulkan_intel.so", RTLD_LAZY | RTLD_NODELETE);
 +#endif
 +
