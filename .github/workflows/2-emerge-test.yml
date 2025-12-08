@@ -13,8 +13,8 @@ env:
   POWERSHELL_7_ARCHITECTURE: x64
   KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
   REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  PACKAGES: media-sound/helvum
+  USEPKG_EXCLUDE: media-sound/helvum 
 
 jobs:
   emerge:
