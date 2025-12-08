@@ -1,7 +1,9 @@
-name: 2 Emerge Temporary
+name: 2 Emerge Thunderbird
 
 on:
   workflow_dispatch:
+#  schedule:
+#    - cron: 45 13 */2 * *
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
@@ -11,8 +13,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  PACKAGES: mail-client/thunderbird
 
 jobs:
   emerge:
@@ -37,7 +38,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$USEPKG_EXCLUDE"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
 
       - name: Unmount Filesystems
         if: always()
