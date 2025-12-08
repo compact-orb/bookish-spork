@@ -11,8 +11,8 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: 
-  USEPKG_EXCLUDE: 
+  PACKAGES: app-office/libreoffice
+  USEPKG_EXCLUDE: app-office/libreoffice
 
 jobs:
   emerge:
