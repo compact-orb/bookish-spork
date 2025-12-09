@@ -37,8 +37,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        #run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$USEPKG_EXCLUDE"
-        run: sudo --preserve-env chroot /mnt/gentoo bash -c "USE="-gpm" emerge --oneshot sys-libs/ncurses"
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" --usepkg-exclude "$USEPKG_EXCLUDE"
 
       - name: Unmount Filesystems
         if: always()
