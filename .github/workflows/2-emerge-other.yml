@@ -54,7 +54,7 @@ jobs:
           if [ "${{ github.event.inputs.update }}" = "true" ]; then
             UPDATE_FLAG="--update"
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$(cat ./2-emerge.list | tr '\n' ' ')" $UPDATE_FLAG
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$(cat ./2-emerge-other.list | tr '\n' ' ')" $UPDATE_FLAG
 
       - name: Unmount Filesystems
         if: always()
