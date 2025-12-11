@@ -1,4 +1,4 @@
-name: 2 Emerge Kernel
+name: 2 Emerge Other
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
         type: boolean
         default: true
 #  schedule:
-#    - cron: 15 7 */2 * *
+#    - cron: 45 13 */2 * *
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
@@ -23,8 +23,6 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
-  POWERSHELL_7_ARCHITECTURE: x64
-  PACKAGES: llvm-runtimes/libunwind sys-kernel/gentoo-kernel
 
 jobs:
   emerge:
@@ -36,12 +34,9 @@ jobs:
       - name: Display Runner Info
         run: bash ./runnerinfo.sh
 
-      - name: Install PowerShell
-        run: sudo --preserve-env bash ./install-powershell.sh
-
       - name: Set Up Gentoo
         run: |
-          ARGS=("-File" "./Start-CopyImage.ps1" "-From" "-Overlay" "-LayerName" "kernel")
+          ARGS=("-File" "./Start-CopyImage.ps1" "-From" "-Overlay" "-LayerName" "other")
           if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
             ARGS+=("-ForceRebuild")
           fi
@@ -59,7 +54,7 @@ jobs:
           if [ "${{ github.event.inputs.update }}" = "true" ]; then
             UPDATE_FLAG="--update"
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" $UPDATE_FLAG
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$(cat ./2-emerge.list | tr '\n' ' ')" $UPDATE_FLAG
 
       - name: Unmount Filesystems
         if: always()
@@ -71,4 +66,4 @@ jobs:
 
       - name: Upload Gentoo Layer
         if: always()
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Overlay -LayerName "kernel"
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Overlay -LayerName "other"

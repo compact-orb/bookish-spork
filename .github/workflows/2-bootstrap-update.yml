@@ -2,6 +2,17 @@ name: 2 Bootstrap Update
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Operation mode'
+        required: true
+        default: 'sync-and-update'
+        type: choice
+        options:
+        - sync
+        - update
+        - sync-and-update
+        - reconfigure
 #  schedule:
 #    - cron: 45 0 */2 * *
 
@@ -12,7 +23,8 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
-  POWERSHELL_7_ARCHITECTURE: x64
+  KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+  REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
 
 jobs:
   bootstrap-update:
@@ -24,27 +36,35 @@ jobs:
       - name: Display Runner Info
         run: bash ./runnerinfo.sh
 
-      - name: Install PowerShell
-        run: sudo --preserve-env bash ./install-powershell.sh
-
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
 
+      - name: Configure Gentoo
+        if: ${{ inputs.mode == 'reconfigure' }}
+        run: sudo --preserve-env pwsh -File ./Start-SetConfiguration.ps1
+
       - name: Set Up Binary Packages
+        if: ${{ inputs.mode != 'sync' && inputs.mode != 'reconfigure' }}
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
+        if: ${{ inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update' }}
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
-      - name: Emerge
+      - name: Emerge Sync
+        if: ${{ inputs.mode == 'sync' || inputs.mode == 'sync-and-update' }}
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --sync
+
+      - name: Emerge Update
+        if: ${{ inputs.mode == 'update' || inputs.mode == 'sync-and-update' }}
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --update
 
       - name: Unmount Filesystems
-        if: always()
+        if: ${{ always() && (inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update') }}
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: success() || failure()
+        if: ${{ (success() || failure()) && inputs.mode != 'sync' && inputs.mode != 'reconfigure' }}
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
       - name: Upload Gentoo

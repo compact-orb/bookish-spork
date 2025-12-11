@@ -1,7 +1,17 @@
-name: 2 Bootstrap 1
+name: 2 Bootstrap
 
 on:
   workflow_dispatch:
+    inputs:
+      step:
+        description: 'Bootstrap Step'
+        required: true
+        default: '1'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '2 resume'
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
@@ -10,13 +20,12 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
-  POWERSHELL_7_ARCHITECTURE: x64
   KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
   REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
 
 jobs:
-  bootstrap-1:
-    name: Bootstrap 1
+  bootstrap:
+    name: Bootstrap ${{ github.event.inputs.step }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -24,24 +33,41 @@ jobs:
       - name: Display Runner Info
         run: bash ./runnerinfo.sh
 
-      - name: Install PowerShell
-        run: sudo --preserve-env bash ./install-powershell.sh
-
-      - name: Set Up Gentoo
+      - name: Set Up Gentoo (Step 1)
+        if: github.event.inputs.step == '1'
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From -Bootstrap
 
+      - name: Set Up Gentoo (Step 2)
+        if: github.event.inputs.step != '1'
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
+
       - name: Configure Gentoo
+        if: github.event.inputs.step == '1'
         run: sudo --preserve-env pwsh -File ./Start-SetConfiguration.ps1
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
-      - name: Emerge
+      - name: Emerge (Step 1)
+        if: github.event.inputs.step == '1'
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd
+
+      - name: Emerge (Step 2)
+        if: github.event.inputs.step == '2'
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 2
+
+      - name: Emerge (Step 2 Resume)
+        if: github.event.inputs.step == '2 resume'
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
 
+      - name: Upload Gentoo Binary Packages
+        if: github.event.inputs.step != '1'
+        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To -NoOverlay
+
       - name: Upload Gentoo
+        if: github.event.inputs.step != '1' || success()
         run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To
