@@ -2,6 +2,17 @@ name: 2 Emerge GNOME
 
 on:
   workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: 'Force a rebuild of the layer (ignore existing)'
+        required: false
+        type: boolean
+        default: false
+      update:
+        description: 'Update packages (skip if no changes)'
+        required: false
+        type: boolean
+        default: true
 #  schedule:
 #    - cron: 45 13 */2 * *
 
@@ -29,7 +40,17 @@ jobs:
         run: sudo --preserve-env bash ./install-powershell.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
+        run: |
+          $params = @{
+            File = "./Start-CopyImage.ps1"
+            From = $true
+            Overlay = $true
+            LayerName = "gnome"
+          }
+          if ("${{ github.event.inputs.force_rebuild }}" -eq "true") {
+            $params['ForceRebuild'] = $true
+          }
+          sudo --preserve-env pwsh @params
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
@@ -38,7 +59,12 @@ jobs:
         run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
 
       - name: Emerge
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES"
+        run: |
+          UPDATE_FLAG=""
+          if [ "${{ github.event.inputs.update }}" = "true" ]; then
+            UPDATE_FLAG="--update"
+          fi
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --packages "$PACKAGES" $UPDATE_FLAG
 
       - name: Unmount Filesystems
         if: always()
@@ -48,6 +74,6 @@ jobs:
         if: always()
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
 
-      - name: Upload Gentoo
-        if: failure()
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Temporary
+      - name: Upload Gentoo Layer
+        if: always()
+        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Overlay -LayerName "gnome"

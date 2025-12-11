@@ -201,10 +201,10 @@ case $bootstrap in
             read -ra PKG_ARR <<< "$packages"
 
             emerge --deselect "${PKG_ARR[@]}"
-        elif (( update )); then
-            t_emerge --deep --newuse --update --with-bdeps=y "@world"
+        elif (( update )) && [[ -z "$packages" ]]; then
+            t_emerge --deep --newuse --update "@world"
 
-            emerge --depclean --with-bdeps=y
+            emerge --depclean
         else
             declare -a opts
 
@@ -219,6 +219,8 @@ case $bootstrap in
             [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
 
             (( no_quiet_build )) && opts+=( --quiet-build=n )
+
+            (( update )) && opts+=( --update --deep --newuse )
 
             read -ra PKG_ARR <<< "$packages"
 
