@@ -15,7 +15,7 @@ if ($From) {
 
     ./DownloadBunnyStorageDirectory.ps1 -Path "/$env:BUNNY_STORAGE_ZONE_NAME/$env:CONFIG_PREFIX" -Destination "/mnt/binpkgs-store/lower"
 
-    mount --types overlay overlay --options lowerdir=/mnt/binpkgs-store/lower, upperdir=/mnt/binpkgs-store/upper, workdir=/mnt/binpkgs-store/work /mnt/gentoo/var/cache/binpkgs
+    mount --types overlay overlay --options "lowerdir=/mnt/binpkgs-store/lower,upperdir=/mnt/binpkgs-store/upper,workdir=/mnt/binpkgs-store/work" /mnt/gentoo/var/cache/binpkgs
 }
 elseif ($To) {
     if ($NoOverlay) {

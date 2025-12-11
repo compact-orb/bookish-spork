@@ -53,7 +53,7 @@ if ($From) {
 
         # Mount Overlay
         Write-Host "Mounting overlayfs..."
-        mount -t overlay overlay -o lowerdir=/mnt/gentoo-lower, upperdir=/mnt/gentoo-upper, workdir=/mnt/gentoo-work /mnt/gentoo
+        mount -t overlay overlay -o "lowerdir=/mnt/gentoo-lower,upperdir=/mnt/gentoo-upper,workdir=/mnt/gentoo-work" /mnt/gentoo
 
         # Restore resolv.conf (writes to upper)
         Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc -Force
