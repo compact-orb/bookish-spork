@@ -41,16 +41,11 @@ jobs:
 
       - name: Set Up Gentoo
         run: |
-          $params = @{
-            File = "./Start-CopyImage.ps1"
-            From = $true
-            Overlay = $true
-            LayerName = "thunderbird"
-          }
-          if ("${{ github.event.inputs.force_rebuild }}" -eq "true") {
-            $params['ForceRebuild'] = $true
-          }
-          sudo --preserve-env pwsh @params
+          ARGS=("-File" "./Start-CopyImage.ps1" "-From" "-Overlay" "-LayerName" "thunderbird")
+          if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
+            ARGS+=("-ForceRebuild")
+          fi
+          sudo --preserve-env pwsh "${ARGS[@]}"
 
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
