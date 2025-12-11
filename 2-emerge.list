@@ -25,7 +25,6 @@ gnome-extra/gnome-shell-extension-appindicator
 gnome-extra/gnome-system-monitor
 gnome-extra/gnome-tweaks
 gui-apps/waypipe
-llvm-runtimes/libunwind
 mail-client/thunderbird
 media-fonts/fonts-meta
 media-gfx/darktable
