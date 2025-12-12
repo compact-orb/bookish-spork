@@ -39,16 +39,9 @@ if ($From) {
             Write-Host "ForceRebuild specified. Starting with empty layer."
         }
         else {
-            Write-Host "Attempting to download Layer Image: $layerFileName"
-            $httpStatus = curl --write-out "%{http_code}" --silent --output /dev/null --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$layerFileName"
-            
-            if ($httpStatus -eq "200") {
-                Write-Host "Layer found. Downloading and extracting..."
-                curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$layerFileName" | tar --directory=/mnt/gentoo-upper --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
-            }
-            else {
-                Write-Host "Layer not found (HTTP $httpStatus). Starting with empty layer."
-            }
+            Write-Host "Downloading and extracting Layer Image..."
+
+            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$layerFileName" | tar --directory=/mnt/gentoo-upper --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
         }
 
         # Mount Overlay
