@@ -41,7 +41,7 @@ jobs:
 
       - name: Configure Gentoo
         if: ${{ inputs.mode == 'reconfigure' }}
-        run: sudo --preserve-env pwsh -File ./Start-SetConfiguration.ps1
+        run: sudo --preserve-env pwsh -File ./SetConfiguration.ps1
 
       - name: Set Up Binary Packages
         if: ${{ inputs.mode != 'sync' && inputs.mode != 'reconfigure' }}
