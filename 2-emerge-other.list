@@ -6,7 +6,7 @@ app-editors/antigravity
 app-editors/gnome-text-editor
 app-emulation/ruffle
 app-emulation/winetricks
-app-emulation/wine-vanilla
+app-emulation/wine-staging
 app-misc/binwalk
 app-office/libreoffice
 app-shells/bash-completion
