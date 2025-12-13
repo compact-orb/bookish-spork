@@ -37,7 +37,7 @@ jobs:
         run: bash ./runnerinfo.sh
 
       - name: Set Up Gentoo
-        run: sudo --preserve-env pwsh -File ./PullPushImage.ps1 -From
+        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -From
 
       - name: Configure Gentoo
         if: ${{ inputs.mode == 'reconfigure' }}
@@ -69,4 +69,4 @@ jobs:
 
       - name: Upload Gentoo
         if: success() || failure()
-        run: sudo --preserve-env pwsh -File ./PullPushImage.ps1 -To
+        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To
