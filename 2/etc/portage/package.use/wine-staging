@@ -1,0 +1,1 @@
+app-emulation/wine-staging -abi_x86_32 wow64
