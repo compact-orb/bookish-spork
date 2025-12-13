@@ -36,4 +36,3 @@ Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
 
     Write-Output -InputObject "Uploaded $_ to $using:Destination"
 } -ThrottleLimit $ThrottleLimit
-`
