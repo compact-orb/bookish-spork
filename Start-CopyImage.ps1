@@ -21,7 +21,7 @@ $PSNativeCommandUseErrorActionPreference = $true
 if ($From) {
     if ($Overlay) {
         if (-not $LayerName) {
-            Write-Error "LayerName is required when Overlay is specified."
+            Write-Error -Message "LayerName is required when Overlay is specified."
         }
 
         $baseFileName = "$env:CONFIG_PREFIX.tar.zst"
@@ -31,21 +31,21 @@ if ($From) {
         New-Item -Path /mnt/gentoo-lower, /mnt/gentoo-upper, /mnt/gentoo-work, /mnt/gentoo -ItemType Directory -Force | Out-Null
 
         # Download and extract Base Image to lowerdir
-        Write-Host "Downloading and extracting Base Image..."
+        Write-Output -InputObject "Downloading and extracting Base Image..."
         curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$baseFileName" | tar --directory=/mnt/gentoo-lower --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
 
         # Handle Layer Image
         if ($ForceRebuild) {
-            Write-Host "ForceRebuild specified. Starting with empty layer."
+            Write-Output -InputObject "ForceRebuild specified. Starting with empty layer."
         }
         else {
-            Write-Host "Downloading and extracting Layer Image..."
+            Write-Output -InputObject "Downloading and extracting Layer Image..."
 
             curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$layerFileName" | tar --directory=/mnt/gentoo-upper --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
         }
 
         # Mount Overlay
-        Write-Host "Mounting overlayfs..."
+        Write-Output -InputObject "Mounting overlayfs..."
         mount -t overlay overlay -o "lowerdir=/mnt/gentoo-lower,upperdir=/mnt/gentoo-upper,workdir=/mnt/gentoo-work" /mnt/gentoo
 
         # Restore resolv.conf (writes to upper)
@@ -84,7 +84,7 @@ elseif ($To) {
         $fileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
         $targetDir = "/mnt/gentoo-upper"
 
-        Write-Host "Archiving Layer: $fileName from $targetDir"
+        Write-Output -InputObject "Archiving Layer: $fileName from $targetDir"
         
         # Exclusions
         $excludeParams = @(
