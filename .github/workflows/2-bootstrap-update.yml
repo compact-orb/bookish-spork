@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Display Runner Info
-        run: bash ./runnerinfo.sh
+        run: bash ./ShowRunnerInfo.sh
 
       - name: Set Up Gentoo
         run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -From
