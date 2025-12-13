@@ -1,21 +1,14 @@
 param(
     [switch]$From,
-
     [switch]$To,
-
     [switch]$Temporary,
-
     [switch]$Bootstrap,
-
     [switch]$Overlay,
-
     [string]$LayerName,
-
     [switch]$ForceRebuild
 )
 
 $ErrorActionPreference = "Stop"
-
 $PSNativeCommandUseErrorActionPreference = $true
 
 if ($From) {
@@ -28,6 +21,7 @@ if ($From) {
         $layerFileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
 
         # Prepare directories
+        Write-Output -InputObject "Creating directories..."
         New-Item -Path /mnt/gentoo-lower, /mnt/gentoo-upper, /mnt/gentoo-work, /mnt/gentoo -ItemType Directory -Force | Out-Null
 
         # Download and extract Base Image to lowerdir
@@ -49,10 +43,10 @@ if ($From) {
         mount -t overlay overlay -o "lowerdir=/mnt/gentoo-lower,upperdir=/mnt/gentoo-upper,workdir=/mnt/gentoo-work" /mnt/gentoo
 
         # Restore resolv.conf (writes to upper)
+        Write-Output -InputObject "Restoring resolv.conf..."
         Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc -Force
     }
     else {
-        # Original Logic
         if ($Bootstrap) {
             $fileName = "$env:CONFIG_PREFIX-bootstrap.tar.xz"
         }
@@ -63,8 +57,10 @@ if ($From) {
             $fileName = "$env:CONFIG_PREFIX.tar.zst"
         }
 
+        Write-Output -InputObject "Creating directories..."
         New-Item -Path /mnt/gentoo -ItemType Directory -Force | Out-Null
 
+        Write-Output -InputObject "Downloading and extracting Base Image..."
         if ($Bootstrap) {
             curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
         }
@@ -72,21 +68,18 @@ if ($From) {
             curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
         }
 
+        Write-Output -InputObject "Restoring resolv.conf..."
         Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc
     }
 }
 elseif ($To) {
     if ($Overlay) {
         if (-not $LayerName) {
-            Write-Error "LayerName is required when Overlay is specified."
+            Write-Error -Message "LayerName is required when Overlay is specified."
         }
 
         $fileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
         $targetDir = "/mnt/gentoo-upper"
-
-        Write-Output -InputObject "Archiving Layer: $fileName from $targetDir"
-        
-        # Exclusions
         $excludeParams = @(
             "--exclude=./var/cache/binpkgs",
             "--exclude=./var/cache/distfiles/*",
@@ -96,16 +89,17 @@ elseif ($To) {
             "--exclude=./etc/resolv.conf"
         )
 
+        Write-Output -InputObject "Creating archive..."
         Measure-Command -Expression {
             tar --create --directory=$targetDir --file=/dev/shm/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" @excludeParams .
         }
 
+        Write-Output -InputObject "Uploading archive..."
         Measure-Command -Expression {
             Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /dev/shm/$fileName
         }
     }
     else {
-        # Original Logic
         if ($Temporary) {
             $fileName = "$env:CONFIG_PREFIX-temporary.tar.zst"
 
@@ -117,10 +111,12 @@ elseif ($To) {
             Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/tmp/* -Recurse -Force -ErrorAction SilentlyContinue
         }
 
+        Write-Output -InputObject "Creating archive..."
         Measure-Command -Expression {
             tar --create --directory=/mnt/gentoo --file=/mnt/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
         }
 
+        Write-Output -InputObject "Uploading archive..."
         Measure-Command -Expression {
             Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /mnt/$fileName
         }
