@@ -35,11 +35,11 @@ jobs:
 
       - name: Set Up Gentoo (Step 1)
         if: github.event.inputs.step == '1'
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From -Bootstrap
+        run: sudo --preserve-env pwsh -File ./PullPushImage.ps1 -From -Bootstrap
 
       - name: Set Up Gentoo (Step 2)
         if: github.event.inputs.step != '1'
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -From
+        run: sudo --preserve-env pwsh -File ./PullPushImage.ps1 -From
 
       - name: Configure Gentoo
         if: github.event.inputs.step == '1'
@@ -70,4 +70,4 @@ jobs:
 
       - name: Upload Gentoo
         if: github.event.inputs.step != '1' || success()
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To
+        run: sudo --preserve-env pwsh -File ./PullPushImage.ps1 -To

@@ -36,7 +36,7 @@ jobs:
 
       - name: Set Up Gentoo
         run: |
-          ARGS=("-File" "./Start-CopyImage.ps1" "-From" "-Overlay" "-LayerName" "other")
+          ARGS=("-File" "./PullPushImage.ps1" "-From" "-Overlay" "-LayerName" "other")
           if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
             ARGS+=("-ForceRebuild")
           fi
@@ -66,4 +66,4 @@ jobs:
 
       - name: Upload Gentoo Layer
         if: always()
-        run: sudo --preserve-env pwsh -File ./Start-CopyImage.ps1 -To -Overlay -LayerName "other"
+        run: sudo --preserve-env pwsh -File ./PullPushImage.ps1 -To -Overlay -LayerName "other"
