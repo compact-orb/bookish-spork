@@ -21,9 +21,10 @@ param (
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
-# Clean up existing configuration directories and files to ensure a fresh start.
+# Clean up some configuration directories to ensure that they dont't include deleted files.
 # This removes old Portage configs, kernel configs, and SSH keys.
-Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/bashrc, /mnt/gentoo/etc/portage/binrepos.conf, /mnt/gentoo/etc/portage/env, /mnt/gentoo/etc/portage/package.accept_keywords, /mnt/gentoo/etc/portage/package.env, /mnt/gentoo/etc/portage/package.mask, /mnt/gentoo/etc/portage/package.unmask, /mnt/gentoo/etc/portage/package.use, /mnt/gentoo/etc/portage/patches, /mnt/gentoo/etc/portage/profile/use.mask, /mnt/gentoo/etc/portage/repos.conf, /mnt/gentoo/etc/python-exec/emerge.conf, /mnt/gentoo/root/.ssh -Recurse -Force -ErrorAction SilentlyContinue
+# If you add or remove files and directories from your configuration, you may want to update the following line to make sure the image's configuration is as expected.
+Remove-Item -Path /mnt/gentoo/etc/kernel/config.d, /mnt/gentoo/etc/portage/binrepos.conf, /mnt/gentoo/etc/portage/env, /mnt/gentoo/etc/portage/package.accept_keywords, /mnt/gentoo/etc/portage/package.env, /mnt/gentoo/etc/portage/package.mask, /mnt/gentoo/etc/portage/package.unmask, /mnt/gentoo/etc/portage/package.use, /mnt/gentoo/etc/portage/patches, /mnt/gentoo/etc/portage/profile/use.mask, /mnt/gentoo/etc/portage/repos.conf, /mnt/gentoo/root/.ssh -Recurse -Force -ErrorAction SilentlyContinue
 
 # Copy the new configuration files from the CONFIG_PREFIX directory to the Gentoo environment.
 Copy-Item -Path $env:CONFIG_PREFIX/* -Destination /mnt/gentoo -Recurse -Force
