@@ -25,7 +25,7 @@ elseif ($To) {
         $binpkgsPath = "/mnt/binpkgs-store/upper"
     }
 
-    ./Copy-BsDirectory.ps1 -Path "$binpkgsPath" -Destination "/$env:CONFIG_PREFIX" -ToBs
+    ./UploadBunnyStorageDirectory.ps1 -Path "$binpkgsPath" -Destination "/$env:CONFIG_PREFIX"
 
     if ($NoOverlay) {
         Remove-Item -Path /mnt/gentoo/var/cache/binpkgs/* -Recurse

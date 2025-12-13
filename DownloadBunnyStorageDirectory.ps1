@@ -12,12 +12,12 @@ $ErrorActionPreference = "Stop"
 
 $PSNativeCommandUseErrorActionPreference = $true
 
-$directories = $Path
+$Directories = $Path
 
-$files = @()
+$Files = @()
 
 do {
-    $directories = $directories | ForEach-Object -Parallel {
+    $Directories = $Directories | ForEach-Object -Parallel {
         $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$_/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
 
         $response | ForEach-Object {
@@ -30,7 +30,8 @@ do {
                     IsDirectory = $true;
                     Path        = "$($Path)$($_.ObjectName)"
                 }
-            } else {
+            }
+            else {
                 [PSCustomObject]@{
                     IsDirectory = $false;
                     Path        = "$($Path)$($_.ObjectName)"
@@ -42,15 +43,15 @@ do {
             $_.Path
         }
         else {
-            $files += $_.Path
+            $Files += $_.Path
         }
     }
-} while (![string]::IsNullOrWhiteSpace($directories))
+} while (![string]::IsNullOrWhiteSpace($Directories))
 
-if (![string]::IsNullOrWhiteSpace($files)) {
-    $files | ForEach-Object -Parallel {
-        Write-Host -Object "Downloading $_ to $using:Destination$($_.Substring($using:Path.Length))"
+if (![string]::IsNullOrWhiteSpace($Files)) {
+    $Files | ForEach-Object -Parallel {
+        Write-Output -InputObject "Downloading $_ to $using:Destination$($_.Substring($using:Path.Length))"
 
-        Invoke-WebRequest -Uri "https://$env:BUNNY_STORAGE_ENDPOINT$_" -Headers @{ accept='*/*'; accesskey=$using:env:BUNNY_STORAGE_ACCESS_KEY } -OutFile "$using:Destination$($_.Substring($using:Path.Length))"
+        Invoke-WebRequest -Uri "https://$env:BUNNY_STORAGE_ENDPOINT$_" -Headers @{ accept = '*/*'; accesskey = $using:env:BUNNY_STORAGE_ACCESS_KEY } -OutFile "$using:Destination$($_.Substring($using:Path.Length))"
     } -ThrottleLimit $ThrottleLimit
 }
