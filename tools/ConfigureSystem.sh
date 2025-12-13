@@ -1,12 +1,10 @@
 #!/bin/bash
 #
-# configure.sh - Gentoo Configuration Script
-#
 # This script configures a Gentoo system to use the binary packages and settings
 # defined in this project. It is intended to be run on client systems (Gentoo systems)
 # that will consume the binary packages.
 #
-# Usage: ./configure.sh <configuration_prefix>
+# Usage: ConfigureSystem.sh <configuration_prefix>
 #
 # Arguments:
 #   <configuration_prefix>: The directory containing the configuration to apply.
