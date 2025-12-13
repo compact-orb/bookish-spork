@@ -49,7 +49,7 @@ jobs:
 
       - name: Mount Filesystems
         if: ${{ inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update' }}
-        run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1
+        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
 
       - name: Emerge Sync
         if: ${{ inputs.mode == 'sync' || inputs.mode == 'sync-and-update' }}
@@ -61,7 +61,7 @@ jobs:
 
       - name: Unmount Filesystems
         if: ${{ always() && (inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update') }}
-        run: sudo --preserve-env pwsh -File ./Start-MountFilesystems.ps1 -Unmount
+        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
         if: ${{ (success() || failure()) && inputs.mode != 'sync' && inputs.mode != 'reconfigure' }}
