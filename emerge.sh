@@ -4,37 +4,21 @@ TIMEOUT=19800
 
 source /mnt/variables.sh
 
-LONG_OPTS=packages:,emptytree,keep-going,oneshot,usepkg-exclude:,no-quiet-build,keepwork,update,resume,deselect,sync,bootstrap:,portage-profile:,no-timeout
+LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
 packages=""
 
-emptytree=0
-
-keep_going=0
-
-oneshot=0
-
-usepkg_exclude=""
-
-no_quiet_build=0
-
-keepwork=0
-
 update=0
 
 resume=0
-
-deselect=0
 
 sync_flag=0
 
 bootstrap=0
 
 portage_profile=""
-
-no_timeout=0
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -43,36 +27,6 @@ while [[ $# -gt 0 ]]; do
 
             shift 2
             ;;
-        --emptytree)
-            emptytree=1
-
-            shift
-            ;;
-        --keep-going)
-            keep_going=1
-
-            shift
-            ;;
-        --oneshot)
-            oneshot=1
-
-            shift
-            ;;
-        --usepkg-exclude)
-            usepkg_exclude=$2
-
-            shift 2
-            ;;
-        --no-quiet-build)
-            no_quiet_build=1
-
-            shift
-            ;;
-        --keepwork)
-            keepwork=1
-
-            shift
-            ;;
         --update)
             update=1
 
@@ -80,11 +34,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --resume)
             resume=1
-
-            shift
-            ;;
-        --deselect)
-            deselect=1
 
             shift
             ;;
@@ -102,11 +51,6 @@ while [[ $# -gt 0 ]]; do
             portage_profile=$2
 
             shift 2
-            ;;
-        --no-timeout)
-            no_timeout=1
-
-            shift
             ;;
         --)
             shift
@@ -128,25 +72,9 @@ packages=$(echo "$packages" | xargs echo)
 t_emerge() {
     local cmd_prefix=()
 
-    local features=""
+    cmd_prefix=(timeout "$TIMEOUT")
 
-    if (( ! no_timeout )); then
-        cmd_prefix=(timeout "$TIMEOUT")
-    fi
-
-    if (( keepwork )); then
-        features="FEATURES=keepwork"
-
-        if (( ! resume )); then
-            "${cmd_prefix[@]}" emerge --onlydeps "$@"
-        fi
-    fi
-
-    if [[ -n "$features" ]]; then
-        eval "${features} "'"${cmd_prefix[@]}" emerge "$@"'
-    else
-        "${cmd_prefix[@]}" emerge "$@"
-    fi
+    "${cmd_prefix[@]}" emerge "$@"
 }
 
 write_file() {
@@ -197,10 +125,6 @@ case $bootstrap in
     0)
         if   (( sync_flag )); then
             emerge --sync
-        elif (( deselect )); then
-            read -ra PKG_ARR <<< "$packages"
-
-            emerge --deselect "${PKG_ARR[@]}"
         elif (( update )) && [[ -z "$packages" ]]; then
             t_emerge --deep --newuse --update "@world"
 
@@ -208,17 +132,7 @@ case $bootstrap in
         else
             declare -a opts
 
-            (( emptytree )) && opts+=( --emptytree )
-
-            (( keep_going )) && opts+=( --keep-going )
-
-            (( oneshot )) && opts+=( --oneshot )
-
             (( resume )) && opts+=( --resume )
-
-            [[ -n $usepkg_exclude ]] && opts+=( --usepkg-exclude "$usepkg_exclude" )
-
-            (( no_quiet_build )) && opts+=( --quiet-build=n )
 
             (( update )) && opts+=( --update --deep --newuse )
 
