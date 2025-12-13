@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload Gentoo Binary Packages
         if: github.event.inputs.step != '1'
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To -NoOverlay
+        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To -NoOverlay
 
       - name: Upload Gentoo
         if: github.event.inputs.step != '1' || success()

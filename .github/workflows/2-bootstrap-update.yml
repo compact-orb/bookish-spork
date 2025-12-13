@@ -45,7 +45,7 @@ jobs:
 
       - name: Set Up Binary Packages
         if: ${{ inputs.mode != 'sync' && inputs.mode != 'reconfigure' }}
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -From
+        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
         if: ${{ inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update' }}
@@ -65,7 +65,7 @@ jobs:
 
       - name: Upload Gentoo Binary Packages
         if: ${{ (success() || failure()) && inputs.mode != 'sync' && inputs.mode != 'reconfigure' }}
-        run: sudo --preserve-env pwsh -File ./Start-CopyBinaryPackages.ps1 -To
+        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
         if: success() || failure()
