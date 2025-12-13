@@ -53,11 +53,11 @@ jobs:
 
       - name: Emerge Sync
         if: ${{ inputs.mode == 'sync' || inputs.mode == 'sync-and-update' }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --sync
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --sync
 
       - name: Emerge Update
         if: ${{ inputs.mode == 'update' || inputs.mode == 'sync-and-update' }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --update
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update
 
       - name: Unmount Filesystems
         if: ${{ always() && (inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update') }}

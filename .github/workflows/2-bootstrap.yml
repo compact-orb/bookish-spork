@@ -50,15 +50,15 @@ jobs:
 
       - name: Emerge (Step 1)
         if: github.event.inputs.step == '1'
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd
 
       - name: Emerge (Step 2)
         if: github.event.inputs.step == '2'
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 2
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2
 
       - name: Emerge (Step 2 Resume)
         if: github.event.inputs.step == '2 resume'
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/emerge.sh --bootstrap 2 --resume
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
         if: always()
