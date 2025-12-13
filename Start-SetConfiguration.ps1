@@ -61,4 +61,3 @@ Host github.com
     IdentityFile ~/.ssh/redesigned-broccoli
 '@
 chmod 600 "/mnt/gentoo/root/.ssh/config"
-chroot /mnt/gentoo env-update
