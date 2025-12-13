@@ -32,7 +32,8 @@ $PSNativeCommandUseErrorActionPreference = $true
 # Recursively find all files in the source path and upload them in parallel
 Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
     # Upload the file using the Bunny Storage API
-    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME$Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$_" | Out-Null
+    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME$using:Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$_" | Out-Null
 
     Write-Output -InputObject "Uploaded $_ to $using:Destination"
 } -ThrottleLimit $ThrottleLimit
+`
