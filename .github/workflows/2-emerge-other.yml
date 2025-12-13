@@ -1,4 +1,4 @@
-name: 2 Emerge
+name: 2 Emerge Other
 
 on:
   workflow_dispatch:
