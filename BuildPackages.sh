@@ -108,7 +108,7 @@ case $bootstrap in
 
         mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
 
-        write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc"
+        write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc\nnet-libs/nghttp2 xml"
 
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
 
