@@ -44,4 +44,4 @@ rm --force --recursive \
 
 # Copy the new configuration files from the specified prefix directory to the root (/).
 # This applies the new Portage configuration, kernel config, and other settings.
-cp --force --recursive "${SCRIPT_DIR}/$1"/* /
+cp --force --recursive "${SCRIPT_DIR}/../$1"/* /
