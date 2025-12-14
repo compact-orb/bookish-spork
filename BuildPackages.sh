@@ -108,7 +108,7 @@ case $bootstrap in
 
         mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
 
-        FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
+        FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
 
         emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
