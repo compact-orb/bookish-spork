@@ -108,6 +108,8 @@ case $bootstrap in
 
         mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
 
+        write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc"
+
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
 
         emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
@@ -125,6 +127,8 @@ case $bootstrap in
         rmdir /etc/portage/binrepos.conf
 
         rm --force --recursive /var/cache/binpkgs/*
+
+        rm /etc/portage/package.use/bootstrap
         ;;
     2)
         # Bootstrap Step 2: System Rebuild
