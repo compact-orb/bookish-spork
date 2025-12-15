@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: true
+      usepkg-exclude:
+        description: 'Exclude packages from usepkg'
+        required: false
+        type: string
   schedule:
     - cron: '0 7 * * *'
 
@@ -54,7 +58,11 @@ jobs:
           if [ "${{ github.event.inputs.update }}" = "true" ]; then
             UPDATE_FLAG="--update"
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --packages "$(cat ./2-emerge-other.list | tr '\n' ' ')" $UPDATE_FLAG
+          USEPKG_EXCLUDE=""
+          if [ "${{ github.event.inputs.usepkg-exclude }}" != "" ]; then
+            USEPKG_EXCLUDE="--usepkg-exclude ${github.event.inputs.usepkg-exclude}"
+          fi
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --packages "$(cat ./2-emerge-other.list | tr '\n' ' ')" $UPDATE_FLAG $USEPKG_EXCLUDE
 
       - name: Unmount Filesystems
         if: always()

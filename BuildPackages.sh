@@ -10,7 +10,7 @@ set -e
 # 5 hours and 30 minutes in seconds. GitHub Actions job timeout is 6 hours.
 TIMEOUT=19800
 
-LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:
+LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile,usepkg-exclude:
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -31,6 +31,9 @@ bootstrap=0
 
 # Portage profile to set during bootstrap step 1
 portage_profile=""
+
+# List of packages to exclude from usepkg
+usepkg_exclude=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -56,6 +59,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --portage-profile)
             portage_profile=$2
+            shift 2
+            ;;
+        --usepkg-exclude)
+            usepkg_exclude+=" $2"
             shift 2
             ;;
         --)
@@ -157,6 +164,8 @@ case $bootstrap in
             (( resume )) && opts+=( --resume )
 
             (( update )) && opts+=( --update --deep --newuse )
+
+            (( usepkg_exclude )) && opts+=( --usepkg-exclude "${usepkg_exclude}" )
 
             read -ra PKG_ARR <<< "$packages"
 
