@@ -60,7 +60,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update
 
       - name: Unmount Filesystems
-        if: ${{ always() && (inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update') }}
+        if: ${{ (success() || failure()) && (inputs.mode == 'update' || inputs.mode == 'sync' || inputs.mode == 'sync-and-update') }}
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages

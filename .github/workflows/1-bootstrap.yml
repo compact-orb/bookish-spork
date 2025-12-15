@@ -61,7 +61,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
-        if: always()
+        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages

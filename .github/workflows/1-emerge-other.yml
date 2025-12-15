@@ -3,6 +3,11 @@ name: 1 Emerge Other
 on:
   workflow_dispatch:
     inputs:
+      ephemeral:
+        description: 'Do not update the layer'
+        required: false
+        type: boolean
+        default: false
       force_rebuild:
         description: 'Force a rebuild of the layer (ignore existing)'
         required: false
@@ -57,13 +62,13 @@ jobs:
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --packages "$(cat ./1-emerge-other.list | tr '\n' ' ')" $UPDATE_FLAG
 
       - name: Unmount Filesystems
-        if: always()
+        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: always()
+        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo Layer
-        if: always()
+        if: success() || failure() && !${{ github.event.inputs.ephemeral }}
         run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To -Overlay -LayerName "other"
