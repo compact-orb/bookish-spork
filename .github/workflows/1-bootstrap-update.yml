@@ -68,5 +68,5 @@ jobs:
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
-        if: success() || failure()
+        if: ${{ success() || failure() }}
         run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To
