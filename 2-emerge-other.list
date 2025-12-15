@@ -49,6 +49,7 @@ net-p2p/qbittorrent
 net-print/cups-filters
 net-print/cups-meta
 net-print/gutenprint
+net-vpn/cloudflare-warp
 net-vpn/i2pd
 net-vpn/tor
 net-vpn/wireguard-tools
