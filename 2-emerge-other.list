@@ -34,6 +34,7 @@ media-gfx/inkscape
 media-gfx/simple-scan
 media-libs/libva-intel-driver
 media-libs/libva-intel-media-driver
+media-sound/ardour
 media-sound/helvum
 media-sound/reaper-bin
 media-video/shotcut
