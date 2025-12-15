@@ -64,11 +64,11 @@ jobs:
           fi
           PACKAGES=""
           if [ "${{ github.event.inputs.packages }}" != "" ]; then
-            PACKAGES="--packages ${github.event.inputs.packages}"
+            PACKAGES="--packages ${{ github.event.inputs.packages }}"
           fi
           USEPKG_EXCLUDE=""
           if [ "${{ github.event.inputs.usepkg-exclude }}" != "" ]; then
-            USEPKG_EXCLUDE="--usepkg-exclude ${github.event.inputs.usepkg-exclude}"
+            USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs.usepkg-exclude }}"
           fi
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
 
