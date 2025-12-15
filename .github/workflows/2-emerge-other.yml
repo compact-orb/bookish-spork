@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: true
+      packages:
+        description: 'Only emerge the specified packages'
+        required: false
+        type: string
       usepkg-exclude:
         description: 'Exclude packages from usepkg'
         required: false
@@ -58,11 +62,15 @@ jobs:
           if [ "${{ github.event.inputs.update }}" = "true" ]; then
             UPDATE_FLAG="--update"
           fi
+          PACKAGES=""
+          if [ "${{ github.event.inputs.packages }}" != "" ]; then
+            PACKAGES="--packages ${github.event.inputs.packages}"
+          fi
           USEPKG_EXCLUDE=""
           if [ "${{ github.event.inputs.usepkg-exclude }}" != "" ]; then
             USEPKG_EXCLUDE="--usepkg-exclude ${github.event.inputs.usepkg-exclude}"
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --packages "$(cat ./2-emerge-other.list | tr '\n' ' ')" $UPDATE_FLAG $USEPKG_EXCLUDE
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
 
       - name: Unmount Filesystems
         if: always()
