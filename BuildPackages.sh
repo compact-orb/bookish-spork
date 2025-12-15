@@ -81,6 +81,8 @@ fi
 
 packages=$(echo "$packages" | xargs echo)
 
+usepkg_exclude=$(echo "$usepkg_exclude" | xargs echo)
+
 # Wrapper function for emerge with a timeout
 # usage: t_emerge [emerge_options] [packages]
 t_emerge() {
