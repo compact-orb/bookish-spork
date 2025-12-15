@@ -70,5 +70,5 @@ jobs:
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo Layer
-        if: success() || failure() && !${{ github.event.inputs.ephemeral }}
+        if: (success() || failure()) && !inputs.ephemeral
         run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To -Overlay -LayerName "other"
