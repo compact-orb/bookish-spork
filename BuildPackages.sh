@@ -167,7 +167,7 @@ case $bootstrap in
 
             (( update )) && opts+=( --update --deep --newuse )
 
-            (( usepkg_exclude )) && opts+=( --usepkg-exclude "${usepkg_exclude}" )
+            [[ -n "$usepkg_exclude" ]] && opts+=( --usepkg-exclude "${usepkg_exclude}" )
 
             read -ra PKG_ARR <<< "$packages"
 
