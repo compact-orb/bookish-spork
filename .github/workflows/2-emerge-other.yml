@@ -70,6 +70,8 @@ jobs:
           PACKAGES=""
           if [ "${{ github.event.inputs.packages }}" != "" ]; then
             PACKAGES="--packages ${{ github.event.inputs.packages }}"
+          else
+            PACKAGES="--packages $(cat ./${CONFIG_PREFIX}-emerge-other.list | tr '\n' ' ')"
           fi
           USEPKG_EXCLUDE=""
           if [ "${{ github.event.inputs.usepkg-exclude }}" != "" ]; then
