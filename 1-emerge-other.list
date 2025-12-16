@@ -10,6 +10,8 @@ dev-db/mariadb
 dev-lang/php
 dev-libs/mimalloc
 dev-util/github-cli
+net-analyzer/traceroute
+net-dns/bind-tools
 net-libs/nodejs
 net-misc/aria2
 net-misc/mosh

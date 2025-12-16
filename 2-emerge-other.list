@@ -42,6 +42,8 @@ media-video/shotcut
 media-video/vlc
 net-analyzer/netcat
 net-analyzer/nmap
+net-analyzer/traceroute
+net-dns/bind-tools
 net-misc/aria2
 net-misc/moonlight
 net-misc/mosh
