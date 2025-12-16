@@ -1,6 +1,7 @@
 app-admin/sudo
 app-arch/7zip
 app-arch/unzip
+app-crypt/johntheripper-jumbo
 app-crypt/seahorse
 app-editors/antigravity
 app-editors/gnome-text-editor
