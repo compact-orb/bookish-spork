@@ -60,6 +60,7 @@ net-vpn/wireguard-tools
 sci-geosciences/gnome-maps
 sys-apps/flatpak
 sys-apps/zram-generator
+sys-auth/nss-mdns
 sys-block/io-scheduler-udev-rules
 sys-boot/plymouth
 sys-firmware/intel-microcode
