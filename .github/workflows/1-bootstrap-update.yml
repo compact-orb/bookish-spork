@@ -13,8 +13,8 @@ on:
         - update
         - sync-and-update
         - reconfigure
-#  schedule:
-#    - cron: '0 0 * * *'
+  schedule:
+    - cron: '0 0 * * *'
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
