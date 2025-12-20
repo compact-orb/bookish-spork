@@ -76,3 +76,4 @@ www-client/firefox-bin
 www-client/google-chrome
 www-client/microsoft-edge
 www-client/mullvad-browser-bin
+www-servers/nginx
