@@ -5,6 +5,7 @@ app-arch/unzip
 app-benchmarks/wrk
 app-misc/jq
 app-misc/screen
+app-portage/gentoolkit
 app-shells/bash-completion
 app-shells/pwsh
 dev-db/mariadb
