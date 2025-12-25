@@ -50,7 +50,7 @@ jobs:
 
       - name: Emerge (Step 1)
         if: github.event.inputs.step == '1'
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 1
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 1 --portage-profile default/linux/arm64/23.0/systemd
 
       - name: Emerge (Step 2)
         if: github.event.inputs.step == '2'
