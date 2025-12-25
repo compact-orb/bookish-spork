@@ -1,0 +1,3 @@
+>=dev-lang/rust-1.80.0 no-lto.conf
+
+<dev-lang/rust-1.80.0 gcc.conf no-lto.conf

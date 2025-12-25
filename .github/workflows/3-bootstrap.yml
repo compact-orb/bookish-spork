@@ -1,0 +1,73 @@
+name: 3 Bootstrap
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: 'Bootstrap Step'
+        required: true
+        default: '1'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '2 resume'
+
+env:
+  BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
+  BUNNY_STORAGE_CDN: ${{ secrets.BUNNY_STORAGE_CDN }}
+  BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
+  BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
+  BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
+  CONFIG_PREFIX: 3
+  KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+  REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
+
+jobs:
+  bootstrap:
+    name: Bootstrap ${{ github.event.inputs.step }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Display Runner Info
+        run: bash ./ShowRunnerInfo.sh
+
+      - name: Set Up Gentoo (Step 1)
+        if: github.event.inputs.step == '1'
+        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -From -Bootstrap
+
+      - name: Set Up Gentoo (Step 2)
+        if: github.event.inputs.step != '1'
+        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -From
+
+      - name: Configure Gentoo
+        if: github.event.inputs.step == '1'
+        run: sudo --preserve-env pwsh -File ./SetConfiguration.ps1
+
+      - name: Mount Filesystems
+        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
+
+      - name: Emerge (Step 1)
+        if: github.event.inputs.step == '1'
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 1
+
+      - name: Emerge (Step 2)
+        if: github.event.inputs.step == '2'
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2
+
+      - name: Emerge (Step 2 Resume)
+        if: github.event.inputs.step == '2 resume'
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2 --resume
+
+      - name: Unmount Filesystems
+        if: success() || failure()
+        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
+
+      - name: Upload Gentoo Binary Packages
+        if: github.event.inputs.step != '1'
+        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To -NoOverlay
+
+      - name: Upload Gentoo
+        if: github.event.inputs.step != '1'
+        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To
