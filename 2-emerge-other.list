@@ -46,8 +46,8 @@ media-sound/helvum
 media-sound/reaper-bin
 media-video/shotcut
 media-video/vlc
-net-analyzer/netcat
 net-analyzer/nmap
+net-analyzer/openbsd-netcat
 net-analyzer/traceroute
 net-dns/bind-tools
 net-misc/aria2
