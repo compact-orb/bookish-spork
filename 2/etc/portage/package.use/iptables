@@ -1,0 +1,2 @@
+# required by app-containers/podman
+net-firewall/iptables nftables
