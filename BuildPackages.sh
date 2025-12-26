@@ -10,7 +10,7 @@ set -e
 # 5 hours and 30 minutes in seconds. GitHub Actions job timeout is 6 hours.
 TIMEOUT=19800
 
-LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile,usepkg-exclude:
+LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile,usepkg-exclude:,bootstrap-binrepos-architecture:
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -34,6 +34,9 @@ portage_profile=""
 
 # List of packages to exclude from usepkg
 usepkg_exclude=""
+
+# Architecture to use for bootstrap binrepos
+bootstrap_binrepos_architecture=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -65,12 +68,16 @@ while [[ $# -gt 0 ]]; do
             usepkg_exclude+=" $2"
             shift 2
             ;;
+        --bootstrap-binrepos-architecture)
+            bootstrap_binrepos_architecture=$2
+            shift 2
+            ;;
         --)
             shift
             break
             ;;
         *)
-            exit 1
+            exit 2
             ;;
     esac
 done
@@ -82,6 +89,20 @@ fi
 packages=$(echo "$packages" | xargs echo)
 
 usepkg_exclude=$(echo "$usepkg_exclude" | xargs echo)
+
+case $bootstrap_binrepos_architecture in
+    "amd64")
+        bootstrap_binrepos_profile="x86-64"
+        ;;
+    "arm64")
+        bootstrap_binrepos_profile="arm64"
+        ;;
+    *)
+        if (( bootstrap == 1 )); then
+            exit 3
+        fi
+        ;;
+esac
 
 # Wrapper function for emerge with a timeout
 # usage: t_emerge [emerge_options] [packages]
@@ -113,7 +134,7 @@ case $bootstrap in
 
         mkdir /etc/portage/binrepos.conf
 
-        write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/"
+        write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/${bootstrap_binrepos_architecture}/binpackages/23.0/${bootstrap_binrepos_profile}/"
 
         mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
 
@@ -177,6 +198,6 @@ case $bootstrap in
         fi
         ;;
     *)
-        exit 1
+        exit 4
         ;;
 esac
