@@ -140,7 +140,13 @@ case $bootstrap in
 
         write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc\nnet-libs/nghttp2 xml"
 
-        FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/pypy dev-lang/rust dev-vcs/git llvm-core/clang
+        FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/rust dev-vcs/git llvm-core/clang
+
+        write_file /etc/portage/package.env/bootstrap "dev-lang/pypy gcc.conf"
+
+        emerge --buildpkg=n --getbinpkg dev-lang/pypy
+
+        rm /etc/portage/package.env/bootstrap
 
         emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
