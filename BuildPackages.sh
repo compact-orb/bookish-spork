@@ -119,10 +119,6 @@ case $bootstrap in
 
         write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc\nnet-libs/nghttp2 xml"
 
-        emerge --info
-
-        ls -l /etc/portage
-
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/rust dev-vcs/git llvm-core/clang
 
         emerge --buildpkg=n --getbinpkg dev-lang/pypy
