@@ -22,6 +22,7 @@ dev-debug/valgrind
 dev-libs/mimalloc
 dev-util/android-tools
 dev-util/github-cli
+dev-vcs/git-lfs
 gnome-base/gnome-light
 gnome-extra/gnome-calculator
 gnome-extra/gnome-clocks
