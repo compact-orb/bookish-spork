@@ -68,6 +68,7 @@ sci-geosciences/gnome-maps
 sys-apps/flatpak
 sys-apps/zram-generator
 sys-auth/nss-mdns
+sys-auth/rtkit
 sys-block/io-scheduler-udev-rules
 sys-boot/plymouth
 sys-firmware/intel-microcode
