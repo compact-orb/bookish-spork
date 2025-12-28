@@ -11,7 +11,11 @@ on:
         options:
           - '1'
           - '2'
-          - '2 resume'
+      resume:
+        description: 'Resume'
+        required: false
+        default: false
+        type: boolean
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
@@ -54,11 +58,11 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd --bootstrap-binrepos-architecture ${{ env.BOOTSTRAP_BINREPOS_ARCHITECTURE }}
 
       - name: Emerge (Step 2)
-        if: github.event.inputs.step == '2'
+        if: github.event.inputs.step == '2' && github.event.inputs.resume != 'true'
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2
 
       - name: Emerge (Step 2 Resume)
-        if: github.event.inputs.step == '2 resume'
+        if: github.event.inputs.step == '2' && github.event.inputs.resume == 'true'
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
