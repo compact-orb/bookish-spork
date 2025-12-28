@@ -13,11 +13,11 @@ on:
         required: false
         type: boolean
         default: false
-      update:
-        description: 'Update packages (skip if no changes)'
+      no-update:
+        description: 'Do not update packages'
         required: false
         type: boolean
-        default: true
+        default: false
       packages:
         description: 'Only emerge the specified packages'
         required: false
@@ -63,9 +63,9 @@ jobs:
 
       - name: Emerge
         run: |
-          UPDATE_FLAG=""
-          if [ "${{ github.event.inputs.update }}" = "true" ]; then
-            UPDATE_FLAG="--update"
+          UPDATE_FLAG="--update"
+          if [ "${{ github.event.inputs.no-update }}" = "true" ]; then
+            UPDATE_FLAG=""
           fi
           PACKAGES=""
           if [ "${{ github.event.inputs.packages }}" != "" ]; then
