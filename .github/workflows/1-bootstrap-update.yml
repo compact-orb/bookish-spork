@@ -3,19 +3,19 @@ name: 1 Bootstrap Update
 on:
   workflow_dispatch:
     inputs:
-      sync:
-        description: 'Sync Portage tree'
-        required: true
-        default: true
+      skip_sync:
+        description: 'Skip Portage tree sync'
+        required: false
+        default: false
         type: boolean
-      update:
-        description: 'Update packages'
-        required: true
-        default: true
+      skip_update:
+        description: 'Skip package update'
+        required: false
+        default: false
         type: boolean
       reconfigure:
         description: 'Reconfigure system'
-        required: true
+        required: false
         default: false
         type: boolean
   schedule:
@@ -45,31 +45,31 @@ jobs:
         run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -From
 
       - name: Configure Gentoo
-        if: ${{ inputs.reconfigure }}
+        if: inputs.reconfigure
         run: sudo --preserve-env pwsh -File ./SetConfiguration.ps1
 
       - name: Set Up Binary Packages
-        if: ${{ inputs.update }}
+        if: "!inputs.skip_update"
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
-        if: ${{ inputs.sync || inputs.update }}
+        if: "!inputs.skip_sync || !inputs.skip_update"
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
 
       - name: Emerge Sync
-        if: ${{ inputs.sync }}
+        if: "!inputs.skip_sync"
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --sync
 
       - name: Emerge Update
-        if: ${{ inputs.update }}
+        if: "!inputs.skip_update"
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update
 
       - name: Unmount Filesystems
-        if: ${{ (success() || failure()) && (inputs.sync || inputs.update) }}
+        if: (success() || failure()) && (!inputs.skip_sync || !inputs.skip_update)
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: ${{ (success() || failure()) && inputs.update }}
+        if: (success() || failure()) && !inputs.skip_update
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
