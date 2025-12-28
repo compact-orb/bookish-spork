@@ -10,7 +10,7 @@ set -e
 # 5 hours and 30 minutes in seconds. GitHub Actions job timeout is 6 hours.
 TIMEOUT=19800
 
-LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile,usepkg-exclude:,bootstrap-binrepos-architecture:
+LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile,usepkg-exclude:,bootstrap-binrepos-architecture:,oneshot
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -37,6 +37,9 @@ usepkg_exclude=""
 
 # Architecture to use for bootstrap binrepos
 bootstrap_binrepos_architecture=""
+
+# Flag to indicate if we should not add the packages to the world file
+oneshot=0
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -71,6 +74,9 @@ while [[ $# -gt 0 ]]; do
         --bootstrap-binrepos-architecture)
             bootstrap_binrepos_architecture=$2
             shift 2
+            ;;
+        --oneshot)
+            oneshot=1
             ;;
         --)
             shift
@@ -191,6 +197,8 @@ case $bootstrap in
             (( update )) && opts+=( --update --deep --newuse )
 
             [[ -n "$usepkg_exclude" ]] && opts+=( --usepkg-exclude "${usepkg_exclude}" )
+
+            (( oneshot )) && opts+=( --oneshot )
 
             read -ra PKG_ARR <<< "$packages"
 

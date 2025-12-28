@@ -18,6 +18,10 @@ on:
         required: false
         default: false
         type: boolean
+      packages:
+        description: 'Only update the specified packages (space separated)'
+        required: false
+        type: string
   # schedule:
   #   - cron: '0 0 * * *'
 
@@ -62,7 +66,15 @@ jobs:
 
       - name: Emerge Update
         if: "!inputs.skip-update"
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update
+        run: |
+          PACKAGES=""
+          ONESHOT=""
+          if [ "${{ github.event.inputs.packages }}" != "" ]; then
+            PACKAGES="--packages ${{ github.event.inputs.packages }}"
+            ONESHOT="--oneshot"
+          fi
+          if 
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
         if: (success() || failure()) && (!inputs.skip-sync || !inputs.skip-update)
