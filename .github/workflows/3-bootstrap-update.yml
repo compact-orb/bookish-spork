@@ -3,12 +3,12 @@ name: 3 Bootstrap Update
 on:
   workflow_dispatch:
     inputs:
-      skip_sync:
+      skip-sync:
         description: 'Skip Portage tree sync'
         required: false
         default: false
         type: boolean
-      skip_update:
+      skip-update:
         description: 'Skip package update'
         required: false
         default: false
@@ -49,27 +49,27 @@ jobs:
         run: sudo --preserve-env pwsh -File ./SetConfiguration.ps1
 
       - name: Set Up Binary Packages
-        if: "!inputs.skip_update"
+        if: "!inputs.skip-update"
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
-        if: "!inputs.skip_sync || !inputs.skip_update"
+        if: "!inputs.skip-sync || !inputs.skip-update"
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
 
       - name: Emerge Sync
-        if: "!inputs.skip_sync"
+        if: "!inputs.skip-sync"
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --sync
 
       - name: Emerge Update
-        if: "!inputs.skip_update"
+        if: "!inputs.skip-update"
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update
 
       - name: Unmount Filesystems
-        if: (success() || failure()) && (!inputs.skip_sync || !inputs.skip_update)
+        if: (success() || failure()) && (!inputs.skip-sync || !inputs.skip-update)
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: (success() || failure()) && !inputs.skip_update
+        if: (success() || failure()) && !inputs.skip-update
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
