@@ -73,7 +73,6 @@ jobs:
             PACKAGES="--packages ${{ github.event.inputs.packages }}"
             ONESHOT="--oneshot"
           fi
-          if 
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
