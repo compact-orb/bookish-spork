@@ -2,7 +2,6 @@ app-admin/eclean-kernel
 app-admin/sudo
 app-arch/7zip
 app-arch/unzip
-app-benchmarks/wrk
 app-emulation/cloud-init
 app-misc/jq
 app-misc/screen
