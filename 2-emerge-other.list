@@ -66,6 +66,7 @@ net-vpn/tor
 net-vpn/wireguard-tools
 sci-geosciences/gnome-maps
 sys-apps/flatpak
+sys-apps/policycoreutils
 sys-apps/zram-generator
 sys-auth/nss-mdns
 sys-auth/rtkit
