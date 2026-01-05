@@ -1,0 +1,2 @@
+# required by app-emulation/virt-manager
+net-libs/gnutls pkcs11 tools

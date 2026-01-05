@@ -1,0 +1,2 @@
+# required by net-proxy/mitmproxy
+dev-lang/rust-bin:1.89.0 rust-src

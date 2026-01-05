@@ -9,6 +9,7 @@ app-crypt/seahorse
 app-editors/antigravity
 app-editors/gnome-text-editor
 app-emulation/ruffle
+app-emulation/virt-manager
 app-emulation/winetricks
 app-emulation/wine-staging
 app-misc/binwalk
@@ -19,6 +20,10 @@ app-shells/pwsh
 dev-debug/gdb
 dev-debug/strace
 dev-debug/valgrind
+dev-java/openjdk:25
+dev-java/openjdk:21
+dev-java/openjdk:17
+dev-java/openjdk:11
 dev-libs/mimalloc
 dev-util/android-tools
 dev-util/github-cli
@@ -60,6 +65,7 @@ net-p2p/qbittorrent
 net-print/cups-filters
 net-print/cups-meta
 net-print/gutenprint
+net-proxy/mitmproxy
 net-vpn/cloudflare-warp
 net-vpn/i2pd
 net-vpn/tor

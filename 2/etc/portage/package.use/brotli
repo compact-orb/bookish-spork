@@ -1,0 +1,2 @@
+# required by net-proxy/mitmproxy
+app-arch/brotli python
