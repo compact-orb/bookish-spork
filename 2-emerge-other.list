@@ -21,10 +21,11 @@ app-shells/pwsh
 dev-debug/gdb
 dev-debug/strace
 dev-debug/valgrind
-dev-java/openjdk:25
-dev-java/openjdk:21
-dev-java/openjdk:17
 dev-java/openjdk:11
+dev-java/openjdk:17
+dev-java/openjdk:21
+dev-java/openjdk:25
+dev-java/openjdk-bin
 dev-libs/mimalloc
 dev-util/android-tools
 dev-util/github-cli
