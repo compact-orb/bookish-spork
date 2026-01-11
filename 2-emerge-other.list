@@ -9,6 +9,7 @@ app-crypt/seahorse
 app-crypt/tpm2-tools
 app-editors/antigravity
 app-editors/gnome-text-editor
+app-editors/vim
 app-emulation/ruffle
 app-emulation/virt-manager
 app-emulation/virtiofsd
@@ -78,6 +79,7 @@ net-vpn/wireguard-tools
 sci-geosciences/gnome-maps
 sys-apps/flatpak
 sys-apps/policycoreutils
+sys-apps/usbutils
 sys-apps/zram-generator
 sys-auth/nss-mdns
 sys-auth/rtkit
