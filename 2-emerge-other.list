@@ -11,6 +11,7 @@ app-editors/antigravity
 app-editors/gnome-text-editor
 app-emulation/ruffle
 app-emulation/virt-manager
+app-emulation/virtiofsd
 app-emulation/winetricks
 app-emulation/wine-staging
 app-misc/binwalk
