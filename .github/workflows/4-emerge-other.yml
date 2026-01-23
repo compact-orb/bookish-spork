@@ -1,0 +1,92 @@
+name: 4 Emerge Other
+
+on:
+  workflow_dispatch:
+    inputs:
+      ephemeral:
+        description: 'Do not update the layer'
+        required: false
+        type: boolean
+        default: false
+      force_rebuild:
+        description: 'Force a rebuild of the layer (ignore existing)'
+        required: false
+        type: boolean
+        default: false
+      no-update:
+        description: 'Do not update packages'
+        required: false
+        type: boolean
+        default: false
+      packages:
+        description: 'Only emerge the specified packages'
+        required: false
+        type: string
+      usepkg-exclude:
+        description: 'Exclude packages from usepkg'
+        required: false
+        type: string
+  schedule:
+    - cron: '0 7 * * *'
+
+env:
+  BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
+  BUNNY_STORAGE_CDN: ${{ secrets.BUNNY_STORAGE_CDN }}
+  BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
+  BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
+  BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
+  CONFIG_PREFIX: 4
+
+jobs:
+  emerge:
+    name: Emerge
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Display Runner Info
+        run: bash ./ShowRunnerInfo.sh
+
+      - name: Set Up Gentoo
+        run: |
+          ARGS=("-File" "./PushPullImage.ps1" "-From" "-Overlay" "-LayerName" "other")
+          if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
+            ARGS+=("-ForceRebuild")
+          fi
+          sudo --preserve-env pwsh "${ARGS[@]}"
+
+      - name: Set Up Binary Packages
+        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -From
+
+      - name: Mount Filesystems
+        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
+
+      - name: Emerge
+        run: |
+          UPDATE_FLAG="--update"
+          if [ "${{ github.event.inputs.no-update }}" = "true" ]; then
+            UPDATE_FLAG=""
+          fi
+          PACKAGES=""
+          if [ "${{ github.event.inputs.packages }}" != "" ]; then
+            PACKAGES="--packages ${{ github.event.inputs.packages }}"
+          else
+            PACKAGES="--packages $(cat ./${CONFIG_PREFIX}-emerge-other.list | tr '\n' ' ')"
+          fi
+          USEPKG_EXCLUDE=""
+          if [ "${{ github.event.inputs.usepkg-exclude }}" != "" ]; then
+            USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs.usepkg-exclude }}"
+          fi
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
+
+      - name: Unmount Filesystems
+        if: success() || failure()
+        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
+
+      - name: Upload Gentoo Binary Packages
+        if: success() || failure()
+        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
+
+      - name: Upload Gentoo Layer
+        if: (success() || failure()) && !inputs.ephemeral
+        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To -Overlay -LayerName "other"

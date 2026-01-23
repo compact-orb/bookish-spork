@@ -1,0 +1,15 @@
+app-admin/sudo
+app-arch/7zip
+app-arch/unzip
+app-misc/jq
+app-misc/screen
+app-portage/gentoolkit
+app-shells/bash-completion
+app-shells/pwsh
+dev-libs/mimalloc
+dev-util/github-cli
+net-analyzer/traceroute
+net-dns/bind-tools
+net-misc/aria2
+net-misc/mosh
+net-vpn/wireguard-tools
