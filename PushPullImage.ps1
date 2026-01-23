@@ -138,15 +138,20 @@ elseif ($To) {
 
         $fileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
         $targetDir = "/mnt/gentoo-upper"
-        # Exclude temporary and cache files from the layer archive
+        # Exclude cache files from the layer archive
+        # When -Temporary is specified, include /tmp and /var/tmp
         $excludeParams = @(
             "--exclude=./var/cache/binpkgs",
             "--exclude=./var/cache/distfiles/*",
-            "--exclude=./var/tmp/*",
-            "--exclude=./tmp/*",
             "--exclude=./run/*",
             "--exclude=./etc/resolv.conf"
         )
+        if (-not $Temporary) {
+            $excludeParams += @(
+                "--exclude=./var/tmp/*",
+                "--exclude=./tmp/*"
+            )
+        }
 
         Write-Output -InputObject "Creating archive..."
         Measure-Command -Expression {

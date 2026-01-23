@@ -26,6 +26,11 @@ on:
         description: 'Exclude packages from usepkg'
         required: false
         type: string
+      temporary:
+        description: 'Upload layer as temporary'
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: '0 7 * * *'
 
@@ -89,4 +94,9 @@ jobs:
 
       - name: Upload Gentoo Layer
         if: (success() || failure()) && !inputs.ephemeral
-        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To -Overlay -LayerName "other"
+        run: |
+          ARGS=("-File" "./PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "other")
+          if [ "${{ github.event.inputs.temporary }}" == "true" ]; then
+            ARGS+=("-Temporary")
+          fi
+          sudo --preserve-env pwsh "${ARGS[@]}"
