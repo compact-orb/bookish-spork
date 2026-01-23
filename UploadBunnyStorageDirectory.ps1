@@ -31,8 +31,23 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 # Recursively find all files in the source path and upload them in parallel
 Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
-    # Upload the file using the Bunny Storage API
-    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME$using:Destination/$_" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$_" | Out-Null
+    $maxRetries = 3
+    $filePath = $_
 
-    Write-Output -InputObject "Uploaded $_ to $using:Destination"
+    for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+        try {
+            # Upload the file using the Bunny Storage API
+            Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME$using:Destination/$filePath" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$filePath" | Out-Null
+
+            Write-Output -InputObject "Uploaded $filePath to $using:Destination"
+            break
+        }
+        catch {
+            if ($attempt -eq $maxRetries) {
+                Write-Error -Message "Failed to upload $filePath after $maxRetries attempts: $_"
+                throw
+            }
+            Write-Warning -Message "Attempt $attempt/$maxRetries failed for $filePath`: $($_.Exception.Message). Retrying..."
+        }
+    }
 } -ThrottleLimit $ThrottleLimit

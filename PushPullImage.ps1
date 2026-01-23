@@ -156,8 +156,21 @@ elseif ($To) {
 
         Write-Output -InputObject "Uploading archive..."
         Measure-Command -Expression {
-            # Upload to storage
-            Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /dev/shm/$fileName
+            $maxRetries = 3
+            for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+                try {
+                    # Upload to storage
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /dev/shm/$fileName
+                    break
+                }
+                catch {
+                    if ($attempt -eq $maxRetries) {
+                        Write-Error -Message "Failed to upload $fileName after $maxRetries attempts: $_"
+                        throw
+                    }
+                    Write-Warning -Message "Attempt $attempt/$maxRetries failed for $fileName`: $($_.Exception.Message). Retrying..."
+                }
+            }
         }
     }
     else {
@@ -185,8 +198,21 @@ elseif ($To) {
 
         Write-Output -InputObject "Uploading archive..."
         Measure-Command -Expression {
-            # Upload to storage
-            Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /mnt/$fileName
+            $maxRetries = 3
+            for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+                try {
+                    # Upload to storage
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /mnt/$fileName
+                    break
+                }
+                catch {
+                    if ($attempt -eq $maxRetries) {
+                        Write-Error -Message "Failed to upload $fileName after $maxRetries attempts: $_"
+                        throw
+                    }
+                    Write-Warning -Message "Attempt $attempt/$maxRetries failed for $fileName`: $($_.Exception.Message). Retrying..."
+                }
+            }
         }
     }
 }

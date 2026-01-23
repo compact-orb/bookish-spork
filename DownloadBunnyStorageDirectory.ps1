@@ -38,8 +38,23 @@ $Files = @()
 do {
     # Process directories in parallel to list their contents
     $Directories = $Directories | ForEach-Object -Parallel {
+        $maxRetries = 3
+        $currentPath = $_
+
         # List the contents of the current directory using the Bunny Storage API
-        $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$_/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
+        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+            try {
+                $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$currentPath/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
+                break
+            }
+            catch {
+                if ($attempt -eq $maxRetries) {
+                    Write-Error -Message "Failed to list $currentPath after $maxRetries attempts: $_"
+                    throw
+                }
+                Write-Warning -Message "Attempt $attempt/$maxRetries failed for $currentPath`: $($_.Exception.Message). Retrying..."
+            }
+        }
 
         $response | ForEach-Object {
             $Path = $_.Path
@@ -77,9 +92,24 @@ do {
 # Download all collected files in parallel
 if (![string]::IsNullOrWhiteSpace($Files)) {
     $Files | ForEach-Object -Parallel {
-        Write-Output -InputObject "Downloading $_ to $using:Destination$($_.Substring($using:Path.Length))"
+        $maxRetries = 3
+        $filePath = $_
 
-        # Download the file from Bunny Storage
-        Invoke-WebRequest -Uri "https://$env:BUNNY_STORAGE_ENDPOINT$_" -Headers @{ accept = '*/*'; accesskey = $using:env:BUNNY_STORAGE_ACCESS_KEY } -OutFile "$using:Destination$($_.Substring($using:Path.Length))"
+        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+            try {
+                # Download the file from Bunny Storage
+                Invoke-WebRequest -Uri "https://$env:BUNNY_STORAGE_ENDPOINT$_" -Headers @{ accept = '*/*'; accesskey = $using:env:BUNNY_STORAGE_ACCESS_KEY } -OutFile "$using:Destination$($_.Substring($using:Path.Length))"
+
+                Write-Output -InputObject "Downloaded $filePath to $using:Destination$($_.Substring($using:Path.Length))"
+                break
+            }
+            catch {
+                if ($attempt -eq $maxRetries) {
+                    Write-Error -Message "Failed to download $filePath after $maxRetries attempts: $_"
+                    throw
+                }
+                Write-Warning -Message "Attempt $attempt/$maxRetries failed for $filePath`: $($_.Exception.Message). Retrying..."
+            }
+        }
     } -ThrottleLimit $ThrottleLimit
 }
