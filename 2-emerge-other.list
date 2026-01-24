@@ -32,6 +32,7 @@ dev-java/openjdk:25
 dev-java/openjdk-bin
 dev-libs/mimalloc
 dev-util/android-tools
+dev-util/ghidra
 dev-util/github-cli
 dev-util/radare2
 dev-vcs/git-lfs
