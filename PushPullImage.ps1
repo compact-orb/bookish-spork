@@ -165,7 +165,7 @@ elseif ($To) {
             for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
                 try {
                     # Upload to storage
-                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /dev/shm/$fileName
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /dev/shm/$fileName
                     break
                 }
                 catch {
@@ -207,7 +207,7 @@ elseif ($To) {
             for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
                 try {
                     # Upload to storage
-                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /mnt/$fileName
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /mnt/$fileName
                     break
                 }
                 catch {
