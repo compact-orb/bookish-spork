@@ -85,6 +85,7 @@ sys-auth/nss-mdns
 sys-auth/rtkit
 sys-block/io-scheduler-udev-rules
 sys-boot/plymouth
+sys-devel/bc
 sys-devel/bison
 sys-devel/flex
 sys-firmware/intel-microcode
