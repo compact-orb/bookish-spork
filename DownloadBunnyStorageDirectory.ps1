@@ -8,8 +8,9 @@
     It uses parallel processing to improve performance when listing directories and downloading files.
 
     The script relies on the following environment variables:
+    - BUNNY_STORAGE_ENDPOINT_CDN: The CDN endpoint for listing files.
     - BUNNY_STORAGE_ACCESS_KEY: The access key for authentication.
-    - BUNNY_STORAGE_ENDPOINT: The storage endpoint for downloading and listing files.
+    - BUNNY_STORAGE_ENDPOINT: The storage endpoint for downloading files.
 
 .PARAMETER Path
     The remote path in Bunny Storage to start downloading from.
@@ -43,7 +44,7 @@ do {
         # List the contents of the current directory using the Bunny Storage API
         for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
             try {
-                $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT$currentPath/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
+                $response = Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$currentPath/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
                 break
             }
             catch {

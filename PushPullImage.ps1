@@ -167,9 +167,13 @@ elseif ($To) {
             for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
                 try {
                     # Upload to storage
+<<<<<<< HEAD
                     Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$fileName"
 
                     Remove-Item -Path "/var/tmp/bookish-spork/$fileName"
+=======
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /dev/shm/$fileName
+>>>>>>> parent of 850f950 (Use standard endpoint)
                     break
                 }
                 catch {
@@ -211,9 +215,13 @@ elseif ($To) {
             for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
                 try {
                     # Upload to storage
+<<<<<<< HEAD
                     Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$fileName"
 
                     Remove-Item -Path "/var/tmp/bookish-spork/$fileName"
+=======
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /mnt/$fileName
+>>>>>>> parent of 850f950 (Use standard endpoint)
                     break
                 }
                 catch {
