@@ -4,6 +4,7 @@ app-arch/7zip
 app-arch/unrar
 app-arch/unzip
 app-containers/podman
+app-containers/waydroid
 app-crypt/johntheripper-jumbo
 app-crypt/seahorse
 app-crypt/tpm2-tools
