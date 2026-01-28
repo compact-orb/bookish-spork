@@ -30,19 +30,21 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+New-Item -Path "/var/tmp/bookish-spork" -ItemType "Directory" -Force | Out-Null
+
 if ($From) {
     # Create the necessary directories for the overlay filesystem:
     # - lower: Read-only layer containing existing packages.
     # - upper: Writable layer for new packages.
     # - work: Working directory for overlayfs.
-    New-Item -Path /mnt/binpkgs-store/lower, /mnt/binpkgs-store/upper, /mnt/binpkgs-store/work -ItemType Directory -Force | Out-Null
+    New-Item -Path "/var/tmp/bookish-spork/binpkgs-store/lower", "/var/tmp/bookish-spork/binpkgs-store/upper", "/var/tmp/bookish-spork/binpkgs-store/work" -ItemType Directory -Force | Out-Null
 
     # Download existing binary packages from Bunny Storage to the read-only 'lower' directory.
-    ./DownloadBunnyStorageDirectory.ps1 -Path "/$env:BUNNY_STORAGE_ZONE_NAME/$env:CONFIG_PREFIX" -Destination "/mnt/binpkgs-store/lower"
+    ./DownloadBunnyStorageDirectory.ps1 -Path "/$env:BUNNY_STORAGE_ZONE_NAME/$env:CONFIG_PREFIX" -Destination "/var/tmp/bookish-spork/binpkgs-store/lower"
 
     # Mount the overlay filesystem at the package cache location.
     # This merges 'lower' and 'upper' at '/mnt/gentoo/var/cache/binpkgs'.
-    mount --types overlay overlay --options "lowerdir=/mnt/binpkgs-store/lower,upperdir=/mnt/binpkgs-store/upper,workdir=/mnt/binpkgs-store/work" /mnt/gentoo/var/cache/binpkgs
+    mount --types "overlay" "overlay" --options "lowerdir=/var/tmp/bookish-spork/binpkgs-store/lower,upperdir=/var/tmp/bookish-spork/binpkgs-store/upper,workdir=/var/tmp/bookish-spork/binpkgs-store/work" "/mnt/gentoo/var/cache/binpkgs"
 }
 elseif ($To) {
     # Determine the source path for uploading packages.
@@ -52,7 +54,7 @@ elseif ($To) {
     }
     else {
         # If overlay is enabled, only upload the new packages from the 'upper' directory.
-        $binpkgsPath = "/mnt/binpkgs-store/upper"
+        $binpkgsPath = "/var/tmp/bookish-spork/binpkgs-store/upper"
     }
 
     # Upload the packages to Bunny Storage.
@@ -67,7 +69,7 @@ elseif ($To) {
         # If overlay is enabled, unmount the filesystem and remove the temporary store directories.
         umount /mnt/gentoo/var/cache/binpkgs
 
-        Remove-Item -Path /mnt/binpkgs-store -Recurse -Force
+        Remove-Item -Path "/var/tmp/bookish-spork/binpkgs-store" -Recurse -Force
     }
 }
 else {
