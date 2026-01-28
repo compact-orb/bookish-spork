@@ -48,6 +48,8 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+New-Item -Path "/var/tmp/bookish-spork" -ItemType "Directory" -Force | Out-Null
+
 # MODE: FROM (Download / Restore)
 # This block handles downloading images from storage and setting up the filesystem.
 if ($From) {
@@ -156,7 +158,7 @@ elseif ($To) {
         Write-Output -InputObject "Creating archive..."
         Measure-Command -Expression {
             # Create archive from the upper directory
-            tar --create --directory=$targetDir --file=/dev/shm/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" @excludeParams .
+            tar --create --directory="$targetDir" --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" @excludeParams .
         }
 
         Write-Output -InputObject "Uploading archive..."
@@ -165,7 +167,9 @@ elseif ($To) {
             for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
                 try {
                     # Upload to storage
-                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /dev/shm/$fileName
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$fileName"
+
+                    Remove-Item -Path "/var/tmp/bookish-spork/$fileName"
                     break
                 }
                 catch {
@@ -198,7 +202,7 @@ elseif ($To) {
         Write-Output -InputObject "Creating archive..."
         Measure-Command -Expression {
             # Create archive from the root mount point
-            tar --create --directory=/mnt/gentoo --file=/mnt/$fileName --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
+            tar --create --directory=/mnt/gentoo --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
         }
 
         Write-Output -InputObject "Uploading archive..."
@@ -207,7 +211,9 @@ elseif ($To) {
             for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
                 try {
                     # Upload to storage
-                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile /mnt/$fileName
+                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$fileName"
+
+                    Remove-Item -Path "/var/tmp/bookish-spork/$fileName"
                     break
                 }
                 catch {
