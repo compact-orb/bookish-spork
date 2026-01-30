@@ -138,7 +138,12 @@ elseif ($To) {
             Write-Error -Message "LayerName is required when Overlay is specified."
         }
 
-        $fileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
+        if ($Temporary) {
+            $fileName = "$env:CONFIG_PREFIX-$LayerName-temporary.tar.zst"
+        }
+        else {
+            $fileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
+        }
         $targetDir = "/mnt/gentoo-upper"
         # Exclude cache files from the layer archive
         # When -Temporary is specified, include /tmp and /var/tmp
