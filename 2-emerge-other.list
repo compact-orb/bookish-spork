@@ -59,6 +59,7 @@ media-sound/ardour
 media-sound/audacity
 media-sound/helvum
 media-sound/reaper-bin
+media-sound/spotify
 media-video/shotcut
 media-video/vlc
 net-analyzer/nmap
