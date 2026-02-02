@@ -23,7 +23,7 @@ on:
         required: false
         type: string
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '15 0 * * *'
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
