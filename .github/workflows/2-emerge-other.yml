@@ -92,7 +92,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo Layer
-        if: !inputs.ephemeral
+        if: ${{ !inputs.ephemeral }}
         run: |
           ARGS=("-File" "./PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "other")
           if [ "${{ github.event.inputs.temporary }}" == "true" ]; then
