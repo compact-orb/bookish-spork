@@ -67,6 +67,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
 
       - name: Emerge
+        continue-on-error: true
         run: |
           UPDATE_FLAG="--update"
           if [ "${{ github.event.inputs.no-update }}" = "true" ]; then
@@ -85,15 +86,13 @@ jobs:
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
 
       - name: Unmount Filesystems
-        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: success() || failure()
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo Layer
-        if: (success() || failure()) && !inputs.ephemeral
+        if: !inputs.ephemeral
         run: |
           ARGS=("-File" "./PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "other")
           if [ "${{ github.event.inputs.temporary }}" == "true" ]; then

@@ -65,6 +65,7 @@ jobs:
 
       - name: Emerge Update
         if: "!inputs.skip-update"
+        continue-on-error: true
         run: |
           PACKAGES=""
           ONESHOT=""
@@ -75,13 +76,12 @@ jobs:
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
-        if: (success() || failure()) && (!inputs.skip-sync || !inputs.skip-update)
+        if: "!inputs.skip-sync || !inputs.skip-update"
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: (success() || failure()) && !inputs.skip-update
+        if: !inputs.skip-update
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
-        if: ${{ success() || failure() }}
         run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To
