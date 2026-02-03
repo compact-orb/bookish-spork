@@ -22,6 +22,7 @@ app-office/libreoffice
 app-portage/gentoolkit
 app-shells/bash-completion
 app-shells/pwsh
+dev-build/cmake
 dev-debug/gdb
 dev-debug/strace
 dev-debug/valgrind
