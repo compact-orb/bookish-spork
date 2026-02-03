@@ -52,19 +52,19 @@ jobs:
         run: sudo --preserve-env pwsh -File ./SetConfiguration.ps1
 
       - name: Set Up Binary Packages
-        if: "!inputs.skip-update"
+        if: ${{ !inputs.skip-update }}
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
-        if: "!inputs.skip-sync || !inputs.skip-update"
+        if: ${{ !inputs.skip-sync || !inputs.skip-update }}
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
 
       - name: Emerge Sync
-        if: "!inputs.skip-sync"
+        if: ${{ !inputs.skip-sync }}
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --sync
 
       - name: Emerge Update
-        if: "!inputs.skip-update"
+        if: ${{ !inputs.skip-update }}
         continue-on-error: true
         run: |
           PACKAGES=""
@@ -76,11 +76,11 @@ jobs:
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --update $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
-        if: "!inputs.skip-sync || !inputs.skip-update"
+        if: ${{ !inputs.skip-sync || !inputs.skip-update }}
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: "!inputs.skip-update"
+        if: ${{ !inputs.skip-update }}
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
