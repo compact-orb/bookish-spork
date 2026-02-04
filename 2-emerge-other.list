@@ -17,6 +17,7 @@ app-emulation/virtiofsd
 app-emulation/winetricks
 app-emulation/wine-staging
 app-misc/binwalk
+app-misc/screen
 app-mobilephone/heimdall
 app-office/libreoffice
 app-portage/gentoolkit
