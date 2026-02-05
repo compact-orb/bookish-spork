@@ -22,8 +22,8 @@ on:
         description: 'Only update the specified packages (space separated)'
         required: false
         type: string
-  schedule:
-    - cron: '15 0 * * *'
+  # schedule:
+  #   - cron: '15 0 * * *'
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
