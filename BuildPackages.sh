@@ -10,7 +10,7 @@ set -e
 # 5 hours and 30 minutes in seconds. GitHub Actions job timeout is 6 hours.
 TIMEOUT=19800
 
-LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile,usepkg-exclude:,bootstrap-binrepos-architecture:,oneshot
+LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:,usepkg-exclude:,bootstrap-binrepos-architecture:,oneshot
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
