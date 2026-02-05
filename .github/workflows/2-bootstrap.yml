@@ -53,18 +53,18 @@ jobs:
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
 
       - name: Emerge (Step 1)
-        continue-on-error: true
         if: github.event.inputs.step == '1'
+        continue-on-error: true
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd --bootstrap-binrepos-architecture ${{ env.BOOTSTRAP_BINREPOS_ARCHITECTURE }}
 
       - name: Emerge (Step 2)
-        continue-on-error: true
         if: github.event.inputs.step == '2' && github.event.inputs.resume != 'true'
+        continue-on-error: true
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2
 
       - name: Emerge (Step 2 Resume)
-        continue-on-error: true
         if: github.event.inputs.step == '2' && github.event.inputs.resume == 'true'
+        continue-on-error: true
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
