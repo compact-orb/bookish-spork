@@ -34,6 +34,7 @@ dev-java/openjdk:21
 dev-java/openjdk:25
 dev-java/openjdk-bin
 dev-libs/mimalloc
+dev-util/android-sdk-cmdline-tools
 dev-util/android-tools
 dev-util/ghidra
 dev-util/github-cli
@@ -85,6 +86,7 @@ net-vpn/tor
 net-vpn/wireguard-tools
 sci-geosciences/gnome-maps
 sys-apps/flatpak
+sys-apps/i2c-tools
 sys-apps/policycoreutils
 sys-apps/usbutils
 sys-apps/zram-generator
