@@ -85,11 +85,11 @@ jobs:
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
 
       - name: Unmount Filesystems
-        if: "!cancelled()"
+        if: ${{ !cancelled() }}
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: "!cancelled()"
+        if: ${{ !cancelled() }}
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo Layer
