@@ -62,20 +62,20 @@ jobs:
 
       - name: Emerge (Step 2)
         if: github.event.inputs.step == '2' && github.event.inputs.resume != 'true'
-        continue-on-error: true
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2
 
       - name: Emerge (Step 2 Resume)
         if: github.event.inputs.step == '2' && github.event.inputs.resume == 'true'
-        continue-on-error: true
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
+        if: !cancelled()
         run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: github.event.inputs.step != '1'
+        if: !cancelled() && github.event.inputs.step != '1'
         run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To ${{ github.event.inputs.resume != 'true' && '-NoOverlay' || '' }}
 
       - name: Upload Gentoo
+        if: !cancelled()
         run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To
