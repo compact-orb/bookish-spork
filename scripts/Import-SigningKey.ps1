@@ -48,6 +48,7 @@ $fingerprints = gpg --homedir "$portageGpgHome" --list-keys --with-colons | Sele
 foreach ($fpr in $fingerprints) {
     "$($fpr):6:" | gpg --homedir "$portageGpgHome" --batch --import-ownertrust
 }
+gpg --homedir "$portageGpgHome" --check-trustdb
 
 # Portage drops GPG verification to the nobody user (GPG_VERIFY_USER_DROP defaults to
 # "nobody" in gpkg.py). The verification keyring must be owned by nobody:nogroup so
