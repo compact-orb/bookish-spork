@@ -63,6 +63,11 @@ jobs:
       - name: Set Up Binary Packages
         run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -From
 
+      - name: Import Signing Key
+        run: sudo --preserve-env pwsh -File ./scripts/Import-SigningKey.ps1
+        env:
+          BINPKG_GPG_SIGNING_KEY_BASE64: ${{ secrets.BINPKG_GPG_SIGNING_KEY_BASE64 }}
+
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 

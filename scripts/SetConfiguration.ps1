@@ -40,14 +40,19 @@ if (-not $Endpoint) {
                 $_
             }
         })
-    Add-Content -Path /mnt/gentoo/etc/portage/make.conf -Value @'
+    $signingKeyFingerprint = (Get-Content -Path "$PSScriptRoot/../keys/fingerprint.txt" -Raw).Trim()
+    Add-Content -Path /mnt/gentoo/etc/portage/make.conf -Value @"
 
 MAKEOPTS="--jobs=4"
 
 EMERGE_DEFAULT_OPTS="--backtrack=1024 --buildpkg --quiet-build --usepkg --verbose --with-bdeps=y --keep-going"
 BINPKG_COMPRESS="zstd"
 BINPKG_COMPRESS_FLAGS="-19 -T4 --long"
-'@
+
+FEATURES="binpkg-signing gpg-keepalive"
+BINPKG_GPG_SIGNING_GPG_HOME="/root/.gnupg"
+BINPKG_GPG_SIGNING_KEY="$signingKeyFingerprint"
+"@
 }
 
 # Set up SSH access for the root user for the purpose of authenticating into private GitHub repositories.

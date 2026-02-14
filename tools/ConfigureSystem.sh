@@ -39,3 +39,26 @@ done < "$SCRIPT_DIR/../cleanup-paths.txt"
 # Copy the new configuration files from the specified prefix directory to the root (/).
 # This applies the new Portage configuration, kernel config, and other settings.
 cp --force --recursive "${SCRIPT_DIR}/../$1"/* /
+
+# Set up the binary package signing verification keyring.
+# This imports the project's signing public key so Portage can verify signed packages.
+PUBLIC_KEY="${SCRIPT_DIR}/../keys/binpkg-signing.asc"
+
+echo "Setting up binary package signature verification..."
+
+# Initialize the Portage GnuPG keyring if it doesn't exist.
+if [ ! -d /etc/portage/gnupg ]; then
+    getuto
+fi
+
+# Import the signing public key into the Portage verification keyring.
+gpg --homedir=/etc/portage/gnupg --batch --import "$PUBLIC_KEY"
+
+# Trust the imported key — extract its fingerprint and set trust to ultimate.
+SIGNING_FPR=$(gpg --homedir=/etc/portage/gnupg --with-colons --fingerprint --list-keys "bookish-spork@compact-orb" | awk -F: '/^fpr:/{print $10; exit}')
+if [ -n "$SIGNING_FPR" ]; then
+    echo "${SIGNING_FPR}:6:" | gpg --homedir=/etc/portage/gnupg --batch --import-ownertrust
+    gpg --homedir=/etc/portage/gnupg --check-trustdb
+fi
+
+echo "Signing key imported and trusted."

@@ -62,8 +62,9 @@ CI scripts are in the `scripts/` directory and run on the GitHub Actions host.
 | -------- | --------- |
 | `PushPullImage.ps1` | Downloads/uploads system images (base, bootstrap, temporary, overlay layers) to/from Bunny Storage. Supports OverlayFS for layered images. |
 | `PushPullBinaryPackages.ps1` | Syncs binary packages via OverlayFS — downloads existing packages to a read-only lower layer, mounts an overlay for new packages, then uploads only the upper (new) layer. |
-| `SetConfiguration.ps1` | Cleans old Portage/kernel/SSH config from the image and copies the repo's configuration. On build nodes, overrides `make.conf` with higher parallelism and `--buildpkg` flags. Also sets up the SSH key for the private overlay repo. |
+| `SetConfiguration.ps1` | Cleans old Portage/kernel/SSH config from the image and copies the repo's configuration. On build nodes, overrides `make.conf` with higher parallelism, `--buildpkg` flags, and binary package signing settings. Also sets up the SSH key for the private overlay repo. |
 | `MountFilesystems.ps1` | Mounts/unmounts `proc`, `sys`, `dev`, `run`, `tmp`, and the working directory into the chroot at `/mnt/gentoo`. |
+| `Import-SigningKey.ps1` | Imports the GPG signing key from a GitHub secret into the chroot's keyring and Portage's verification keyring. |
 | `DownloadBunnyStorageDirectory.ps1` | Recursively downloads a directory from Bunny Storage with parallel threads and retry logic. Uses CDN endpoint for listing. |
 | `UploadBunnyStorageDirectory.ps1` | Recursively uploads a local directory to Bunny Storage with parallel threads and retry logic. Uses CDN endpoint for uploads. |
 
@@ -73,7 +74,7 @@ CI scripts are in the `scripts/` directory and run on the GitHub Actions host.
 | -------- | --------- |
 | `scripts/BuildPackages.sh` | Core emerge wrapper. Handles bootstrap (step 1 & 2), sync, `@world` update, and package installation. Enforces a 5h30m timeout to stay within the GitHub Actions 6-hour job limit. |
 | `scripts/ShowRunnerInfo.sh` | Prints CPU, memory, and disk info for debugging. |
-| `tools/ConfigureSystem.sh` | Client-side script for applying a configuration to a live Gentoo system. Cleans existing Portage config directories and copies the specified configuration. |
+| `tools/ConfigureSystem.sh` | Client-side script for applying a configuration to a live Gentoo system. Cleans existing Portage config directories, copies the specified configuration, and sets up the binary package signing verification keyring. |
 
 ## Repository Secrets
 
@@ -85,6 +86,7 @@ CI scripts are in the `scripts/` directory and run on the GitHub Actions host.
 | `BUNNY_STORAGE_ENDPOINT_CDN` | CDN pull zone with storage API endpoint as origin (used for listing and uploads — more reliable?) |
 | `BUNNY_STORAGE_ZONE_NAME` | Storage zone name |
 | `REDESIGNED_BROCCOLI_SSH_KEY` | Base64-encoded SSH key for authenticating that private overlay repository |
+| `BINPKG_GPG_SIGNING_KEY_BASE64` | Base64-encoded GPG private key for signing binary packages |
 
 ## Client Setup
 
@@ -96,9 +98,11 @@ cd bookish-spork
 sudo bash tools/ConfigureSystem.sh <config-number>
 ```
 
-This replaces Portage configuration directories with the selected configuration. The `make.conf` in each config sets `--getbinpkgonly` by default, so the client will only install pre-built binary packages.
+This replaces Portage configuration directories with the selected configuration, and imports the binary package signing public key into Portage's verification keyring. The `make.conf` in each config sets `--getbinpkgonly` by default, so the client will only install pre-built binary packages.
 
 > **Note**: You will need to configure `binrepos.conf` on the client to point to your Bunny Storage CDN URL serving the binary packages for the corresponding config prefix.
+>
+> **Note**: Requires `app-portage/getuto` to be installed for keyring initialization.
 
 ## Maintenance Notes
 
@@ -106,3 +110,4 @@ This replaces Portage configuration directories with the selected configuration.
 - **Adding a new configuration**: Create a new numbered directory with `/etc` tree, a `*-emerge-other.list`, and duplicate/adjust the three workflow files with the correct `CONFIG_PREFIX`, `BOOTSTRAP_BINREPOS_ARCHITECTURE`, runner, and Portage profile.
 - **Build timeouts**: `scripts/BuildPackages.sh` has a 5h30m timeout. If an emerge times out, the step 2 bootstrap and emerge-other workflows support `--resume`.
 - **Bootstrap step 1 specifics**: The bootstrap process installs Clang, Rust, PyPy, and Portage from Gentoo's official binhost before rebuilding. If the toolchain bootstrap changes, update `scripts/BuildPackages.sh` case `1`.
+- **Signing key rotation**: Generate a new GPG key, update `BINPKG_GPG_SIGNING_KEY_BASE64` in GitHub secrets, replace `keys/binpkg-signing.asc` and `keys/fingerprint.txt`, and re-run `tools/ConfigureSystem.sh` on all clients. See `keys/README.md` for instructions.
