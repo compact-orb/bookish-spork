@@ -48,6 +48,33 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+function Send-ToStorage {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FileName
+    )
+
+    Write-Output -InputObject "Uploading archive..."
+    Measure-Command -Expression {
+        $maxRetries = 3
+        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+            try {
+                Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$FileName"
+
+                Remove-Item -Path "/var/tmp/bookish-spork/$FileName"
+                break
+            }
+            catch {
+                if ($attempt -eq $maxRetries) {
+                    Write-Error -Message "Failed to upload $FileName after $maxRetries attempts: $_"
+                    throw
+                }
+                Write-Warning -Message "Attempt $attempt/$maxRetries failed for $FileName`: $($_.Exception.Message). Retrying..."
+            }
+        }
+    }
+}
+
 New-Item -Path "/var/tmp/bookish-spork" -ItemType "Directory" -Force | Out-Null
 
 # MODE: FROM (Download / Restore)
@@ -166,26 +193,7 @@ elseif ($To) {
             tar --create --directory="$targetDir" --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" @excludeParams .
         }
 
-        Write-Output -InputObject "Uploading archive..."
-        Measure-Command -Expression {
-            $maxRetries = 3
-            for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-                try {
-                    # Upload to storage
-                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$fileName"
-
-                    Remove-Item -Path "/var/tmp/bookish-spork/$fileName"
-                    break
-                }
-                catch {
-                    if ($attempt -eq $maxRetries) {
-                        Write-Error -Message "Failed to upload $fileName after $maxRetries attempts: $_"
-                        throw
-                    }
-                    Write-Warning -Message "Attempt $attempt/$maxRetries failed for $fileName`: $($_.Exception.Message). Retrying..."
-                }
-            }
-        }
+        Send-ToStorage -FileName $fileName
     }
     else {
         # Sub-mode: Standard (Non-Overlay)
@@ -210,26 +218,7 @@ elseif ($To) {
             tar --create --directory=/mnt/gentoo --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
         }
 
-        Write-Output -InputObject "Uploading archive..."
-        Measure-Command -Expression {
-            $maxRetries = 3
-            for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-                try {
-                    # Upload to storage
-                    Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$fileName"
-
-                    Remove-Item -Path "/var/tmp/bookish-spork/$fileName"
-                    break
-                }
-                catch {
-                    if ($attempt -eq $maxRetries) {
-                        Write-Error -Message "Failed to upload $fileName after $maxRetries attempts: $_"
-                        throw
-                    }
-                    Write-Warning -Message "Attempt $attempt/$maxRetries failed for $fileName`: $($_.Exception.Message). Retrying..."
-                }
-            }
-        }
+        Send-ToStorage -FileName $fileName
     }
 }
 else {

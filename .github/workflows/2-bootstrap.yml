@@ -35,47 +35,47 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Display Runner Info
-        run: bash ./ShowRunnerInfo.sh
+        run: bash ./scripts/ShowRunnerInfo.sh
 
       - name: Set Up Gentoo (Step 1)
         if: ${{ github.event.inputs.step == '1' }}
-        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -From -Bootstrap
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullImage.ps1 -From -Bootstrap
 
       - name: Set Up Gentoo (Step 2)
         if: ${{ github.event.inputs.step != '1' }}
-        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -From
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullImage.ps1 -From
 
       - name: Configure Gentoo
         if: ${{ github.event.inputs.step == '1' }}
-        run: sudo --preserve-env pwsh -File ./SetConfiguration.ps1
+        run: sudo --preserve-env pwsh -File ./scripts/SetConfiguration.ps1
 
       - name: Set Up Binary Packages
         if: ${{ github.event.inputs.step == '2' && github.event.inputs.resume == 'true' }}
-        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -From
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
-        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
+        run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
       - name: Emerge (Step 1)
         if: ${{ github.event.inputs.step == '1' }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd --bootstrap-binrepos-architecture ${{ env.BOOTSTRAP_BINREPOS_ARCHITECTURE }}
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --bootstrap 1 --portage-profile default/linux/amd64/23.0/desktop/gnome/systemd --bootstrap-binrepos-architecture ${{ env.BOOTSTRAP_BINREPOS_ARCHITECTURE }}
 
       - name: Emerge (Step 2)
         if: ${{ github.event.inputs.step == '2' && github.event.inputs.resume != 'true' }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --bootstrap 2
 
       - name: Emerge (Step 2 Resume)
         if: ${{ github.event.inputs.step == '2' && github.event.inputs.resume == 'true' }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh --bootstrap 2 --resume
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --bootstrap 2 --resume
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() }}
-        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
+        run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
         if: ${{ !cancelled() && github.event.inputs.step != '1' }}
-        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To ${{ github.event.inputs.resume != 'true' && '-NoOverlay' || '' }}
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -To ${{ github.event.inputs.resume != 'true' && '-NoOverlay' || '' }}
 
       - name: Upload Gentoo
         if: ${{ !cancelled() }}
-        run: sudo --preserve-env pwsh -File ./PushPullImage.ps1 -To
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullImage.ps1 -To

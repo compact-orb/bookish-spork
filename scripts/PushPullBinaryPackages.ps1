@@ -40,7 +40,7 @@ if ($From) {
     New-Item -Path "/var/tmp/bookish-spork/binpkgs-store/lower", "/var/tmp/bookish-spork/binpkgs-store/upper", "/var/tmp/bookish-spork/binpkgs-store/work" -ItemType Directory -Force | Out-Null
 
     # Download existing binary packages from Bunny Storage to the read-only 'lower' directory.
-    ./DownloadBunnyStorageDirectory.ps1 -Path "/$env:BUNNY_STORAGE_ZONE_NAME/$env:CONFIG_PREFIX" -Destination "/var/tmp/bookish-spork/binpkgs-store/lower"
+    & "$PSScriptRoot/DownloadBunnyStorageDirectory.ps1" -Path "/$env:BUNNY_STORAGE_ZONE_NAME/$env:CONFIG_PREFIX" -Destination "/var/tmp/bookish-spork/binpkgs-store/lower"
 
     # Mount the overlay filesystem at the package cache location.
     # This merges 'lower' and 'upper' at '/mnt/gentoo/var/cache/binpkgs'.
@@ -58,7 +58,7 @@ elseif ($To) {
     }
 
     # Upload the packages to Bunny Storage.
-    ./UploadBunnyStorageDirectory.ps1 -Path "$binpkgsPath" -Destination "/$env:CONFIG_PREFIX"
+    & "$PSScriptRoot/UploadBunnyStorageDirectory.ps1" -Path "$binpkgsPath" -Destination "/$env:CONFIG_PREFIX"
 
     # Perform cleanup operations.
     if ($NoOverlay) {

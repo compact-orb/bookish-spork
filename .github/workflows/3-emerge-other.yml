@@ -50,21 +50,21 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Display Runner Info
-        run: bash ./ShowRunnerInfo.sh
+        run: bash ./scripts/ShowRunnerInfo.sh
 
       - name: Set Up Gentoo
         run: |
-          ARGS=("-File" "./PushPullImage.ps1" "-From" "-Overlay" "-LayerName" "other")
+          ARGS=("-File" "./scripts/PushPullImage.ps1" "-From" "-Overlay" "-LayerName" "other")
           if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
             ARGS+=("-ForceRebuild")
           fi
           sudo --preserve-env pwsh "${ARGS[@]}"
 
       - name: Set Up Binary Packages
-        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -From
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -From
 
       - name: Mount Filesystems
-        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1
+        run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
       - name: Emerge
         run: |
@@ -82,20 +82,20 @@ jobs:
           if [ "${{ github.event.inputs.usepkg-exclude }}" != "" ]; then
             USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs.usepkg-exclude }}"
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() }}
-        run: sudo --preserve-env pwsh -File ./MountFilesystems.ps1 -Unmount
+        run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
         if: ${{ !cancelled() }}
-        run: sudo --preserve-env pwsh -File ./PushPullBinaryPackages.ps1 -To
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo Layer
         if: ${{ !cancelled() && !inputs.ephemeral }}
         run: |
-          ARGS=("-File" "./PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "other")
+          ARGS=("-File" "./scripts/PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "other")
           if [ "${{ github.event.inputs.temporary }}" == "true" ]; then
             ARGS+=("-Temporary")
           fi

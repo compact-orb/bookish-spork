@@ -28,19 +28,13 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-# Clean up some configuration directories to ensure that they dont't include deleted files.
+# Clean up some configuration directories to ensure that they don't include deleted files.
 # This removes old Portage configs, kernel configs, and SSH keys.
-# If you add or remove files and directories from your configuration, you may want to update the following line to make sure the configuration is as expected.
-rm --force --recursive \
-    /etc/kernel/config.d \
-    /etc/portage/env \
-    /etc/portage/package.accept_keywords \
-    /etc/portage/package.env \
-    /etc/portage/package.mask \
-    /etc/portage/package.unmask \
-    /etc/portage/package.use \
-    /etc/portage/patches \
-    /etc/portage/repos.conf \
+# The list of paths is maintained in cleanup-paths.txt, shared with scripts/SetConfiguration.ps1.
+while IFS= read -r path; do
+    [ -z "$path" ] && continue
+    rm --force --recursive "/$path"
+done < "$SCRIPT_DIR/../cleanup-paths.txt"
 
 # Copy the new configuration files from the specified prefix directory to the root (/).
 # This applies the new Portage configuration, kernel config, and other settings.
