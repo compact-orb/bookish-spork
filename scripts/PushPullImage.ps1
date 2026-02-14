@@ -176,6 +176,7 @@ elseif ($To) {
         # When -Temporary is specified, include /tmp and /var/tmp
         $excludeParams = @(
             "--exclude=./root/.gnupg",
+            "--exclude=./root/secureboot",
             "--exclude=./var/cache/binpkgs",
             "--exclude=./var/cache/distfiles/*",
             "--exclude=./run/*",
@@ -216,7 +217,7 @@ elseif ($To) {
         Write-Output -InputObject "Creating archive..."
         Measure-Command -Expression {
             # Create archive from the root mount point
-            tar --create --directory=/mnt/gentoo --exclude=./root/.gnupg --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
+            tar --create --directory=/mnt/gentoo --exclude=./root/.gnupg --exclude=./root/secureboot --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
         }
 
         Send-ToStorage -FileName $fileName
