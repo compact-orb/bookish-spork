@@ -51,3 +51,13 @@ foreach ($fpr in $fingerprints) {
 chown --recursive portage:portage "$portageGpgHome"
 
 Write-Output -InputObject "Signing key imported and trusted."
+
+# Import Secure Boot signing key and certificate into the chroot.
+# These are used by Portage's secureboot and modules-sign USE flags to sign
+# EFI binaries and kernel modules during builds.
+$sbDir = "/mnt/gentoo/root/secureboot"
+New-Item -Path $sbDir -ItemType Directory -Force | Out-Null
+$env:SECUREBOOT_DB_KEY_BASE64 | base64 --decode | Set-Content -Path "$sbDir/db.key" -AsByteStream
+$env:SECUREBOOT_DB_CERT_BASE64 | base64 --decode | Set-Content -Path "$sbDir/db.pem" -AsByteStream
+chmod 600 "$sbDir/db.key"
+Write-Output -InputObject "Secure Boot signing key imported."

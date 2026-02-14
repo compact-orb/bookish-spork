@@ -59,6 +59,8 @@ jobs:
         run: sudo --preserve-env pwsh -File ./scripts/Import-SigningKey.ps1
         env:
           BINPKG_GPG_SIGNING_KEY_BASE64: ${{ secrets.BINPKG_GPG_SIGNING_KEY_BASE64 }}
+          SECUREBOOT_DB_KEY_BASE64: ${{ secrets.SECUREBOOT_DB_KEY_BASE64 }}
+          SECUREBOOT_DB_CERT_BASE64: ${{ secrets.SECUREBOOT_DB_CERT_BASE64 }}
 
       - name: Mount Filesystems
         if: ${{ !inputs.skip-sync || !inputs.skip-update }}

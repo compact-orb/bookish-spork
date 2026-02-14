@@ -87,6 +87,8 @@ CI scripts are in the `scripts/` directory and run on the GitHub Actions host.
 | `BUNNY_STORAGE_ZONE_NAME` | Storage zone name |
 | `REDESIGNED_BROCCOLI_SSH_KEY` | Base64-encoded SSH key for authenticating that private overlay repository |
 | `BINPKG_GPG_SIGNING_KEY_BASE64` | Base64-encoded GPG private key for signing binary packages |
+| `SECUREBOOT_DB_KEY_BASE64` | Base64-encoded PEM private key for Secure Boot EFI/module signing |
+| `SECUREBOOT_DB_CERT_BASE64` | Base64-encoded PEM certificate for Secure Boot EFI/module signing |
 
 ## Client Setup
 
@@ -98,11 +100,35 @@ cd bookish-spork
 sudo bash tools/ConfigureSystem.sh <config-number>
 ```
 
-This replaces Portage configuration directories with the selected configuration, and imports the binary package signing public key into Portage's verification keyring. The `make.conf` in each config sets `--getbinpkgonly` by default, so the client will only install pre-built binary packages.
+This replaces Portage configuration directories with the selected configuration and imports the binary package signing public key into Portage's verification keyring. The `make.conf` in each config sets `--getbinpkgonly` by default, so the client will only install pre-built binary packages.
 
 > **Note**: You will need to configure `binrepos.conf` on the client to point to your Bunny Storage CDN URL serving the binary packages for the corresponding config prefix.
 >
 > **Note**: Requires `app-portage/getuto` to be installed for keyring initialization.
+
+### Secure Boot
+
+CI-built kernels and modules are pre-signed with a Secure Boot signing key. To enable Secure Boot on a client (one-time setup):
+
+1. Enroll the CI's signing certificate: `sudo mokutil --import keys/secureboot-db.cer`
+2. Reboot and confirm the MOK enrollment in MokManager (prompted automatically).
+3. Enable Secure Boot in the UEFI firmware settings.
+
+Optionally install `app-crypt/sbctl` for managing Secure Boot keys and checking status:
+
+```bash
+sbctl status    # Check Secure Boot status
+sbctl verify    # Verify signed EFI binaries
+```
+
+When enrolling your own PK/KEK/db keys via sbctl, you can choose whether to keep Microsoft's vendor keys:
+
+| Command | Effect |
+| ------- | ------ |
+| `sbctl enroll-keys -m` | Enroll your keys **and** keep Microsoft vendor keys |
+| `sbctl enroll-keys` | Enroll **only** your keys, removing Microsoft's |
+
+> **Warning**: Removing Microsoft keys blocks hardware with Microsoft-signed option ROMs, dual-booting Windows, and fwupd firmware updates signed by Microsoft. Generally safe for servers (configs 1, 3); evaluate per-machine for desktops (config 2).
 
 ## Maintenance Notes
 
@@ -111,3 +137,4 @@ This replaces Portage configuration directories with the selected configuration,
 - **Build timeouts**: `scripts/BuildPackages.sh` has a 5h30m timeout. If an emerge times out, the step 2 bootstrap and emerge-other workflows support `--resume`.
 - **Bootstrap step 1 specifics**: The bootstrap process installs Clang, Rust, PyPy, and Portage from Gentoo's official binhost before rebuilding. If the toolchain bootstrap changes, update `scripts/BuildPackages.sh` case `1`.
 - **Signing key rotation**: Generate a new GPG key, update `BINPKG_GPG_SIGNING_KEY_BASE64` in GitHub secrets, replace `keys/binpkg-signing.asc` and `keys/fingerprint.txt`, and re-run `tools/ConfigureSystem.sh` on all clients. See `keys/README.md` for instructions.
+- **Secure Boot key rotation**: Generate a new RSA-2048 key pair with `openssl`, update `SECUREBOOT_DB_KEY_BASE64` and `SECUREBOOT_DB_CERT_BASE64` in GitHub secrets, replace `keys/secureboot-db.cer`, rebuild all kernel packages, and re-enroll the new certificate on all clients via `mokutil --import`.
