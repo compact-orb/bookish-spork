@@ -60,5 +60,8 @@ if [ -n "$SIGNING_FPR" ]; then
     echo "${SIGNING_FPR}:6:" | gpg --homedir=/etc/portage/gnupg --batch --import-ownertrust
     gpg --homedir=/etc/portage/gnupg --check-trustdb
 fi
+# Portage runs GPG verification as the portage user (FEATURES=userpriv),
+# so the verification keyring must be owned by portage:portage.
+chown --recursive portage:portage /etc/portage/gnupg
 
 echo "Signing key imported and trusted."

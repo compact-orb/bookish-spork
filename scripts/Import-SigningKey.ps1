@@ -46,4 +46,8 @@ foreach ($fpr in $fingerprints) {
     "$($fpr):6:" | gpg --homedir "$portageGpgHome" --batch --import-ownertrust
 }
 
+# Portage runs GPG verification as the portage user (FEATURES=userpriv),
+# so the verification keyring must be owned by portage:portage.
+chown --recursive portage:portage "$portageGpgHome"
+
 Write-Output -InputObject "Signing key imported and trusted."
