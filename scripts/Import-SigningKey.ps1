@@ -33,8 +33,8 @@ foreach ($fpr in $fingerprints) {
 }
 
 # Also set up Portage's verification keyring so the build system can verify packages.
-# Remove any pre-existing keyring first — the base image may have a portage-owned keyring
-# from getuto, but GPG verification runs as root and requires root ownership.
+# Remove any pre-existing keyring first — the base image may have a differently-owned
+# keyring from getuto.
 $portageGpgHome = "/mnt/gentoo/etc/portage/gnupg"
 Remove-Item -Path "$portageGpgHome" -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -Path "$portageGpgHome" -ItemType Directory -Force | Out-Null
@@ -48,6 +48,12 @@ $fingerprints = gpg --homedir "$portageGpgHome" --list-keys --with-colons | Sele
 foreach ($fpr in $fingerprints) {
     "$($fpr):6:" | gpg --homedir "$portageGpgHome" --batch --import-ownertrust
 }
+
+# Portage drops GPG verification to the nobody user (GPG_VERIFY_USER_DROP defaults to
+# "nobody" in gpkg.py). The verification keyring must be owned by nobody:nogroup so
+# the dropped process can read keys and create lock/temp files.
+# nobody=65534, nogroup=65533 on Gentoo; using numeric IDs since we run on the host.
+chown --recursive 65534:65533 "$portageGpgHome"
 
 Write-Output -InputObject "Signing key imported and trusted."
 
