@@ -33,7 +33,10 @@ foreach ($fpr in $fingerprints) {
 }
 
 # Also set up Portage's verification keyring so the build system can verify packages.
+# Remove any pre-existing keyring first — the base image may have a portage-owned keyring
+# from getuto, but GPG verification runs as root and requires root ownership.
 $portageGpgHome = "/mnt/gentoo/etc/portage/gnupg"
+Remove-Item -Path "$portageGpgHome" -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -Path "$portageGpgHome" -ItemType Directory -Force | Out-Null
 chmod 700 "$portageGpgHome"
 
@@ -45,10 +48,6 @@ $fingerprints = gpg --homedir "$portageGpgHome" --list-keys --with-colons | Sele
 foreach ($fpr in $fingerprints) {
     "$($fpr):6:" | gpg --homedir "$portageGpgHome" --batch --import-ownertrust
 }
-
-# Portage runs GPG verification as the portage user (FEATURES=userpriv),
-# so the verification keyring must be owned by portage:portage (250:250).
-chown --recursive 250:250 "$portageGpgHome"
 
 Write-Output -InputObject "Signing key imported and trusted."
 

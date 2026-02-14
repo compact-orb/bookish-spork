@@ -42,14 +42,14 @@ cp --force --recursive "${SCRIPT_DIR}/../$1"/* /
 
 # Set up the binary package signing verification keyring.
 # This imports the project's signing public key so Portage can verify signed packages.
+# Remove any pre-existing keyring first — getuto creates it as portage-owned, but GPG
+# verification runs as root and requires root ownership.
 PUBLIC_KEY="${SCRIPT_DIR}/../keys/binpkg-signing.asc"
 
 echo "Setting up binary package signature verification..."
 
-# Initialize the Portage GnuPG keyring if it doesn't exist.
-if [ ! -d /etc/portage/gnupg ]; then
-    getuto
-fi
+rm --force --recursive /etc/portage/gnupg
+getuto
 
 # Import the signing public key into the Portage verification keyring.
 gpg --homedir=/etc/portage/gnupg --batch --import "$PUBLIC_KEY"
@@ -60,8 +60,5 @@ if [ -n "$SIGNING_FPR" ]; then
     echo "${SIGNING_FPR}:6:" | gpg --homedir=/etc/portage/gnupg --batch --import-ownertrust
     gpg --homedir=/etc/portage/gnupg --check-trustdb
 fi
-# Portage runs GPG verification as the portage user (FEATURES=userpriv),
-# so the verification keyring must be owned by portage:portage.
-chown --recursive portage:portage /etc/portage/gnupg
 
 echo "Signing key imported and trusted."
