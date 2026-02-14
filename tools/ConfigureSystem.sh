@@ -33,7 +33,7 @@ fi
 # The list of paths is maintained in cleanup-paths.txt, shared with scripts/SetConfiguration.ps1.
 while IFS= read -r path; do
     [ -z "$path" ] && continue
-    rm --force --recursive "/$path"
+    rm --force --recursive "/${path:?}"
 done < "$SCRIPT_DIR/../cleanup-paths.txt"
 
 # Copy the new configuration files from the specified prefix directory to the root (/).
