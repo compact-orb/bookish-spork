@@ -47,8 +47,8 @@ foreach ($fpr in $fingerprints) {
 }
 
 # Portage runs GPG verification as the portage user (FEATURES=userpriv),
-# so the verification keyring must be owned by portage:portage.
-chown --recursive portage:portage "$portageGpgHome"
+# so the verification keyring must be owned by portage:portage (250:250).
+chown --recursive 250:250 "$portageGpgHome"
 
 Write-Output -InputObject "Signing key imported and trusted."
 
