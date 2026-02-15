@@ -81,7 +81,6 @@ net-print/cups-filters
 net-print/cups-meta
 net-print/gutenprint
 net-proxy/mitmproxy
-net-proxy/sing-box
 net-vpn/cloudflare-warp
 net-vpn/i2pd
 net-vpn/tor
