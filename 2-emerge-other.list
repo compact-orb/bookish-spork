@@ -49,7 +49,7 @@ gnome-extra/gnome-shell-extension-appindicator
 gnome-extra/gnome-system-monitor
 gnome-extra/gnome-tweaks
 gui-apps/waypipe
-mail-client/thunderbird
+mail-client/thunderbird-bin
 media-fonts/fonts-meta
 media-gfx/blender
 media-gfx/darktable
