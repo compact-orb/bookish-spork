@@ -87,6 +87,7 @@ net-vpn/tor
 net-vpn/wireguard-tools
 sci-geosciences/gnome-maps
 sys-apps/flatpak
+sys-apps/fwupd
 sys-apps/i2c-tools
 sys-apps/policycoreutils
 sys-apps/usbutils
