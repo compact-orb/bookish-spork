@@ -1,6 +1,5 @@
 etc/kernel/config.d
 etc/portage/binrepos.conf
-etc/portage/env
 etc/portage/package.accept_keywords
 etc/portage/package.env
 etc/portage/package.mask

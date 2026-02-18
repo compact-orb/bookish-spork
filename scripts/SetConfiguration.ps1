@@ -24,7 +24,11 @@ $PSNativeCommandUseErrorActionPreference = $true
 # Clean up some configuration directories to ensure that they don't include deleted files.
 # This removes old Portage configs, kernel configs, and SSH keys.
 # The list of paths is maintained in cleanup-paths.txt, shared with tools/ConfigureSystem.sh.
-$cleanupPaths = Get-Content -Path "$PSScriptRoot/../cleanup-paths.txt" | Where-Object { $_ -ne '' } | ForEach-Object { "/mnt/gentoo/$_" }
+$cleanupPaths = @("/mnt/gentoo/etc/portage/env") + @(
+    Get-Content -Path "$PSScriptRoot/../cleanup-paths.txt" `
+    | Where-Object -FilterScript { $_ -ne '' } `
+    | ForEach-Object -Process { "/mnt/gentoo/$_" }
+)
 Remove-Item -Path $cleanupPaths -Recurse -Force -ErrorAction SilentlyContinue
 
 # Copy the new configuration files from the CONFIG_PREFIX directory to the Gentoo environment.
