@@ -95,6 +95,7 @@ sys-apps/zram-generator
 sys-auth/nss-mdns
 sys-auth/rtkit
 sys-block/io-scheduler-udev-rules
+sys-boot/mokutil
 sys-boot/plymouth
 sys-devel/bc
 sys-devel/bison
