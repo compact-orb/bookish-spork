@@ -22,6 +22,7 @@ net-misc/mosh
 net-vpn/wireguard-tools
 sys-apps/zram-generator
 sys-block/io-scheduler-udev-rules
+sys-boot/efibootmgr
 sys-boot/mokutil
 sys-boot/shim
 sys-kernel/gentoo-kernel
