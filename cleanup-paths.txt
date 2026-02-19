@@ -1,5 +1,4 @@
 etc/kernel/config.d
-etc/portage/binrepos.conf
 etc/portage/package.accept_keywords
 etc/portage/package.env
 etc/portage/package.mask
@@ -7,4 +6,3 @@ etc/portage/package.unmask
 etc/portage/package.use
 etc/portage/patches
 etc/portage/repos.conf
-root/.ssh
