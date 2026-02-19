@@ -108,27 +108,40 @@ This replaces Portage configuration directories with the selected configuration 
 
 ### Secure Boot
 
-CI-built kernels and modules are pre-signed with a Secure Boot signing key. To enable Secure Boot on a client (one-time setup):
+CI-built kernels, modules, and systemd-boot are pre-signed with a Secure Boot signing key. Secure Boot uses shim to chain-load systemd-boot while preserving the firmware's vendor keys. One-time client setup:
 
-1. Enroll the CI's signing certificate: `sudo mokutil --import keys/secureboot-db.cer`
-2. Reboot and confirm the MOK enrollment in MokManager (prompted automatically).
-3. Enable Secure Boot in the UEFI firmware settings.
+1. Install shim and mokutil: `sudo emerge sys-boot/shim sys-boot/mokutil`
+2. Copy shim and MokManager to the ESP alongside systemd-boot:
 
-Optionally install `app-crypt/sbctl` for managing Secure Boot keys and checking status:
+   ```bash
+   cp /usr/share/shim/BOOTX64.EFI /boot/EFI/systemd/shimx64.efi
+   cp /usr/share/shim/mmx64.efi /boot/EFI/systemd/mmx64.efi
+   ```
+
+3. Copy systemd-boot as `grubx64.efi` (shim is hardcoded to chain-load this name):
+
+   ```bash
+   cp /boot/EFI/systemd/systemd-bootx64.efi /boot/EFI/systemd/grubx64.efi
+   ```
+
+4. Create a boot entry pointing to shim:
+
+   ```bash
+   efibootmgr --create --disk /dev/sdX --part N \
+       --label "Systemd-boot via Shim" \
+       --loader '\EFI\systemd\shimx64.efi'
+   ```
+
+5. Enroll the CI signing certificate into MOK: `sudo mokutil --ignore-keyring --import keys/secureboot-db.cer`
+6. Enable Secure Boot in the UEFI firmware settings and reboot — confirm the MOK enrollment in MokManager when prompted.
+
+To keep `grubx64.efi` up to date when systemd-boot is updated, create a kernel-install hook:
 
 ```bash
-sbctl status    # Check Secure Boot status
-sbctl verify    # Verify signed EFI binaries
+# /etc/kernel/install.d/99-local.install
+#!/bin/bash
+cp /boot/EFI/systemd/systemd-bootx64.efi /boot/EFI/systemd/grubx64.efi
 ```
-
-When enrolling your own PK/KEK/db keys via sbctl, you can choose whether to keep Microsoft's vendor keys:
-
-| Command | Effect |
-| ------- | ------ |
-| `sbctl enroll-keys -m` | Enroll your keys **and** keep Microsoft vendor keys |
-| `sbctl enroll-keys` | Enroll **only** your keys, removing Microsoft's |
-
-> **Warning**: Removing Microsoft keys blocks hardware with Microsoft-signed option ROMs, dual-booting Windows, and fwupd firmware updates signed by Microsoft. Generally safe for servers (configs 1, 3); evaluate per-machine for desktops (config 2).
 
 ## Maintenance Notes
 
