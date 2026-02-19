@@ -56,6 +56,8 @@ BINPKG_COMPRESS_FLAGS="-19 -T4 --long"
 FEATURES="binpkg-signing gpg-keepalive"
 BINPKG_GPG_SIGNING_GPG_HOME="/root/.gnupg"
 BINPKG_GPG_SIGNING_KEY="$signingKeyFingerprint"
+
+INSTALL_MASK="/boot"
 "@
 }
 

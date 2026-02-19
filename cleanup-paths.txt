@@ -1,3 +1,4 @@
+etc/dracut.conf.d
 etc/kernel/config.d
 etc/portage/package.accept_keywords
 etc/portage/package.env
