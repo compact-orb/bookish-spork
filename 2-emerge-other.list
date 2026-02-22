@@ -28,6 +28,7 @@ dev-build/cmake
 dev-debug/gdb
 dev-debug/strace
 dev-debug/valgrind
+dev-embedded/arduino-ide
 dev-java/openjdk
 dev-java/openjdk:11
 dev-java/openjdk:17
