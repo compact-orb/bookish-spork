@@ -114,4 +114,5 @@ sys-kernel/linux-firmware
 www-client/firefox-bin
 www-client/google-chrome
 www-client/microsoft-edge
+www-client/torbrowser-launcher
 www-servers/nginx
