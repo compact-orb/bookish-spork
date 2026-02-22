@@ -91,6 +91,7 @@ sys-apps/flatpak
 sys-apps/fwupd
 sys-apps/i2c-tools
 sys-apps/policycoreutils
+sys-apps/smartmontools
 sys-apps/usbutils
 sys-apps/zram-generator
 sys-auth/nss-mdns
