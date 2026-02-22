@@ -106,6 +106,7 @@ sys-devel/flex
 sys-firmware/intel-microcode
 sys-firmware/sof-firmware
 sys-fs/btrfs-progs
+sys-fs/compsize
 sys-fs/exfatprogs
 sys-fs/f2fs-tools
 sys-fs/fuse:0
