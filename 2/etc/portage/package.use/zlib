@@ -1,1 +1,2 @@
 sys-libs/zlib minizip static-libs
+virtual/zlib static-libs
