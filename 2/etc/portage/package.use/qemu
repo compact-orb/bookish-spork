@@ -1,1 +1,1 @@
-app-emulation/qemu spice usbredir
+app-emulation/qemu spice static-user usbredir QEMU_SOFTMMU_TARGETS: * QEMU_USER_TARGETS: *
