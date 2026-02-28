@@ -71,6 +71,7 @@ net-analyzer/nmap
 net-analyzer/openbsd-netcat
 net-analyzer/traceroute
 net-dns/bind-tools
+net-libs/nodejs
 net-misc/aria2
 net-misc/gnome-remote-desktop
 net-misc/moonlight
