@@ -120,4 +120,5 @@ www-client/firefox-bin
 www-client/google-chrome
 www-client/microsoft-edge
 www-client/torbrowser-launcher
+www-client/w3m
 www-servers/nginx
