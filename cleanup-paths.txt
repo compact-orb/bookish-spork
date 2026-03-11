@@ -1,7 +1,6 @@
 etc/dracut.conf.d
 etc/kernel/config.d
 etc/plymouth/plymouthd.conf
-plymouth
 etc/portage/package.accept_keywords
 etc/portage/package.env
 etc/portage/package.mask
