@@ -32,7 +32,7 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 # Initialize the list of directories to process with the starting path
 $Directories = $Path
-$Files = @()
+$Files = [System.Collections.Generic.List[string]]::new()
 
 # Loop until there are no more directories to process
 do {
@@ -84,13 +84,13 @@ do {
         }
         else {
             # Add file to the list of files to download
-            $Files += $_.Path
+            $Files.Add($_.Path)
         }
     }
 } while (![string]::IsNullOrWhiteSpace($Directories))
 
 # Download all collected files in parallel
-if (![string]::IsNullOrWhiteSpace($Files)) {
+if ($Files.Count -gt 0) {
     $Files | ForEach-Object -Parallel {
         $maxRetries = 3
         $filePath = $_
