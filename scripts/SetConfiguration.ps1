@@ -65,11 +65,13 @@ INSTALL_MASK="/boot"
 # This involves creating the .ssh directory, setting permissions, and decoding the SSH key and known_hosts.
 New-Item -Path "/mnt/gentoo/root/.ssh" -ItemType Directory -Force | Out-Null
 chmod 700 "/mnt/gentoo/root/.ssh"
-$env:REDESIGNED_BROCCOLI_SSH_KEY | base64 --decode | Set-Content -Path "/mnt/gentoo/root/.ssh/redesigned-broccoli"
+New-Item -Path "/mnt/gentoo/root/.ssh/redesigned-broccoli" -ItemType File -Force | Out-Null
 chmod 600 "/mnt/gentoo/root/.ssh/redesigned-broccoli"
+$env:REDESIGNED_BROCCOLI_SSH_KEY | base64 --decode | Set-Content -Path "/mnt/gentoo/root/.ssh/redesigned-broccoli"
+New-Item -Path "/mnt/gentoo/root/.ssh/config" -ItemType File -Force | Out-Null
+chmod 600 "/mnt/gentoo/root/.ssh/config"
 Set-Content -Path "/mnt/gentoo/root/.ssh/config" -Value @'
 Host github.com
     IdentityFile ~/.ssh/redesigned-broccoli
     StrictHostKeyChecking no
 '@
-chmod 600 "/mnt/gentoo/root/.ssh/config"
