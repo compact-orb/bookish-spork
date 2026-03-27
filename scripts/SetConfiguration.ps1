@@ -62,7 +62,7 @@ INSTALL_MASK="/boot"
 }
 
 # Set up SSH access for the root user for the purpose of authenticating into private GitHub repositories.
-# This involves creating the .ssh directory, setting permissions, and decoding the SSH key and known_hosts.
+# This involves creating the .ssh directory, setting permissions, decoding the SSH key, and writing GitHub's SSH host keys into known_hosts (using default strict host key checking).
 # Use sh to safely create the directory and files with strict permissions from the start
 # to avoid any TOCTOU (Time of Check to Time of Use) race conditions.
 sh -c 'umask 077 && mkdir -p /mnt/gentoo/root/.ssh && touch /mnt/gentoo/root/.ssh/redesigned-broccoli /mnt/gentoo/root/.ssh/config /mnt/gentoo/root/.ssh/known_hosts'
