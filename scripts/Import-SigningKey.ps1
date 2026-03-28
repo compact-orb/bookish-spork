@@ -29,7 +29,7 @@ $env:BINPKG_GPG_SIGNING_KEY_BASE64 | base64 --decode | gpg --homedir "$gpgHome" 
 $fingerprints = @(gpg --homedir "$gpgHome" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_ -split ":")[9] })
 if ($fingerprints.Count -gt 0) {
     Write-Output -InputObject "Trusting imported keys..."
-    (@($fingerprints | ForEach-Object { "$($_):6:" }) -join "`n") + "`n" | gpg --homedir "$gpgHome" --batch --import-ownertrust
+    @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$gpgHome" --batch --import-ownertrust
 }
 
 # Also set up Portage's verification keyring so the build system can verify packages.
@@ -46,7 +46,7 @@ gpg --homedir "$gpgHome" --export | gpg --homedir "$portageGpgHome" --batch --im
 # Trust the signing key in the Portage keyring.
 $fingerprints = @(gpg --homedir "$portageGpgHome" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_ -split ":")[9] })
 if ($fingerprints.Count -gt 0) {
-    (@($fingerprints | ForEach-Object { "$($_):6:" }) -join "`n") + "`n" | gpg --homedir "$portageGpgHome" --batch --import-ownertrust
+    @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$portageGpgHome" --batch --import-ownertrust
 }
 gpg --homedir "$portageGpgHome" --check-trustdb
 
