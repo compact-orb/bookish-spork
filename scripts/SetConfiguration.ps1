@@ -36,14 +36,7 @@ Copy-Item -Path $env:CONFIG_PREFIX/* -Destination /mnt/gentoo -Recurse -Force
 
 # If this is NOT an endpoint (i.e., it's a build node), optimize make.conf for building.
 if (-not $Endpoint) {
-    Set-Content -Path /mnt/gentoo/etc/portage/make.conf -Value (Get-Content -Path /mnt/gentoo/etc/portage/make.conf | ForEach-Object {
-            if ($_ -match "^EMERGE_DEFAULT_OPTS=") {
-                "# $_"
-            }
-            else {
-                $_
-            }
-        })
+    Set-Content -Path /mnt/gentoo/etc/portage/make.conf -Value ((Get-Content -Path /mnt/gentoo/etc/portage/make.conf -Raw) -replace '(?m)^(EMERGE_DEFAULT_OPTS=.*)', '# $1') -NoNewline
     $signingKeyFingerprint = (Get-Content -Path "$PSScriptRoot/../keys/fingerprint.txt" -Raw).Trim()
     Add-Content -Path /mnt/gentoo/etc/portage/make.conf -Value @"
 
