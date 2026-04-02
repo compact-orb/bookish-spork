@@ -48,6 +48,8 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+. "$PSScriptRoot/Invoke-WithRetry.ps1"
+
 function Send-ToStorage {
     param(
         [Parameter(Mandatory)]
@@ -56,21 +58,10 @@ function Send-ToStorage {
 
     Write-Output -InputObject "Uploading archive..."
     Measure-Command -Expression {
-        $maxRetries = 3
-        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-            try {
-                Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$FileName"
+        Invoke-WithRetry -ActionName "upload $FileName" -MaxRetries 3 -ScriptBlock {
+            Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$FileName"
 
-                Remove-Item -Path "/var/tmp/bookish-spork/$FileName"
-                break
-            }
-            catch {
-                if ($attempt -eq $maxRetries) {
-                    Write-Error -Message "Failed to upload $FileName after $maxRetries attempts: $_"
-                    throw
-                }
-                Write-Warning -Message "Attempt $attempt/$maxRetries failed for $FileName`: $($_.Exception.Message). Retrying..."
-            }
+            Remove-Item -Path "/var/tmp/bookish-spork/$FileName"
         }
     }
 }
