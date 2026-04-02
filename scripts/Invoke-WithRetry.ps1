@@ -3,6 +3,7 @@ function Invoke-WithRetry {
         [Parameter(Mandatory=$true)]
         [scriptblock]$ScriptBlock,
 
+        [ValidateRange(1, [int]::MaxValue)]
         [int]$MaxRetries = 3,
         [string]$ActionName = "Operation"
     )
