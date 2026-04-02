@@ -48,6 +48,8 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+. "$PSScriptRoot/Invoke-WithRetry.ps1"
+
 function Receive-FromStorage {
     param(
         [Parameter(Mandatory)]
@@ -57,13 +59,15 @@ function Receive-FromStorage {
         [switch]$Bootstrap
     )
 
-    if ($Bootstrap) {
-        # Bootstrap images use .xz compression
-        curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
-    }
-    else {
-        # Standard images use .zst (Zstandard) compression
-        curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+    Invoke-WithRetry -ActionName "download $FileName" -MaxRetries 3 -ScriptBlock {
+        if ($Bootstrap) {
+            # Bootstrap images use .xz compression
+            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
+        }
+        else {
+            # Standard images use .zst (Zstandard) compression
+            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+        }
     }
 }
 
@@ -75,21 +79,10 @@ function Send-ToStorage {
 
     Write-Output -InputObject "Uploading archive..."
     Measure-Command -Expression {
-        $maxRetries = 3
-        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-            try {
-                Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$FileName"
+        Invoke-WithRetry -ActionName "upload $FileName" -MaxRetries 3 -ScriptBlock {
+            Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "/var/tmp/bookish-spork/$FileName"
 
-                Remove-Item -Path "/var/tmp/bookish-spork/$FileName"
-                break
-            }
-            catch {
-                if ($attempt -eq $maxRetries) {
-                    Write-Error -Message "Failed to upload $FileName after $maxRetries attempts: $_"
-                    throw
-                }
-                Write-Warning -Message "Attempt $attempt/$maxRetries failed for $FileName`: $($_.Exception.Message). Retrying..."
-            }
+            Remove-Item -Path "/var/tmp/bookish-spork/$FileName"
         }
     }
 }
