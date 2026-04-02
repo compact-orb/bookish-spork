@@ -48,6 +48,25 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+function Receive-FromStorage {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FileName,
+        [Parameter(Mandatory)]
+        [string]$TargetDirectory,
+        [switch]$Bootstrap
+    )
+
+    if ($Bootstrap) {
+        # Bootstrap images use .xz compression
+        curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory=$TargetDirectory --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
+    }
+    else {
+        # Standard images use .zst (Zstandard) compression
+        curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory=$TargetDirectory --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+    }
+}
+
 function Send-ToStorage {
     param(
         [Parameter(Mandatory)]
@@ -100,7 +119,7 @@ if ($From) {
 
         # Download and extract Base Image to lowerdir (Read-Only)
         Write-Output -InputObject "Downloading and extracting Base Image..."
-        curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$baseFileName" | tar --directory=/mnt/gentoo-lower --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+        Receive-FromStorage -FileName $baseFileName -TargetDirectory "/mnt/gentoo-lower"
 
         # Handle Layer Image (Upper Dir)
         if ($ForceRebuild) {
@@ -110,8 +129,7 @@ if ($From) {
         else {
             # Otherwise, try to download the existing layer to resume or update it
             Write-Output -InputObject "Downloading and extracting Layer Image..."
-
-            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$layerFileName" | tar --directory=/mnt/gentoo-upper --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+            Receive-FromStorage -FileName $layerFileName -TargetDirectory "/mnt/gentoo-upper"
         }
 
         # Mount OverlayFS
@@ -142,14 +160,7 @@ if ($From) {
         New-Item -Path /mnt/gentoo -ItemType Directory -Force | Out-Null
 
         Write-Output -InputObject "Downloading and extracting Base Image..."
-        if ($Bootstrap) {
-            # Bootstrap images use .xz compression
-            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
-        }
-        else {
-            # Standard images use .zst (Zstandard) compression
-            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
-        }
+        Receive-FromStorage -FileName $fileName -TargetDirectory "/mnt/gentoo" -Bootstrap:$Bootstrap
 
         Write-Output -InputObject "Restoring resolv.conf..."
         Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc
