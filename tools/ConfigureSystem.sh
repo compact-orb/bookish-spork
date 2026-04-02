@@ -33,7 +33,7 @@ fi
 # The list of paths is maintained in cleanup-paths.txt, shared with scripts/SetConfiguration.ps1.
 while IFS= read -r path; do
     [ -z "$path" ] && continue
-    if [[ "$path" == /* ]] || [[ "$path" == *"../"* ]]; then
+    if [[ "$path" == /* ]] || [[ "$path" =~ (^|/)\.\.($|/) ]] || [[ "$path" =~ (^|/)\.($|/) ]]; then
         echo "Error: Invalid path detected in cleanup-paths.txt: '$path'" >&2
         exit 1
     fi

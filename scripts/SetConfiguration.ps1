@@ -28,7 +28,7 @@ $cleanupPaths = @("/mnt/gentoo/etc/portage/env", "/mnt/gentoo/etc/portage/binrep
     Get-Content -Path "$PSScriptRoot/../cleanup-paths.txt" `
     | Where-Object -FilterScript { $_ -ne '' } `
     | ForEach-Object -Process {
-        if ($_ -match '^\/' -or $_ -match '\.\.\/') {
+        if ($_ -match '^\/' -or $_ -match '(^|/)\.\.($|/)' -or $_ -match '(^|/)\.($|/)') {
             Write-Error "Invalid path detected in cleanup-paths.txt: '$_'"
             exit 1
         }
