@@ -27,7 +27,13 @@ $PSNativeCommandUseErrorActionPreference = $true
 $cleanupPaths = @("/mnt/gentoo/etc/portage/env", "/mnt/gentoo/etc/portage/binrepos.conf", "/mnt/gentoo/root/.ssh") + @(
     Get-Content -Path "$PSScriptRoot/../cleanup-paths.txt" `
     | Where-Object -FilterScript { $_ -ne '' } `
-    | ForEach-Object -Process { "/mnt/gentoo/$_" }
+    | ForEach-Object -Process {
+        if ($_ -match '^\/' -or $_ -match '(^|/)\.\.($|/)' -or $_ -match '(^|/)\.($|/)') {
+            Write-Error "Invalid path detected in cleanup-paths.txt: '$_'"
+            exit 1
+        }
+        "/mnt/gentoo/$_"
+    }
 )
 Remove-Item -Path $cleanupPaths -Recurse -Force -ErrorAction SilentlyContinue
 
