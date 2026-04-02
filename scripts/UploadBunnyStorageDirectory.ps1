@@ -31,7 +31,9 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 # Recursively find all files in the source path and upload them in parallel
 Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
-    . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+    if (-not (Test-Path Function:\Invoke-WithRetry)) {
+        . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+    }
     $filePath = $_
 
     Invoke-WithRetry -ActionName "upload $filePath" -MaxRetries 3 -ScriptBlock {

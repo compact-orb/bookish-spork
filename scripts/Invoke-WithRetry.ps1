@@ -16,8 +16,8 @@ function Invoke-WithRetry {
         }
         catch {
             if ($attempt -eq $MaxRetries) {
-                Write-Error -Message "Failed to $ActionName after $MaxRetries attempts: $_"
-                throw
+                Write-Error -ErrorAction Continue -Message "Failed to $ActionName after $MaxRetries attempts: $_"
+                throw $_
             }
             Write-Warning -Message "Attempt $attempt/$MaxRetries failed for $ActionName`: $($_.Exception.Message). Retrying..."
         }

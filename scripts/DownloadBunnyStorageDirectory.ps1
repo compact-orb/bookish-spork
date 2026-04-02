@@ -38,7 +38,9 @@ $Files = [System.Collections.Generic.List[string]]::new()
 do {
     # Process directories in parallel to list their contents
     $Directories = $Directories | ForEach-Object -Parallel {
-        . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+        if (-not (Test-Path Function:\Invoke-WithRetry)) {
+            . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+        }
         $currentPath = $_
 
         # List the contents of the current directory using the Bunny Storage API
@@ -82,7 +84,9 @@ do {
 # Download all collected files in parallel
 if ($Files.Count -gt 0) {
     $Files | ForEach-Object -Parallel {
-        . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+        if (-not (Test-Path Function:\Invoke-WithRetry)) {
+            . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+        }
         $filePath = $_
 
         Invoke-WithRetry -ActionName "download $filePath" -MaxRetries 3 -ScriptBlock {
