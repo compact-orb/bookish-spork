@@ -27,6 +27,7 @@ app-shells/bash-completion
 app-shells/pwsh
 dev-build/cmake
 dev-cpp/sdbus-c++
+dev-db/sqlitebrowser
 dev-debug/gdb
 dev-debug/strace
 dev-debug/valgrind
