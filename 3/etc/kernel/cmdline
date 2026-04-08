@@ -1,1 +1,4 @@
+root=UUID=289152d4-0d8e-4956-8292-06ce837c4e6d
 lockdown=confidentiality
+rd.iscsi.ibft=1
+rd.iscsi.firmware=1
