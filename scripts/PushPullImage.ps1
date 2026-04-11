@@ -59,14 +59,26 @@ function Receive-FromStorage {
         [switch]$Bootstrap
     )
 
-    Invoke-WithRetry -ActionName "download $FileName" -MaxRetries 3 -ScriptBlock {
-        if ($Bootstrap) {
-            # Bootstrap images use .xz compression
-            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
+    $headerFile = "/var/tmp/bookish-spork/curl-header-$([guid]::NewGuid()).txt"
+    try {
+        sh -c "umask 077 && touch $headerFile"
+        Set-Content -Path $headerFile -Value "accesskey: $($env:BUNNY_STORAGE_ACCESS_KEY)" -NoNewline
+
+        # Pass the header securely via file to prevent exposure in process lists (ps)
+        Invoke-WithRetry -ActionName "download $FileName" -MaxRetries 3 -ScriptBlock {
+            if ($Bootstrap) {
+                # Bootstrap images use .xz compression
+                curl --header "accept: */*" --header "@$headerFile" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
+            }
+            else {
+                # Standard images use .zst (Zstandard) compression
+                curl --header "accept: */*" --header "@$headerFile" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+            }
         }
-        else {
-            # Standard images use .zst (Zstandard) compression
-            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+    }
+    finally {
+        if (Test-Path -Path $headerFile) {
+            Remove-Item -Path $headerFile -Force -ErrorAction SilentlyContinue
         }
     }
 }
