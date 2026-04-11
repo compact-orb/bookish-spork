@@ -61,8 +61,27 @@ function Receive-FromStorage {
 
     $headerFile = "/var/tmp/bookish-spork/curl-header-$([guid]::NewGuid()).txt"
     try {
-        sh -c "umask 077 && touch $headerFile"
-        Set-Content -Path $headerFile -Value "accesskey: $($env:BUNNY_STORAGE_ACCESS_KEY)" -NoNewline
+        $headerFileMode = [System.IO.UnixFileMode]::UserRead -bor [System.IO.UnixFileMode]::UserWrite
+        $headerFileStream = [System.IO.FileStream]::new($headerFile, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+        try {
+            [System.IO.File]::SetUnixFileMode($headerFile, $headerFileMode)
+
+            $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+            $headerFileWriter = [System.IO.StreamWriter]::new($headerFileStream, $utf8NoBom)
+            $headerFileStream = $null
+            try {
+                $headerFileWriter.Write("accesskey: $($env:BUNNY_STORAGE_ACCESS_KEY)")
+                $headerFileWriter.Flush()
+            }
+            finally {
+                $headerFileWriter.Dispose()
+            }
+        }
+        finally {
+            if ($null -ne $headerFileStream) {
+                $headerFileStream.Dispose()
+            }
+        }
 
         # Pass the header securely via file to prevent exposure in process lists (ps)
         Invoke-WithRetry -ActionName "download $FileName" -MaxRetries 3 -ScriptBlock {
