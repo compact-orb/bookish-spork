@@ -15,7 +15,7 @@ LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:,usepkg-exclud
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
 # List of packages to install
-packages=""
+packages=()
 
 # Flag to indicate if we should update @world
 update=0
@@ -33,7 +33,7 @@ bootstrap=0
 portage_profile=""
 
 # List of packages to exclude from usepkg
-usepkg_exclude=""
+usepkg_exclude=()
 
 # Architecture to use for bootstrap binrepos
 bootstrap_binrepos_architecture=""
@@ -44,7 +44,7 @@ oneshot=0
 while [[ $# -gt 0 ]]; do
     case $1 in
         --packages)
-            packages+=" $2"
+            packages+=("$2")
             shift 2
             ;;
         --update)
@@ -68,7 +68,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --usepkg-exclude)
-            usepkg_exclude+=" $2"
+            usepkg_exclude+=("$2")
             shift 2
             ;;
         --bootstrap-binrepos-architecture)
@@ -90,12 +90,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ $# -gt 0 ]]; then
-    packages+=" $*"
+    packages+=("$@")
 fi
-
-packages=$(echo "$packages" | xargs echo)
-
-usepkg_exclude=$(echo "$usepkg_exclude" | xargs echo)
 
 case $bootstrap_binrepos_architecture in
     "amd64")
@@ -186,7 +182,7 @@ case $bootstrap in
         # This mode handles syncing, updating the system, or installing specific packages.
         if   (( sync_flag )); then
             emerge --sync
-        elif (( update )) && [[ -z "$packages" ]]; then
+        elif (( update )) && [[ ${#packages[@]} -eq 0 ]]; then
             t_emerge --deep --newuse --update "@world"
 
             emerge --depclean
@@ -197,13 +193,11 @@ case $bootstrap in
 
             (( update )) && opts+=( --update --deep --newuse )
 
-            [[ -n "$usepkg_exclude" ]] && opts+=( --usepkg-exclude "${usepkg_exclude}" )
+            [[ ${#usepkg_exclude[@]} -gt 0 ]] && opts+=( --usepkg-exclude "${usepkg_exclude[*]}" )
 
             (( oneshot )) && opts+=( --oneshot )
 
-            read -ra PKG_ARR <<< "$packages"
-
-            t_emerge "${opts[@]}" "${PKG_ARR[@]}"
+            t_emerge "${opts[@]}" "${packages[@]}"
 
             emerge --depclean
         fi
