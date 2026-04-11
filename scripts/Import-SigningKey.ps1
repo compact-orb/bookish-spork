@@ -22,7 +22,7 @@ function Set-GpgUltimateTrust {
         [string]$Message = ""
     )
 
-    $fingerprints = @(gpg --homedir "$HomeDir" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_ -split ":")[9] })
+    $fingerprints = @(gpg --homedir "$HomeDir" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_.Line -split ":")[9] })
     if ($fingerprints.Count -gt 0) {
         if (-not [string]::IsNullOrWhiteSpace($Message)) {
             Write-Output -InputObject $Message
