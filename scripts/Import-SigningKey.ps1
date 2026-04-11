@@ -14,6 +14,23 @@
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+function Set-GpgUltimateTrust {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$HomeDir,
+
+        [string]$Message = ""
+    )
+
+    $fingerprints = @(gpg --homedir "$HomeDir" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_ -split ":")[9] })
+    if ($fingerprints.Count -gt 0) {
+        if (-not [string]::IsNullOrWhiteSpace($Message)) {
+            Write-Output -InputObject $Message
+        }
+        @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$HomeDir" --batch --import-ownertrust
+    }
+}
+
 if (-not $env:BINPKG_GPG_SIGNING_KEY_BASE64) {
     Write-Error -Message "BINPKG_GPG_SIGNING_KEY_BASE64 environment variable is not set."
 }
@@ -26,11 +43,7 @@ $env:BINPKG_GPG_SIGNING_KEY_BASE64 | base64 --decode | gpg --homedir "$gpgHome" 
 
 # Mark the imported key as ultimately trusted.
 # This retrieves all key fingerprints and sets trust level 6 (ultimate).
-$fingerprints = @(gpg --homedir "$gpgHome" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_ -split ":")[9] })
-if ($fingerprints.Count -gt 0) {
-    Write-Output -InputObject "Trusting imported keys..."
-    @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$gpgHome" --batch --import-ownertrust
-}
+Set-GpgUltimateTrust -HomeDir "$gpgHome" -Message "Trusting imported keys..."
 
 # Also set up Portage's verification keyring so the build system can verify packages.
 # Remove any pre-existing keyring first — the base image may have a differently-owned
@@ -44,10 +57,7 @@ chmod 700 "$portageGpgHome"
 gpg --homedir "$gpgHome" --export | gpg --homedir "$portageGpgHome" --batch --import
 
 # Trust the signing key in the Portage keyring.
-$fingerprints = @(gpg --homedir "$portageGpgHome" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_ -split ":")[9] })
-if ($fingerprints.Count -gt 0) {
-    @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$portageGpgHome" --batch --import-ownertrust
-}
+Set-GpgUltimateTrust -HomeDir "$portageGpgHome"
 gpg --homedir "$portageGpgHome" --check-trustdb
 
 # Portage drops GPG verification to the nobody user (GPG_VERIFY_USER_DROP defaults to
