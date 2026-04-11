@@ -63,7 +63,18 @@ Write-Output -InputObject "Signing key imported and trusted."
 # EFI binaries and kernel modules during builds.
 $sbDir = "/mnt/gentoo/root/secureboot"
 New-Item -Path $sbDir -ItemType Directory -Force | Out-Null
-bash -c "echo '$env:SECUREBOOT_DB_KEY_BASE64' | base64 --decode > '$sbDir/db.key'"
-bash -c "echo '$env:SECUREBOOT_DB_CERT_BASE64' | base64 --decode > '$sbDir/db.pem'"
-chmod 600 "$sbDir/db.key"
+
+# Securely create the key file with 600 permissions to avoid TOCTOU race conditions
+sh -c "umask 077 && touch '$sbDir/db.key'"
+
+$keyBytes = if (-not [string]::IsNullOrWhiteSpace($env:SECUREBOOT_DB_KEY_BASE64)) { [System.Convert]::FromBase64String($env:SECUREBOOT_DB_KEY_BASE64) } else { [byte[]]::new(0) }
+if ($null -ne $keyBytes) {
+    [System.IO.File]::WriteAllBytes("$sbDir/db.key", $keyBytes)
+}
+
+$certBytes = if (-not [string]::IsNullOrWhiteSpace($env:SECUREBOOT_DB_CERT_BASE64)) { [System.Convert]::FromBase64String($env:SECUREBOOT_DB_CERT_BASE64) } else { [byte[]]::new(0) }
+if ($null -ne $certBytes) {
+    [System.IO.File]::WriteAllBytes("$sbDir/db.pem", $certBytes)
+}
+
 Write-Output -InputObject "Secure Boot signing key imported."
