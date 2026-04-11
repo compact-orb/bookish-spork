@@ -71,6 +71,23 @@ function Receive-FromStorage {
     }
 }
 
+function Publish-SystemArchive {
+    param(
+        [Parameter(Mandatory)]
+        [string]$TargetDirectory,
+        [Parameter(Mandatory)]
+        [string]$FileName,
+        [string[]]$ExcludeParams = @()
+    )
+
+    Write-Output -InputObject "Creating archive..."
+    Measure-Command -Expression {
+        tar --create --directory="$TargetDirectory" --file="/var/tmp/bookish-spork/$FileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" @ExcludeParams .
+    }
+
+    Send-ToStorage -FileName $FileName
+}
+
 function Send-ToStorage {
     param(
         [Parameter(Mandatory)]
@@ -193,13 +210,7 @@ elseif ($To) {
             )
         }
 
-        Write-Output -InputObject "Creating archive..."
-        Measure-Command -Expression {
-            # Create archive from the upper directory
-            tar --create --directory="$targetDir" --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" @excludeParams .
-        }
-
-        Send-ToStorage -FileName $fileName
+        Publish-SystemArchive -TargetDirectory $targetDir -FileName $fileName -ExcludeParams $excludeParams
     }
     else {
         # Sub-mode: Standard (Non-Overlay)
@@ -218,13 +229,11 @@ elseif ($To) {
             Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/tmp/* -Recurse -Force -ErrorAction SilentlyContinue
         }
 
-        Write-Output -InputObject "Creating archive..."
-        Measure-Command -Expression {
-            # Create archive from the root mount point
-            tar --create --directory=/mnt/gentoo --exclude=./root/.gnupg --exclude=./root/secureboot --file="/var/tmp/bookish-spork/$fileName" --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
-        }
-
-        Send-ToStorage -FileName $fileName
+        $excludeParams = @(
+            "--exclude=./root/.gnupg",
+            "--exclude=./root/secureboot"
+        )
+        Publish-SystemArchive -TargetDirectory "/mnt/gentoo" -FileName $fileName -ExcludeParams $excludeParams
     }
 }
 else {
