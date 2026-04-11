@@ -64,17 +64,51 @@ Write-Output -InputObject "Signing key imported and trusted."
 $sbDir = "/mnt/gentoo/root/secureboot"
 New-Item -Path $sbDir -ItemType Directory -Force | Out-Null
 
-# Securely create the key file with 600 permissions to avoid TOCTOU race conditions
-sh -c "umask 077 && touch '$sbDir/db.key'"
+# Use FileStreamOptions to natively and securely create the key files with strict permissions
+# in a single operation, avoiding shell command interpolation and TOCTOU race conditions.
+function Write-SecureFile {
+    param (
+        [string]$Path,
+        [byte[]]$Content,
+        [System.IO.UnixFileMode]$UnixMode
+    )
+    $options = [System.IO.FileStreamOptions]::new()
+    $options.Mode = [System.IO.FileMode]::Create
+    $options.Access = [System.IO.FileAccess]::Write
+    $options.UnixCreateMode = $UnixMode
 
-$keyBytes = if (-not [string]::IsNullOrWhiteSpace($env:SECUREBOOT_DB_KEY_BASE64)) { [System.Convert]::FromBase64String($env:SECUREBOOT_DB_KEY_BASE64) } else { [byte[]]::new(0) }
-if ($null -ne $keyBytes) {
-    [System.IO.File]::WriteAllBytes("$sbDir/db.key", $keyBytes)
+    $stream = $null
+    try {
+        $stream = [System.IO.File]::Open($Path, $options)
+        $stream.Write($Content, 0, $Content.Length)
+    } finally {
+        if ($null -ne $stream) {
+            $stream.Dispose()
+        }
+    }
 }
 
-$certBytes = if (-not [string]::IsNullOrWhiteSpace($env:SECUREBOOT_DB_CERT_BASE64)) { [System.Convert]::FromBase64String($env:SECUREBOOT_DB_CERT_BASE64) } else { [byte[]]::new(0) }
-if ($null -ne $certBytes) {
-    [System.IO.File]::WriteAllBytes("$sbDir/db.pem", $certBytes)
+if ([string]::IsNullOrWhiteSpace($env:SECUREBOOT_DB_KEY_BASE64)) {
+    Write-Error -Message "SECUREBOOT_DB_KEY_BASE64 environment variable is not set or empty."
 }
+
+if ([string]::IsNullOrWhiteSpace($env:SECUREBOOT_DB_CERT_BASE64)) {
+    Write-Error -Message "SECUREBOOT_DB_CERT_BASE64 environment variable is not set or empty."
+}
+
+try {
+    $keyBytes = [System.Convert]::FromBase64String($env:SECUREBOOT_DB_KEY_BASE64)
+} catch {
+    Write-Error -Message "Failed to decode SECUREBOOT_DB_KEY_BASE64: $_"
+}
+
+try {
+    $certBytes = [System.Convert]::FromBase64String($env:SECUREBOOT_DB_CERT_BASE64)
+} catch {
+    Write-Error -Message "Failed to decode SECUREBOOT_DB_CERT_BASE64: $_"
+}
+
+Write-SecureFile -Path "$sbDir/db.key" -Content $keyBytes -UnixMode ([System.IO.UnixFileMode]::UserRead -bor [System.IO.UnixFileMode]::UserWrite)
+Write-SecureFile -Path "$sbDir/db.pem" -Content $certBytes -UnixMode ([System.IO.UnixFileMode]::UserRead -bor [System.IO.UnixFileMode]::UserWrite -bor [System.IO.UnixFileMode]::GroupRead -bor [System.IO.UnixFileMode]::OtherRead)
 
 Write-Output -InputObject "Secure Boot signing key imported."
