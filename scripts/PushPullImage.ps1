@@ -59,14 +59,45 @@ function Receive-FromStorage {
         [switch]$Bootstrap
     )
 
-    Invoke-WithRetry -ActionName "download $FileName" -MaxRetries 3 -ScriptBlock {
-        if ($Bootstrap) {
-            # Bootstrap images use .xz compression
-            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
+    $headerFile = "/var/tmp/bookish-spork/curl-header-$([guid]::NewGuid()).txt"
+    try {
+        $headerFileMode = [System.IO.UnixFileMode]::UserRead -bor [System.IO.UnixFileMode]::UserWrite
+        $headerFileStream = [System.IO.FileStream]::new($headerFile, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+        try {
+            [System.IO.File]::SetUnixFileMode($headerFile, $headerFileMode)
+
+            $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+            $headerFileWriter = [System.IO.StreamWriter]::new($headerFileStream, $utf8NoBom)
+            $headerFileStream = $null
+            try {
+                $headerFileWriter.Write("accesskey: $($env:BUNNY_STORAGE_ACCESS_KEY)")
+                $headerFileWriter.Flush()
+            }
+            finally {
+                $headerFileWriter.Dispose()
+            }
         }
-        else {
-            # Standard images use .zst (Zstandard) compression
-            curl --header "accept: */*" --header "accesskey: $env:BUNNY_STORAGE_ACCESS_KEY" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+        finally {
+            if ($null -ne $headerFileStream) {
+                $headerFileStream.Dispose()
+            }
+        }
+
+        # Pass the header securely via file to prevent exposure in process lists (ps)
+        Invoke-WithRetry -ActionName "download $FileName" -MaxRetries 3 -ScriptBlock {
+            if ($Bootstrap) {
+                # Bootstrap images use .xz compression
+                curl --header "accept: */*" --header "@$headerFile" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz
+            }
+            else {
+                # Standard images use .zst (Zstandard) compression
+                curl --header "accept: */*" --header "@$headerFile" --silent --fail --show-error "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$FileName" | tar --directory="$TargetDirectory" --extract --file=- --numeric-owner --preserve-permissions --use-compress-program="zstd --long=31" --xattrs-include="*.*"
+            }
+        }
+    }
+    finally {
+        if (Test-Path -Path $headerFile) {
+            Remove-Item -Path $headerFile -Force -ErrorAction SilentlyContinue
         }
     }
 }
