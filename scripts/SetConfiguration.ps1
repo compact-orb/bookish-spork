@@ -72,9 +72,17 @@ INSTALL_MASK="/boot"
 # to avoid any TOCTOU (Time of Check to Time of Use) race conditions.
 sh -c 'umask 077 && mkdir -p /mnt/gentoo/root/.ssh && touch /mnt/gentoo/root/.ssh/redesigned-broccoli /mnt/gentoo/root/.ssh/config /mnt/gentoo/root/.ssh/known_hosts'
 
-$decodedBytes = [System.Convert]::FromBase64String($env:REDESIGNED_BROCCOLI_SSH_KEY)
-if ($null -ne $decodedBytes) {
+if ([string]::IsNullOrWhiteSpace($env:REDESIGNED_BROCCOLI_SSH_KEY)) {
+    Write-Error "The REDESIGNED_BROCCOLI_SSH_KEY environment variable is missing or empty."
+    exit 1
+}
+
+try {
+    $decodedBytes = [System.Convert]::FromBase64String($env:REDESIGNED_BROCCOLI_SSH_KEY)
     [System.IO.File]::WriteAllBytes("/mnt/gentoo/root/.ssh/redesigned-broccoli", $decodedBytes)
+} catch {
+    Write-Error "Failed to decode the REDESIGNED_BROCCOLI_SSH_KEY environment variable as base64: $_"
+    exit 1
 }
 
 Set-Content -Path "/mnt/gentoo/root/.ssh/known_hosts" -Value @'
