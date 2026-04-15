@@ -48,7 +48,7 @@ function Receive-Ccache {
         # We need to catch error if cache file doesn't exist yet (e.g., first run)
         Invoke-WithRetry -ActionName "download $fileName" -MaxRetries 3 -ScriptBlock {
             # Check the remote archive status first
-            $httpStatus = bash -c "curl --head -o /dev/null -s -w '%{http_code}' --header 'accept: */*' --header '@$headerFile' 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName'"
+            $httpStatus = bash -c "curl --head -o /dev/null -s -w '%{http_code}' --header 'accept: */*' --header '@$headerFile' 'https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName'"
             
             if ($httpStatus -eq '404') {
                 Write-Warning "Cache not found (HTTP 404). Expected if this is the first cache push."
