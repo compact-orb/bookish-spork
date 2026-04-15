@@ -48,7 +48,7 @@ function Receive-Ccache {
         # We need to catch error if cache file doesn't exist yet (e.g., first run)
         Invoke-WithRetry -ActionName "download $fileName" -MaxRetries 3 -ScriptBlock {
             # Check the remote archive status first
-            $httpStatus = bash -c "curl -o /dev/null -s -w '%{http_code}' --header 'accept: */*' --header '@$headerFile' 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName'"
+            $httpStatus = bash -c "curl --head -o /dev/null -s -w '%{http_code}' --header 'accept: */*' --header '@$headerFile' 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName'"
             
             if ($httpStatus -eq '404') {
                 Write-Warning "Cache not found (HTTP 404). Expected if this is the first cache push."
@@ -83,14 +83,15 @@ function Send-Ccache {
     # `tar` creates an uncompressed archive directly at the destination path.
     # PushPullImage uploads via Invoke-RestMethod with -InFile
     $tmpFile = "/var/tmp/bookish-spork/$fileName"
-    $process = Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", "--numeric-owner", '--xattrs-include=*.*', ".") -Wait -PassThru -NoNewWindow
     
-    if ($process.ExitCode -ne 0) {
-        throw "Failed to archive ccache directory. tar exited with code $($process.ExitCode)."
-    }
-    
-    Write-Output "Uploading $fileName..."
     try {
+        $process = Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", "--numeric-owner", '--xattrs-include=*.*', ".") -Wait -PassThru -NoNewWindow
+        
+        if ($process.ExitCode -ne 0) {
+            throw "Failed to archive ccache directory. tar exited with code $($process.ExitCode)."
+        }
+        
+        Write-Output "Uploading $fileName..."
         Measure-Command -Expression {
             Invoke-WithRetry -ActionName "upload $fileName" -MaxRetries 3 -ScriptBlock {
                 Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile $tmpFile
