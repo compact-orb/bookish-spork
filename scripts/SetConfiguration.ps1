@@ -35,8 +35,7 @@ foreach ($line in Get-Content -Path "$PSScriptRoot/../cleanup-paths.txt") {
     }
 
     if ($line -match '^\/' -or $line -match '(^|/)\.\.($|/)' -or $line -match '(^|/)\.($|/)') {
-        Write-Error "Invalid path detected in cleanup-paths.txt: '$line'"
-        exit 1
+        throw "Invalid path detected in cleanup-paths.txt: '$line'"
     }
     $cleanupPaths.Add("/mnt/gentoo/$line")
 }
@@ -73,16 +72,14 @@ INSTALL_MASK="/boot"
 sh -c 'umask 077 && mkdir -p /mnt/gentoo/root/.ssh && touch /mnt/gentoo/root/.ssh/redesigned-broccoli /mnt/gentoo/root/.ssh/config /mnt/gentoo/root/.ssh/known_hosts'
 
 if ([string]::IsNullOrWhiteSpace($env:REDESIGNED_BROCCOLI_SSH_KEY)) {
-    Write-Error "The REDESIGNED_BROCCOLI_SSH_KEY environment variable is missing or empty."
-    exit 1
+    throw "The REDESIGNED_BROCCOLI_SSH_KEY environment variable is missing or empty."
 }
 
 try {
     $decodedBytes = [System.Convert]::FromBase64String($env:REDESIGNED_BROCCOLI_SSH_KEY)
     [System.IO.File]::WriteAllBytes("/mnt/gentoo/root/.ssh/redesigned-broccoli", $decodedBytes)
 } catch {
-    Write-Error "Failed to decode the REDESIGNED_BROCCOLI_SSH_KEY environment variable as base64: $_"
-    exit 1
+    throw "Failed to decode the REDESIGNED_BROCCOLI_SSH_KEY environment variable as base64: $($_.Exception.Message)"
 }
 
 Set-Content -Path "/mnt/gentoo/root/.ssh/known_hosts" -Value @'
