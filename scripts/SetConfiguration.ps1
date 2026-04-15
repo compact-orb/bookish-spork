@@ -77,9 +77,14 @@ if ([string]::IsNullOrWhiteSpace($env:REDESIGNED_BROCCOLI_SSH_KEY)) {
 
 try {
     $decodedBytes = [System.Convert]::FromBase64String($env:REDESIGNED_BROCCOLI_SSH_KEY)
-    [System.IO.File]::WriteAllBytes("/mnt/gentoo/root/.ssh/redesigned-broccoli", $decodedBytes)
 } catch {
     throw "Failed to decode the REDESIGNED_BROCCOLI_SSH_KEY environment variable as base64: $($_.Exception.Message)"
+}
+
+try {
+    [System.IO.File]::WriteAllBytes("/mnt/gentoo/root/.ssh/redesigned-broccoli", $decodedBytes)
+} catch {
+    throw "Failed to write the decoded SSH key to disk: $($_.Exception.Message)"
 }
 
 Set-Content -Path "/mnt/gentoo/root/.ssh/known_hosts" -Value @'
