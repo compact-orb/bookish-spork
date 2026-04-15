@@ -60,7 +60,7 @@ function Receive-Ccache {
             }
 
             # If it exists, download and extract. pipefail accurately halts execution on curl failures
-            $process = Start-Process -FilePath "bash" -ArgumentList "-c", "set -o pipefail; curl --header 'accept: */*' --header '@$headerFile' --silent --fail --show-error 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName' | tar --directory='$cacheDir' --extract --file=-" -Wait -PassThru -NoNewWindow
+            $process = Start-Process -FilePath "bash" -ArgumentList "-c", "set -o pipefail; curl --header 'accept: */*' --header '@$headerFile' --silent --fail --show-error 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName' | tar --directory='$cacheDir' --extract --file=- --numeric-owner --preserve-permissions --xattrs-include='*.*'" -Wait -PassThru -NoNewWindow
             
             if ($process.ExitCode -ne 0) {
                 throw "Failed to download ccache archive. bash exited with code $($process.ExitCode)."
@@ -83,7 +83,7 @@ function Send-Ccache {
     # `tar` creates an uncompressed archive directly at the destination path.
     # PushPullImage uploads via Invoke-RestMethod with -InFile
     $tmpFile = "/var/tmp/bookish-spork/$fileName"
-    $process = Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", ".") -Wait -PassThru -NoNewWindow
+    $process = Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", "--numeric-owner", '--xattrs-include=*.*', ".") -Wait -PassThru -NoNewWindow
     
     if ($process.ExitCode -ne 0) {
         throw "Failed to archive ccache directory. tar exited with code $($process.ExitCode)."
