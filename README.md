@@ -62,9 +62,9 @@ CI scripts are in the `scripts/` directory and run on the GitHub Actions host.
 | -------- | --------- |
 | `PushPullImage.ps1` | Downloads/uploads system images (base, bootstrap, temporary, overlay layers) to/from Bunny Storage. Supports OverlayFS for layered images. |
 | `PushPullBinaryPackages.ps1` | Syncs binary packages via OverlayFS — downloads existing packages to a read-only lower layer, mounts an overlay for new packages, then uploads only the upper (new) layer. |
-| `SetConfiguration.ps1` | Cleans old Portage/kernel/SSH config from the image and copies the repo's configuration. On build nodes, overrides `make.conf` with higher parallelism, `--buildpkg` flags, and binary package signing settings. Also sets up the SSH key for the private overlay repo. |
+| `SetConfiguration.ps1` | Cleans old Portage/kernel/SSH config from the image and copies the repo's configuration. On build nodes, overrides `make.conf` with higher parallelism, `--buildpkg` flags, and binary package signing settings. |
 | `MountFilesystems.ps1` | Mounts/unmounts `proc`, `sys`, `dev`, `run`, `tmp`, and the working directory into the chroot at `/mnt/gentoo`. |
-| `Import-SigningKey.ps1` | Imports the GPG signing key from a GitHub secret into the chroot's keyring and Portage's verification keyring. |
+| `Import-SigningKey.ps1` | Imports the GPG signing key, Secure Boot keys, and the private SSH key from GitHub secrets into the chroot. |
 | `DownloadBunnyStorageDirectory.ps1` | Recursively downloads a directory from Bunny Storage with parallel threads and retry logic. Uses CDN endpoint for listing. |
 | `UploadBunnyStorageDirectory.ps1` | Recursively uploads a local directory to Bunny Storage with parallel threads and retry logic. Uses CDN endpoint for uploads. |
 

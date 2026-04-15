@@ -24,7 +24,6 @@ env:
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 4
-  REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
   BOOTSTRAP_BINREPOS_ARCHITECTURE: arm64
 
 jobs:
@@ -60,6 +59,7 @@ jobs:
           BINPKG_GPG_SIGNING_KEY_BASE64: ${{ secrets.BINPKG_GPG_SIGNING_KEY_BASE64 }}
           SECUREBOOT_DB_KEY_BASE64: ${{ secrets.SECUREBOOT_DB_KEY_BASE64 }}
           SECUREBOOT_DB_CERT_BASE64: ${{ secrets.SECUREBOOT_DB_CERT_BASE64 }}
+          REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
 
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
