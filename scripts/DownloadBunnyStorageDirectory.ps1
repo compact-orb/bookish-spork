@@ -45,7 +45,7 @@ do {
 
         # List the contents of the current directory using the Bunny Storage API
         $response = Invoke-WithRetry -ActionName "list $currentPath" -MaxRetries 3 -ScriptBlock {
-            Invoke-RestMethod -StatusCodeVariable httpStatusCode -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$currentPath/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
+            Invoke-RestMethod -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN$currentPath/" -Headers @{ "accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method GET
         }
 
         $response | ForEach-Object {
