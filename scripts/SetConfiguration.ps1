@@ -24,17 +24,22 @@ $PSNativeCommandUseErrorActionPreference = $true
 # Clean up some configuration directories to ensure that they don't include deleted files.
 # This removes old Portage configs, kernel configs, and SSH keys.
 # The list of paths is maintained in cleanup-paths.txt, shared with tools/ConfigureSystem.sh.
-$cleanupPaths = @("/mnt/gentoo/etc/portage/env", "/mnt/gentoo/etc/portage/binrepos.conf", "/mnt/gentoo/root/.ssh") + @(
-    Get-Content -Path "$PSScriptRoot/../cleanup-paths.txt" `
-    | Where-Object -FilterScript { $_ -ne '' } `
-    | ForEach-Object -Process {
-        if ($_ -match '^\/' -or $_ -match '(^|/)\.\.($|/)' -or $_ -match '(^|/)\.($|/)') {
-            Write-Error "Invalid path detected in cleanup-paths.txt: '$_'"
-            exit 1
-        }
-        "/mnt/gentoo/$_"
+$cleanupPaths = [System.Collections.Generic.List[string]]::new()
+$cleanupPaths.Add("/mnt/gentoo/etc/portage/env")
+$cleanupPaths.Add("/mnt/gentoo/etc/portage/binrepos.conf")
+$cleanupPaths.Add("/mnt/gentoo/root/.ssh")
+
+foreach ($line in Get-Content -Path "$PSScriptRoot/../cleanup-paths.txt") {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
     }
-)
+
+    if ($line -match '^\/' -or $line -match '(^|/)\.\.($|/)' -or $line -match '(^|/)\.($|/)') {
+        throw "Invalid path detected in cleanup-paths.txt: '$line'"
+    }
+    $cleanupPaths.Add("/mnt/gentoo/$line")
+}
+
 Remove-Item -Path $cleanupPaths -Recurse -Force -ErrorAction SilentlyContinue
 
 # Copy the new configuration files from the CONFIG_PREFIX directory to the Gentoo environment.
@@ -66,7 +71,21 @@ INSTALL_MASK="/boot"
 # to avoid any TOCTOU (Time of Check to Time of Use) race conditions.
 sh -c 'umask 077 && mkdir -p /mnt/gentoo/root/.ssh && touch /mnt/gentoo/root/.ssh/redesigned-broccoli /mnt/gentoo/root/.ssh/config /mnt/gentoo/root/.ssh/known_hosts'
 
-$env:REDESIGNED_BROCCOLI_SSH_KEY | base64 --decode | Set-Content -Path "/mnt/gentoo/root/.ssh/redesigned-broccoli"
+if ([string]::IsNullOrWhiteSpace($env:REDESIGNED_BROCCOLI_SSH_KEY)) {
+    throw "The REDESIGNED_BROCCOLI_SSH_KEY environment variable is missing or empty."
+}
+
+try {
+    $decodedBytes = [System.Convert]::FromBase64String($env:REDESIGNED_BROCCOLI_SSH_KEY)
+} catch {
+    throw "Failed to decode the REDESIGNED_BROCCOLI_SSH_KEY environment variable as base64: $($_.Exception.Message)"
+}
+
+try {
+    [System.IO.File]::WriteAllBytes("/mnt/gentoo/root/.ssh/redesigned-broccoli", $decodedBytes)
+} catch {
+    throw "Failed to write the decoded SSH key to disk: $($_.Exception.Message)"
+}
 
 Set-Content -Path "/mnt/gentoo/root/.ssh/known_hosts" -Value @'
 github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
