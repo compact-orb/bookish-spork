@@ -13,6 +13,7 @@ app-editors/antigravity
 app-editors/gnome-text-editor
 app-editors/hexedit
 app-editors/vim
+app-editors/vscode
 app-emulation/ruffle
 app-emulation/virt-manager
 app-emulation/virtiofsd
