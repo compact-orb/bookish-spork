@@ -79,7 +79,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --packages dev-util/ccache
 
       - name: Setup Ccache Storage
-        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -From
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -From -LayerName kernel
 
       - name: Enable Ccache
         run: sudo --preserve-env pwsh -File ./scripts/EnableCcache.ps1
@@ -105,7 +105,7 @@ jobs:
 
       - name: Teardown Ccache
         if: ${{ !cancelled() }}
-        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -To
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -To -LayerName kernel
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() }}

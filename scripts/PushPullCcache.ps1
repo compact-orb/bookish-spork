@@ -4,7 +4,8 @@
 #>
 param(
     [switch]$From,
-    [switch]$To
+    [switch]$To,
+    [string]$LayerName
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,7 +13,11 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 . "$PSScriptRoot/Invoke-WithRetry.ps1"
 
-$fileName = "$env:CONFIG_PREFIX-ccache.tar"
+if ($LayerName) {
+    $fileName = "$env:CONFIG_PREFIX-$LayerName-ccache.tar"
+} else {
+    $fileName = "$env:CONFIG_PREFIX-ccache.tar"
+}
 $cacheDir = "/mnt/gentoo/var/cache/ccache"
 
 function Receive-Ccache {
