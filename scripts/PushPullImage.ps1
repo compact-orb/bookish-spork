@@ -231,6 +231,7 @@ elseif ($To) {
             "--exclude=./root/.ssh",
             "--exclude=./root/secureboot",
             "--exclude=./var/cache/binpkgs",
+            "--exclude=./var/cache/ccache",
             "--exclude=./var/cache/distfiles/*",
             "--exclude=./run/*",
             "--exclude=./etc/resolv.conf"
