@@ -4,6 +4,7 @@
 #>
 
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 $makeConfPath = "/mnt/gentoo/etc/portage/make.conf"
 
