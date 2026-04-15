@@ -19,9 +19,14 @@ function Receive-Ccache {
     $headerFile = "/var/tmp/bookish-spork/curl-header-$([guid]::NewGuid()).txt"
     try {
         $headerFileMode = [System.IO.UnixFileMode]::UserRead -bor [System.IO.UnixFileMode]::UserWrite
-        $headerFileStream = [System.IO.FileStream]::new($headerFile, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+        $options = [System.IO.FileStreamOptions]::new()
+        $options.Mode = [System.IO.FileMode]::Create
+        $options.Access = [System.IO.FileAccess]::Write
+        $options.Share = [System.IO.FileShare]::None
+        $options.UnixCreateMode = $headerFileMode
+        
+        $headerFileStream = [System.IO.FileStream]::new($headerFile, $options)
         try {
-            [System.IO.File]::SetUnixFileMode($headerFile, $headerFileMode)
             $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
             $headerFileWriter = [System.IO.StreamWriter]::new($headerFileStream, $utf8NoBom)
             $headerFileStream = $null
@@ -78,7 +83,11 @@ function Send-Ccache {
     # `tar` creates an uncompressed archive directly at the destination path.
     # PushPullImage uploads via Invoke-RestMethod with -InFile
     $tmpFile = "/var/tmp/bookish-spork/$fileName"
-    Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", ".") -Wait -NoNewWindow
+    $process = Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", ".") -Wait -PassThru -NoNewWindow
+    
+    if ($process.ExitCode -ne 0) {
+        throw "Failed to archive ccache directory. tar exited with code $($process.ExitCode)."
+    }
     
     Write-Output "Uploading $fileName..."
     try {
@@ -94,5 +103,11 @@ function Send-Ccache {
 
 New-Item -Path "/var/tmp/bookish-spork" -ItemType "Directory" -Force | Out-Null
 
-if ($From) { Receive-Ccache }
-elseif ($To) { Send-Ccache }
+if ($From) { 
+    Receive-Ccache 
+} elseif ($To) { 
+    Send-Ccache 
+} else {
+    Write-Error "Either -From or -To must be specified."
+    exit 1
+}
