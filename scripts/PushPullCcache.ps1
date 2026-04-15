@@ -42,12 +42,25 @@ function Receive-Ccache {
         
         # We need to catch error if cache file doesn't exist yet (e.g., first run)
         Invoke-WithRetry -ActionName "download $fileName" -MaxRetries 3 -ScriptBlock {
-            $exitCode = 0
-            # Suppress curl error with `|| true` but check if tar gets data. Actually `curl --fail` will fail if 404.
-            # We can use pure bash because powershell curl is an alias in some cases, but here it's native curl.
-            $process = Start-Process -FilePath "bash" -ArgumentList "-c", "curl --header 'accept: */*' --header '@$headerFile' --silent --fail 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName' | tar --directory='$cacheDir' --extract --file=- 2>/dev/null || true" -Wait -PassThru -NoNewWindow
+            # Check the remote archive status first
+            $httpStatus = bash -c "curl -o /dev/null -s -w '%{http_code}' --header 'accept: */*' --header '@$headerFile' 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName'"
             
-            # Since first run will fail to download, we just warn and continue.
+            if ($httpStatus -eq '404') {
+                Write-Warning "Cache not found (HTTP 404). Expected if this is the first cache push."
+                return
+            }
+
+            if ($httpStatus -match '^4' -or $httpStatus -match '^5') {
+                throw "HTTP error $httpStatus from storage endpoint."
+            }
+
+            # If it exists, download and extract. pipefail accurately halts execution on curl failures
+            $process = Start-Process -FilePath "bash" -ArgumentList "-c", "set -o pipefail; curl --header 'accept: */*' --header '@$headerFile' --silent --fail --show-error 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName' | tar --directory='$cacheDir' --extract --file=-" -Wait -PassThru -NoNewWindow
+            
+            if ($process.ExitCode -ne 0) {
+                throw "Failed to download ccache archive. bash exited with code $($process.ExitCode)."
+            }
+            
             Write-Output "Done fetching ccache."
         }
     } finally {
@@ -68,11 +81,14 @@ function Send-Ccache {
     Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", ".") -Wait -NoNewWindow
     
     Write-Output "Uploading $fileName..."
-    Measure-Command -Expression {
-        Invoke-WithRetry -ActionName "upload $fileName" -MaxRetries 3 -ScriptBlock {
-            Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile $tmpFile
-            Remove-Item -Path $tmpFile -Force -ErrorAction SilentlyContinue
+    try {
+        Measure-Command -Expression {
+            Invoke-WithRetry -ActionName "upload $fileName" -MaxRetries 3 -ScriptBlock {
+                Invoke-RestMethod -Uri "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName" -Headers @{"accept" = "application/json"; "accesskey" = $env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile $tmpFile
+            }
         }
+    } finally {
+        Remove-Item -Path $tmpFile -Force -ErrorAction SilentlyContinue
     }
 }
 
