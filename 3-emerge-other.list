@@ -25,6 +25,5 @@ sys-block/io-scheduler-udev-rules
 sys-block/open-iscsi
 sys-boot/efibootmgr
 sys-boot/shim
-sys-kernel/gentoo-kernel
 sys-kernel/installkernel
 sys-kernel/linux-firmware
