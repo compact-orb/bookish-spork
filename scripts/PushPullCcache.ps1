@@ -61,8 +61,8 @@ function Send-Ccache {
         return
     }
     
-    Write-Output "Compressing ccache directory..."
-    # `tar` compress the directory directly to the destination path because we pipe to curl or compress first.
+    Write-Output "Archiving ccache directory..."
+    # `tar` creates an uncompressed archive directly at the destination path.
     # PushPullImage uploads via Invoke-RestMethod with -InFile
     $tmpFile = "/var/tmp/bookish-spork/$fileName"
     Start-Process -FilePath "tar" -ArgumentList @("--directory=$cacheDir", "--create", "--file=$tmpFile", ".") -Wait -NoNewWindow
