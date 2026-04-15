@@ -77,7 +77,7 @@ jobs:
       - name: Emerge
         run: |
           UPDATE_FLAG="--update"
-          if [ "${{ github.event.inputs.no-update }}" = "true" ]; then
+          if [ "${{ github.event.inputs['no-update'] }}" = "true" ]; then
             UPDATE_FLAG=""
           fi
           PACKAGES=""
@@ -87,8 +87,8 @@ jobs:
             PACKAGES="--packages $(cat ./${CONFIG_PREFIX}-emerge-other.list | tr '\n' ' ')"
           fi
           USEPKG_EXCLUDE=""
-          if [ "${{ github.event.inputs.usepkg-exclude }}" != "" ]; then
-            USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs.usepkg-exclude }}"
+          if [ "${{ github.event.inputs['usepkg-exclude'] }}" != "" ]; then
+            USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs['usepkg-exclude'] }}"
           fi
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
 

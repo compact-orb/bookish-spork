@@ -1,4 +1,4 @@
-name: 2 Emerge Other
+name: 3 Emerge Kernel
 
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ on:
         type: boolean
         default: false
 #   schedule:
-#     - cron: '15 8 * * *'
+#     - cron: '15 9 * * *'
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
@@ -40,12 +40,12 @@ env:
   BUNNY_STORAGE_ENDPOINT: ${{ secrets.BUNNY_STORAGE_ENDPOINT }}
   BUNNY_STORAGE_ENDPOINT_CDN: ${{ secrets.BUNNY_STORAGE_ENDPOINT_CDN }}
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
-  CONFIG_PREFIX: 2
+  CONFIG_PREFIX: 3
 
 jobs:
   emerge:
     name: Emerge
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
 
@@ -54,7 +54,7 @@ jobs:
 
       - name: Set Up Gentoo
         run: |
-          ARGS=("-File" "./scripts/PushPullImage.ps1" "-From" "-Overlay" "-LayerName" "other")
+          ARGS=("-File" "./scripts/PushPullImage.ps1" "-From" "-Overlay" "-LayerName" "kernel")
           if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
             ARGS+=("-ForceRebuild")
           fi
@@ -74,6 +74,16 @@ jobs:
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
+
+      - name: Emerge Ccache
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --packages dev-util/ccache
+
+      - name: Setup Ccache Storage
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -From
+
+      - name: Enable Ccache
+        run: sudo --preserve-env pwsh -File ./scripts/EnableCcache.ps1
+
       - name: Emerge
         run: |
           UPDATE_FLAG="--update"
@@ -84,13 +94,18 @@ jobs:
           if [ "${{ github.event.inputs.packages }}" != "" ]; then
             PACKAGES="--packages ${{ github.event.inputs.packages }}"
           else
-            PACKAGES="--packages $(cat ./${CONFIG_PREFIX}-emerge-other.list | tr '\n' ' ')"
+            PACKAGES="--packages $(cat ./${CONFIG_PREFIX}-emerge-kernel.list | tr '\n' ' ')"
           fi
           USEPKG_EXCLUDE=""
           if [ "${{ github.event.inputs['usepkg-exclude'] }}" != "" ]; then
             USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs['usepkg-exclude'] }}"
           fi
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
+
+
+      - name: Teardown Ccache
+        if: ${{ !cancelled() }}
+        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -To
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() }}
@@ -103,7 +118,7 @@ jobs:
       - name: Upload Gentoo Layer
         if: ${{ !cancelled() && !inputs.ephemeral }}
         run: |
-          ARGS=("-File" "./scripts/PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "other")
+          ARGS=("-File" "./scripts/PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "kernel")
           if [ "${{ github.event.inputs.temporary }}" == "true" ]; then
             ARGS+=("-Temporary")
           fi
