@@ -228,6 +228,7 @@ elseif ($To) {
         # When -Temporary is specified, include /tmp and /var/tmp
         $excludeParams = @(
             "--exclude=./root/.gnupg",
+            "--exclude=./root/.ssh",
             "--exclude=./root/secureboot",
             "--exclude=./var/cache/binpkgs",
             "--exclude=./var/cache/distfiles/*",
@@ -262,6 +263,7 @@ elseif ($To) {
 
         $excludeParams = @(
             "--exclude=./root/.gnupg",
+            "--exclude=./root/.ssh",
             "--exclude=./root/secureboot"
         )
         Publish-SystemArchive -TargetDirectory "/mnt/gentoo" -FileName $fileName -ExcludeParams $excludeParams
