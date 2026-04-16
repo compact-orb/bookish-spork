@@ -35,8 +35,6 @@ dev-debug/valgrind
 dev-embedded/arduino-ide
 dev-java/maven-bin
 dev-java/openjdk
-dev-java/openjdk-bin
-dev-java/openjdk:11
 dev-java/openjdk:17
 dev-java/openjdk:21
 dev-java/openjdk:25
