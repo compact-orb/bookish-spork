@@ -31,6 +31,11 @@ on:
         required: false
         type: boolean
         default: false
+      force_rebuild_ccache:
+        description: 'Force a rebuild of the ccache layer (ignore existing)'
+        required: false
+        type: boolean
+        default: false
 #   schedule:
 #     - cron: '15 7 * * *'
 
@@ -79,6 +84,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --packages dev-util/ccache
 
       - name: Setup Ccache Storage
+        if: ${{ !github.event.inputs.force_rebuild_ccache }}
         run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -From -LayerName kernel
 
       - name: Enable Ccache
