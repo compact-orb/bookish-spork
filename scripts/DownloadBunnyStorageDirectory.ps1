@@ -19,12 +19,12 @@
     The local directory where the files will be saved.
 
 .PARAMETER ThrottleLimit
-    The maximum number of concurrent threads to use for parallel operations. Default is 50.
+    The maximum number of concurrent threads to use for parallel operations. Default is 4.
 #>
 param(
     [string]$Path,
     [string]$Destination,
-    [Int32]$ThrottleLimit = 50
+    [Int32]$ThrottleLimit = 4
 )
 
 $ErrorActionPreference = "Stop"
