@@ -22,7 +22,6 @@ app-emulation/winetricks
 app-misc/binwalk
 app-misc/screen
 app-mobilephone/heimdall
-app-office/libreoffice
 app-portage/gentoolkit
 app-shells/bash-completion
 app-shells/pwsh
