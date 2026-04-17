@@ -18,12 +18,12 @@
     The destination path in Bunny Storage (relative to the zone root).
 
 .PARAMETER ThrottleLimit
-    The maximum number of concurrent threads to use for parallel operations. Default is 4.
+    The maximum number of concurrent threads to use for parallel operations. Default is 8.
 #>
 param(
     [string]$Path,
     [string]$Destination,
-    [Int32]$ThrottleLimit = 4
+    [Int32]$ThrottleLimit = 8
 )
 
 $ErrorActionPreference = "Stop"
