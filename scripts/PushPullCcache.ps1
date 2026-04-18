@@ -67,7 +67,8 @@ function Receive-Ccache {
             Get-ChildItem -Path $cacheDir -Force | Remove-Item -Recurse -Force
 
             # If it exists, download and extract. pipefail accurately halts execution on curl failures
-            $process = Start-Process -FilePath "bash" -ArgumentList "-c", "set -o pipefail; curl --header 'accept: */*' --header '@$headerFile' --silent --fail --show-error 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName' | tar --directory='$cacheDir' --extract --file=- --numeric-owner --preserve-permissions --xattrs-include='*.*'" -Wait -PassThru -NoNewWindow
+            $bashScript = "set -o pipefail; curl --header 'accept: */*' --header '@$headerFile' --silent --fail --show-error 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName' | tar --directory='$cacheDir' --extract --file=- --numeric-owner --preserve-permissions --xattrs-include='*.*'"
+            $process = Start-Process -FilePath "bash" -ArgumentList "-c", "`"$bashScript`"" -Wait -PassThru -NoNewWindow
             
             if ($process.ExitCode -ne 0) {
                 throw "Failed to download ccache archive. bash exited with code $($process.ExitCode)."
