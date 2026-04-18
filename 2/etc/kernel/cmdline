@@ -1,3 +1,4 @@
+rd.luks.uuid=e4c8d308-02e8-4016-9370-d33cd3401e97
 root=UUID=fa91b355-364a-4e91-823e-67197cfdbb35
 lockdown=confidentiality
 intel_iommu=on
