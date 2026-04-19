@@ -127,7 +127,7 @@ case $bootstrap in
     1)
         # Bootstrap Step 1: Initial Setup
         # This step sets up the basic environment, including the portage profile,
-        # This step is specific to the current configuration (LLVM, PyPy emerge, Rust, etc).
+        # This step is specific to the current configuration (LLVM, Rust, etc).
         # If you change the configuration, you may need to update this step.
         emerge-webrsync
 
@@ -142,8 +142,6 @@ case $bootstrap in
         write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc\nnet-libs/nghttp2 xml"
 
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/rust dev-vcs/git llvm-core/clang
-
-        emerge --buildpkg=n --getbinpkg dev-lang/pypy
 
         emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
