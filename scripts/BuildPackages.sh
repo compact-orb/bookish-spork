@@ -10,7 +10,7 @@ set -e
 # 5 hours and 30 minutes in seconds. GitHub Actions job timeout is 6 hours.
 TIMEOUT=19800
 
-LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:,usepkg-exclude:,bootstrap-binrepos-architecture:,oneshot
+LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:,usepkg-exclude:,bootstrap-binrepos-architecture:,oneshot,deselect:
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -40,6 +40,9 @@ bootstrap_binrepos_architecture=""
 
 # Flag to indicate if we should not add the packages to the world file
 oneshot=0
+
+# List of packages to deselect
+deselect_packages=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -78,6 +81,10 @@ while [[ $# -gt 0 ]]; do
         --oneshot)
             oneshot=1
             shift
+            ;;
+        --deselect)
+            deselect_packages+=("$2")
+            shift 2
             ;;
         --)
             shift
@@ -190,6 +197,13 @@ case $bootstrap in
             [[ ${#usepkg_exclude[@]} -gt 0 ]] && opts+=( --usepkg-exclude "${usepkg_exclude[*]}" )
 
             (( oneshot )) && opts+=( --oneshot )
+
+            if [[ ${#deselect_packages[@]} -gt 0 ]]; then
+                opts=()
+                for pkg in "${deselect_packages[@]}"; do
+                    opts+=( --deselect "$pkg" )
+                done
+            fi
 
             t_emerge "${opts[@]}" "${packages[@]}"
 

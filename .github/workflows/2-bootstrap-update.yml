@@ -22,6 +22,10 @@ on:
         description: 'Only update the specified packages (space separated)'
         required: false
         type: string
+      deselect:
+        description: 'Deselect the specified packages, then depclean (space separated)'
+        required: false
+        type: string
 #   schedule:
 #     - cron: '15 1 * * *'
 
@@ -63,7 +67,7 @@ jobs:
           REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
 
       - name: Mount Filesystems
-        if: ${{ !inputs.skip-sync || !inputs.skip-update }}
+        if: ${{ !inputs.skip-sync || !inputs.skip-update || inputs.deselect != '' }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
       - name: Emerge Sync
@@ -79,10 +83,13 @@ jobs:
             PACKAGES="--packages ${{ github.event.inputs.packages }}"
             ONESHOT="--oneshot"
           fi
+          if [ "${{ github.event.inputs.deselect }}" != "" ]; then
+            PACKAGES="--deselect ${{ github.event.inputs.deselect }}"
+          fi
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --update $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
-        if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update) }}
+        if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update || inputs.deselect != '') }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
