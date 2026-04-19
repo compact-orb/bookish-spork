@@ -75,18 +75,21 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --sync
 
       - name: Emerge Update
-        if: ${{ !inputs.skip-update }}
+        if: ${{ !inputs.skip-update || inputs.deselect != '' }}
         run: |
           PACKAGES=""
           ONESHOT=""
+          DESELECT=""
           if [ "${{ github.event.inputs.packages }}" != "" ]; then
             PACKAGES="--packages ${{ github.event.inputs.packages }}"
             ONESHOT="--oneshot"
           fi
           if [ "${{ github.event.inputs.deselect }}" != "" ]; then
-            PACKAGES="--deselect ${{ github.event.inputs.deselect }}"
+            PACKAGES=""
+            ONESHOT=""
+            DESELECT="--deselect ${{ github.event.inputs.deselect }}"
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --update $PACKAGES $ONESHOT
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --update $DESELECT $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update || inputs.deselect != '') }}

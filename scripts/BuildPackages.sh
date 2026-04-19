@@ -183,7 +183,7 @@ case $bootstrap in
         # This mode handles syncing, updating the system, or installing specific packages.
         if   (( sync_flag )); then
             emerge --sync
-        elif (( update )) && [[ ${#packages[@]} -eq 0 ]]; then
+        elif (( update )) && [[ ${#packages[@]} -eq 0 ]] && [[ ${#deselect_packages[@]} -eq 0 ]]; then
             t_emerge --deep --newuse --update "@world"
 
             emerge --depclean
