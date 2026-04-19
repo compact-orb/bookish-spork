@@ -10,7 +10,7 @@ set -e
 # 5 hours and 30 minutes in seconds. GitHub Actions job timeout is 6 hours.
 TIMEOUT=19800
 
-LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:,usepkg-exclude:,bootstrap-binrepos-architecture:,oneshot,deselect:
+LONG_OPTS=packages:,update,resume,sync,bootstrap:,portage-profile:,usepkg-exclude:,bootstrap-binrepos-architecture:,oneshot,deselect
 
 eval set -- "$(getopt --longoptions "$LONG_OPTS" --name "$0" --options "" -- "$@")" || exit 1
 
@@ -41,8 +41,8 @@ bootstrap_binrepos_architecture=""
 # Flag to indicate if we should not add the packages to the world file
 oneshot=0
 
-# List of packages to deselect
-deselect_packages=()
+# Flag to indicate if we should deselect packages
+deselect=0
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -83,8 +83,8 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --deselect)
-            deselect_packages+=("$2")
-            shift 2
+            deselect=1
+            shift
             ;;
         --)
             shift
@@ -183,7 +183,7 @@ case $bootstrap in
         # This mode handles syncing, updating the system, or installing specific packages.
         if   (( sync_flag )); then
             emerge --sync
-        elif (( update )) && [[ ${#packages[@]} -eq 0 ]] && [[ ${#deselect_packages[@]} -eq 0 ]]; then
+        elif (( update )) && [[ ${#packages[@]} -eq 0 ]] && (( deselect == 0 )); then
             t_emerge --deep --newuse --update "@world"
 
             emerge --depclean
@@ -198,11 +198,9 @@ case $bootstrap in
 
             (( oneshot )) && opts+=( --oneshot )
 
-            if [[ ${#deselect_packages[@]} -gt 0 ]]; then
+            if (( deselect )); then
                 opts=()
-                for pkg in "${deselect_packages[@]}"; do
-                    opts+=( --deselect "$pkg" )
-                done
+                opts+=( --deselect )
             fi
 
             t_emerge "${opts[@]}" "${packages[@]}"

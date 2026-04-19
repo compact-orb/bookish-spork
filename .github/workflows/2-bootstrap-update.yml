@@ -23,9 +23,10 @@ on:
         required: false
         type: string
       deselect:
-        description: 'Deselect the specified packages, then depclean (space separated)'
+        description: 'Deselect the specified packages, then depclean'
         required: false
-        type: string
+        default: false
+        type: boolean
 #   schedule:
 #     - cron: '15 1 * * *'
 
@@ -67,7 +68,7 @@ jobs:
           REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
 
       - name: Mount Filesystems
-        if: ${{ !inputs.skip-sync || !inputs.skip-update || inputs.deselect != '' }}
+        if: ${{ !inputs.skip-sync || !inputs.skip-update || inputs.deselect }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
       - name: Emerge Sync
@@ -75,7 +76,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --sync
 
       - name: Emerge Update
-        if: ${{ !inputs.skip-update || inputs.deselect != '' }}
+        if: ${{ !inputs.skip-update || inputs.deselect }}
         run: |
           PACKAGES=""
           ONESHOT=""
@@ -84,15 +85,14 @@ jobs:
             PACKAGES="--packages ${{ github.event.inputs.packages }}"
             ONESHOT="--oneshot"
           fi
-          if [ "${{ github.event.inputs.deselect }}" != "" ]; then
-            PACKAGES=""
+          if [ "${{ github.event.inputs.deselect }}" == "true" ]; then
             ONESHOT=""
-            DESELECT="--deselect ${{ github.event.inputs.deselect }}"
+            DESELECT="--deselect"
           fi
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --update $DESELECT $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
-        if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update || inputs.deselect != '') }}
+        if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update || inputs.deselect) }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
