@@ -230,6 +230,7 @@ elseif ($To) {
             "--exclude=./root/.gnupg",
             "--exclude=./root/.ssh",
             "--exclude=./root/secureboot",
+            "--exclude=./var/cache/binhost",
             "--exclude=./var/cache/binpkgs",
             "--exclude=./var/cache/ccache",
             "--exclude=./var/cache/distfiles/*",

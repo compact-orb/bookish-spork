@@ -139,8 +139,6 @@ case $bootstrap in
 
         write_file /etc/portage/binrepos.conf/bootstrap.conf "[binhost]\npriority = 9999\nsync-uri = http://distfiles.gentoo.org/releases/${bootstrap_binrepos_architecture}/binpackages/23.0/${bootstrap_binrepos_profile}/"
 
-        mv /etc/python-exec/emerge.conf /tmp/emerge.conf.backup
-
         write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc\nnet-libs/nghttp2 xml"
 
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/rust dev-vcs/git llvm-core/clang
@@ -151,8 +149,6 @@ case $bootstrap in
 
         emerge --buildpkg=n --deep --oneshot sys-apps/portage
 
-        mv /tmp/emerge.conf.backup /etc/python-exec/emerge.conf
-
         emerge --buildpkg=n --oneshot dev-lang/perl
 
         emerge --sync
@@ -161,7 +157,7 @@ case $bootstrap in
 
         rmdir /etc/portage/binrepos.conf
 
-        rm --force --recursive /var/cache/binpkgs/*
+        rm --force --recursive /var/cache/binhost/* /var/cache/binpkgs/*
 
         rm /etc/portage/package.use/bootstrap
         ;;
