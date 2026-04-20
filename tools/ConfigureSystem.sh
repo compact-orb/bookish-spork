@@ -31,14 +31,19 @@ fi
 # Clean up some configuration directories to ensure that they don't include deleted files.
 # This removes old Portage configs, kernel configs, and SSH keys.
 # The list of paths is maintained in cleanup-paths.txt, shared with scripts/SetConfiguration.ps1.
+paths_to_delete=()
 while IFS= read -r path; do
     [ -z "$path" ] && continue
     if [[ "$path" == /* ]] || [[ "$path" =~ (^|/)\.\.($|/) ]] || [[ "$path" =~ (^|/)\.($|/) ]]; then
         echo "Error: Invalid path detected in cleanup-paths.txt: '$path'" >&2
         exit 1
     fi
-    rm --force --recursive "/${path:?}"
+    paths_to_delete+=("/${path:?}")
 done < "$SCRIPT_DIR/../cleanup-paths.txt"
+
+if [ ${#paths_to_delete[@]} -gt 0 ]; then
+    rm --force --recursive "${paths_to_delete[@]}"
+fi
 
 # Copy the new configuration files from the specified prefix directory to the root (/).
 # This applies the new Portage configuration, kernel config, and other settings.
