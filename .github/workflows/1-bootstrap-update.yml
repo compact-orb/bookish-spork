@@ -73,27 +73,36 @@ jobs:
 
       - name: Emerge Sync and Update
         if: ${{ !inputs.skip-sync || !inputs.skip-update || inputs.deselect }}
+        env:
+          PACKAGES_INPUT: ${{ inputs.packages }}
         run: |
-          SYNC=""
-          PACKAGES=""
-          ONESHOT=""
-          DESELECT=""
-          UPDATE=""
+          if [ "${{ inputs.deselect }}" == "true" ] && [ -z "$PACKAGES_INPUT" ]; then
+            echo "Error: deselect requires packages to be specified."
+            exit 1
+          fi
+
+          declare -a args
           if [ "${{ !inputs.skip-sync }}" == "true" ]; then
-            SYNC="--sync"
+            args+=( "--sync" )
           fi
+
           if [ "${{ !inputs.skip-update }}" == "true" ] || [ "${{ inputs.deselect }}" == "true" ]; then
-            UPDATE="--update"
+            args+=( "--update" )
+
+            if [ -n "$PACKAGES_INPUT" ]; then
+              args+=( "--packages" )
+              read -ra pkgs <<< "$PACKAGES_INPUT"
+              args+=( "${pkgs[@]}" )
+
+              if [ "${{ inputs.deselect }}" == "true" ]; then
+                args+=( "--deselect" )
+              else
+                args+=( "--oneshot" )
+              fi
+            fi
           fi
-          if [ "${{ github.event.inputs.packages }}" != "" ]; then
-            PACKAGES="--packages ${{ github.event.inputs.packages }}"
-            ONESHOT="--oneshot"
-          fi
-          if [ "${{ github.event.inputs.deselect }}" == "true" ]; then
-            ONESHOT=""
-            DESELECT="--deselect"
-          fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $SYNC $UPDATE $DESELECT $PACKAGES $ONESHOT
+
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh "${args[@]}"
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update || inputs.deselect) }}

@@ -68,22 +68,26 @@ jobs:
 
       - name: Emerge Sync and Update
         if: ${{ !inputs.skip-sync || !inputs.skip-update }}
+        env:
+          PACKAGES_INPUT: ${{ inputs.packages }}
         run: |
-          SYNC=""
-          PACKAGES=""
-          ONESHOT=""
-          UPDATE=""
+          declare -a args
           if [ "${{ !inputs.skip-sync }}" == "true" ]; then
-            SYNC="--sync"
+            args+=( "--sync" )
           fi
+
           if [ "${{ !inputs.skip-update }}" == "true" ]; then
-            UPDATE="--update"
+            args+=( "--update" )
+
+            if [ -n "$PACKAGES_INPUT" ]; then
+              args+=( "--packages" )
+              read -ra pkgs <<< "$PACKAGES_INPUT"
+              args+=( "${pkgs[@]}" )
+              args+=( "--oneshot" )
+            fi
           fi
-          if [ "${{ github.event.inputs.packages }}" != "" ]; then
-            PACKAGES="--packages ${{ github.event.inputs.packages }}"
-            ONESHOT="--oneshot"
-          fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $SYNC $UPDATE $PACKAGES $ONESHOT
+
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh "${args[@]}"
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update) }}
