@@ -19,9 +19,14 @@ net-dns/bind-tools
 net-libs/nodejs
 net-misc/aria2
 net-misc/mosh
+net-vpn/i2pd
+net-vpn/tor
 net-vpn/wireguard-tools
 sys-apps/zram-generator
 sys-block/io-scheduler-udev-rules
+sys-block/open-iscsi
 sys-boot/efibootmgr
 sys-boot/mokutil
 sys-boot/shim
+sys-fs/btrfs-progs
+sys-fs/dosfstools
