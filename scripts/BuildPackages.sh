@@ -182,11 +182,7 @@ case $bootstrap in
         # Normal Operation
         # This mode handles syncing, updating the system, or installing specific packages.
 
-        if (( sync_flag )); then
-            emerge --sync
-        fi
-
-        # If there's nothing to emerge/deselect, we can just finish successfully
+        # Validate flags before proceeding with sync or other operations
         if (( update == 0 )) && (( deselect == 0 )) && [[ ${#packages[@]} -eq 0 ]] && (( resume == 0 )); then
             if (( oneshot )); then
                 echo "Error: --oneshot requires packages, --update, or --resume." >&2
@@ -196,12 +192,24 @@ case $bootstrap in
                 echo "Error: --usepkg-exclude requires packages, --update, or --resume." >&2
                 exit 5
             fi
-            exit 0
         fi
 
         if (( deselect )) && [[ ${#packages[@]} -eq 0 ]]; then
             echo "Error: --deselect requires packages to be specified." >&2
             exit 5
+        fi
+
+        if (( sync_flag )); then
+            emerge --sync
+        fi
+
+        # If there's nothing to emerge/deselect, check if it was a true no-op
+        if (( update == 0 )) && (( deselect == 0 )) && [[ ${#packages[@]} -eq 0 ]] && (( resume == 0 )); then
+            if (( sync_flag == 0 )); then
+                echo "Error: No actionable flags or packages provided." >&2
+                exit 5
+            fi
+            exit 0
         fi
 
         if (( update )) && [[ ${#packages[@]} -eq 0 ]]; then

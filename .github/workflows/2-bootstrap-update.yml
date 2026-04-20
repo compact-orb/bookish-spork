@@ -76,6 +76,11 @@ jobs:
         env:
           PACKAGES_INPUT: ${{ inputs.packages }}
         run: |
+          if [ "${{ inputs.deselect }}" == "true" ] && [ -z "$PACKAGES_INPUT" ]; then
+            echo "::error::The 'deselect' option requires 'packages' to be provided."
+            exit 1
+          fi
+
           declare -a args
           if [ "${{ !inputs.skip-sync }}" == "true" ]; then
             args+=( "--sync" )
