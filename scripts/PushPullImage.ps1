@@ -128,7 +128,8 @@ function Handle-FromMode {
         Receive-FromStorage -FileName $fileName -TargetDirectory "/mnt/gentoo" -Bootstrap:$Bootstrap
 
         Write-Output -InputObject "Restoring resolv.conf..."
-        Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc
+        New-Item -Path /mnt/gentoo/etc -ItemType Directory -Force | Out-Null
+        Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc -Force
     }
 }
 
@@ -213,10 +214,13 @@ function Receive-FromStorage {
     $headerFile = "/var/tmp/bookish-spork/curl-header-$([guid]::NewGuid()).txt"
     try {
         $headerFileMode = [System.IO.UnixFileMode]::UserRead -bor [System.IO.UnixFileMode]::UserWrite
-        $headerFileStream = [System.IO.FileStream]::new($headerFile, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+        $headerFileOptions = [System.IO.FileStreamOptions]::new()
+        $headerFileOptions.Mode = [System.IO.FileMode]::CreateNew
+        $headerFileOptions.Access = [System.IO.FileAccess]::Write
+        $headerFileOptions.Share = [System.IO.FileShare]::None
+        $headerFileOptions.UnixCreateMode = $headerFileMode
+        $headerFileStream = [System.IO.FileStream]::new($headerFile, $headerFileOptions)
         try {
-            [System.IO.File]::SetUnixFileMode($headerFile, $headerFileMode)
-
             $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
             $headerFileWriter = [System.IO.StreamWriter]::new($headerFileStream, $utf8NoBom)
             $headerFileStream = $null
