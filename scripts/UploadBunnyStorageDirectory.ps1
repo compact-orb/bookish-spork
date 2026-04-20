@@ -29,7 +29,7 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
-# Read script block content once to prevent redundant disk I/O in runspaces
+# Read the Invoke-WithRetry.ps1 file content once to prevent redundant disk I/O in runspaces
 $invokeWithRetryContent = [System.IO.File]::ReadAllText("$PSScriptRoot/Invoke-WithRetry.ps1")
 
 # Recursively find all files in the source path and upload them in parallel

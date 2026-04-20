@@ -34,7 +34,7 @@ $PSNativeCommandUseErrorActionPreference = $true
 $Directories = $Path
 $Files = [System.Collections.Generic.List[string]]::new()
 
-# Read script block content once to prevent redundant disk I/O in runspaces
+# Read the helper script text once to prevent redundant disk I/O in runspaces
 $invokeWithRetryContent = [System.IO.File]::ReadAllText("$PSScriptRoot/Invoke-WithRetry.ps1")
 
 # Loop until there are no more directories to process
