@@ -53,7 +53,9 @@ function Receive-Ccache {
         # We need to catch error if cache file doesn't exist yet (e.g., first run)
         Invoke-WithRetry -ActionName "download $fileName" -MaxRetries 3 -ScriptBlock {
             # Check the remote archive status first
-            $httpStatus = bash -c "curl --head -o /dev/null -s -w '%{http_code}' --header 'accept: */*' --header '@$headerFile' 'https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName'"
+            $url = "https://$env:BUNNY_STORAGE_ENDPOINT_CDN/$env:BUNNY_STORAGE_ZONE_NAME/$fileName"
+            $bashScriptHead = "curl --head -o /dev/null -s -w '%{http_code}' --header 'accept: */*' --header ""@`$1"" ""`$2"""
+            $httpStatus = bash -c $bashScriptHead "_" $headerFile $url
             
             if ($httpStatus -eq '404') {
                 Write-Warning "Cache not found (HTTP 404). Expected if this is the first cache push."
@@ -67,8 +69,10 @@ function Receive-Ccache {
             Get-ChildItem -Path $cacheDir -Force | Remove-Item -Recurse -Force
 
             # If it exists, download and extract. pipefail accurately halts execution on curl failures
-            $bashScript = "set -o pipefail; curl --header 'accept: */*' --header '@$headerFile' --silent --fail --show-error 'https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName' | tar --directory='$cacheDir' --extract --file=- --numeric-owner --preserve-permissions --xattrs-include='*.*'"
-            $process = Start-Process -FilePath "bash" -ArgumentList "-c", "`"$bashScript`"" -Wait -PassThru -NoNewWindow
+            $bashScript = 'set -o pipefail; curl --header "accept: */*" --header "@$1" --silent --fail --show-error "$2" | tar --directory="$3" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"'
+            $url = "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName"
+
+            $process = Start-Process -FilePath "bash" -ArgumentList "-c", $bashScript, "_", $headerFile, $url, $cacheDir -Wait -PassThru -NoNewWindow
             
             if ($process.ExitCode -ne 0) {
                 throw "Failed to download ccache archive. bash exited with code $($process.ExitCode)."
