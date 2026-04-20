@@ -50,6 +50,152 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 . "$PSScriptRoot/Invoke-WithRetry.ps1"
 
+function Handle-FromMode {
+    param(
+        [switch]$Overlay,
+        [string]$LayerName,
+        [switch]$ForceRebuild,
+        [switch]$Bootstrap,
+        [switch]$Temporary
+    )
+
+    # Sub-mode: Overlay
+    # Sets up an OverlayFS environment with a read-only base and a writable upper layer.
+    if ($Overlay) {
+        if (-not $LayerName) {
+            Write-Error -Message "LayerName is required when Overlay is specified."
+        }
+
+        $baseFileName = "$env:CONFIG_PREFIX.tar.zst"
+        $layerFileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
+
+        # Prepare directories for OverlayFS
+        # - lower: Read-only base image
+        # - upper: Writable layer
+        # - work: OverlayFS internal work directory
+        # - gentoo: The merged mount point
+        Write-Output -InputObject "Creating directories..."
+        New-Item -Path /mnt/gentoo-lower, /mnt/gentoo-upper, /mnt/gentoo-work, /mnt/gentoo -ItemType Directory -Force | Out-Null
+
+        # Download and extract Base Image to lowerdir (Read-Only)
+        Write-Output -InputObject "Downloading and extracting Base Image..."
+        Receive-FromStorage -FileName $baseFileName -TargetDirectory "/mnt/gentoo-lower"
+
+        # Handle Layer Image (Upper Dir)
+        if ($ForceRebuild) {
+            # If rebuilding, start with a fresh empty upper layer
+            Write-Output -InputObject "ForceRebuild specified. Starting with empty layer."
+        }
+        else {
+            # Otherwise, try to download the existing layer to resume or update it
+            Write-Output -InputObject "Downloading and extracting Layer Image..."
+            Receive-FromStorage -FileName $layerFileName -TargetDirectory "/mnt/gentoo-upper"
+        }
+
+        # Mount OverlayFS
+        # Combines lower (base) and upper (layer) into /mnt/gentoo
+        Write-Output -InputObject "Mounting overlayfs..."
+        mount -t overlay overlay -o "lowerdir=/mnt/gentoo-lower,upperdir=/mnt/gentoo-upper,workdir=/mnt/gentoo-work" /mnt/gentoo
+
+        # Restore resolv.conf (writes to upper layer effectively)
+        # This ensures networking works within the chroot
+        Write-Output -InputObject "Restoring resolv.conf..."
+        Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc -Force
+    }
+    else {
+        # Sub-mode: Standard (Non-Overlay)
+        # Handles Bootstrap, Temporary, or Base images directly.
+
+        if ($Bootstrap) {
+            $fileName = "$env:CONFIG_PREFIX-bootstrap.tar.xz"
+        }
+        elseif ($Temporary) {
+            $fileName = "$env:CONFIG_PREFIX-temporary.tar.zst"
+        }
+        else {
+            $fileName = "$env:CONFIG_PREFIX.tar.zst"
+        }
+
+        Write-Output -InputObject "Creating directories..."
+        New-Item -Path /mnt/gentoo -ItemType Directory -Force | Out-Null
+
+        Write-Output -InputObject "Downloading and extracting Base Image..."
+        Receive-FromStorage -FileName $fileName -TargetDirectory "/mnt/gentoo" -Bootstrap:$Bootstrap
+
+        Write-Output -InputObject "Restoring resolv.conf..."
+        Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc
+    }
+}
+
+function Handle-ToMode {
+    param(
+        [switch]$Overlay,
+        [string]$LayerName,
+        [switch]$Temporary
+    )
+
+    # Sub-mode: Overlay
+    # Archives only the upper layer (changes made on top of the base).
+    if ($Overlay) {
+        if (-not $LayerName) {
+            Write-Error -Message "LayerName is required when Overlay is specified."
+        }
+
+        if ($Temporary) {
+            $fileName = "$env:CONFIG_PREFIX-$LayerName-temporary.tar.zst"
+        }
+        else {
+            $fileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
+        }
+        $targetDir = "/mnt/gentoo-upper"
+        # Exclude cache files from the layer archive
+        # When -Temporary is specified, include /tmp and /var/tmp
+        $excludeParams = @(
+            "--exclude=./root/.gnupg",
+            "--exclude=./root/.ssh",
+            "--exclude=./root/secureboot",
+            "--exclude=./var/cache/binhost",
+            "--exclude=./var/cache/binpkgs",
+            "--exclude=./var/cache/ccache",
+            "--exclude=./var/cache/distfiles/*",
+            "--exclude=./run/*",
+            "--exclude=./etc/resolv.conf"
+        )
+        if (-not $Temporary) {
+            $excludeParams += @(
+                "--exclude=./var/tmp/*",
+                "--exclude=./tmp/*"
+            )
+        }
+
+        Publish-SystemArchive -TargetDirectory $targetDir -FileName $fileName -ExcludeParams $excludeParams
+    }
+    else {
+        # Sub-mode: Standard (Non-Overlay)
+        # Archives the entire /mnt/gentoo directory.
+
+        if ($Temporary) {
+            $fileName = "$env:CONFIG_PREFIX-temporary.tar.zst"
+
+            # Clean up before archiving
+            Remove-Item -Path /mnt/gentoo/etc/resolv.conf
+        }
+        else {
+            $fileName = "$env:CONFIG_PREFIX.tar.zst"
+
+            # Aggressive cleanup for base images
+            Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/tmp/* -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        $excludeParams = @(
+            "--exclude=./root/.gnupg",
+            "--exclude=./root/.ssh",
+            "--exclude=./root/secureboot"
+        )
+        Publish-SystemArchive -TargetDirectory "/mnt/gentoo" -FileName $fileName -ExcludeParams $excludeParams
+    }
+}
+
 function Receive-FromStorage {
     param(
         [Parameter(Mandatory)]
@@ -140,136 +286,12 @@ New-Item -Path "/var/tmp/bookish-spork" -ItemType "Directory" -Force | Out-Null
 # MODE: FROM (Download / Restore)
 # This block handles downloading images from storage and setting up the filesystem.
 if ($From) {
-    # Sub-mode: Overlay
-    # Sets up an OverlayFS environment with a read-only base and a writable upper layer.
-    if ($Overlay) {
-        if (-not $LayerName) {
-            Write-Error -Message "LayerName is required when Overlay is specified."
-        }
-
-        $baseFileName = "$env:CONFIG_PREFIX.tar.zst"
-        $layerFileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
-
-        # Prepare directories for OverlayFS
-        # - lower: Read-only base image
-        # - upper: Writable layer
-        # - work: OverlayFS internal work directory
-        # - gentoo: The merged mount point
-        Write-Output -InputObject "Creating directories..."
-        New-Item -Path /mnt/gentoo-lower, /mnt/gentoo-upper, /mnt/gentoo-work, /mnt/gentoo -ItemType Directory -Force | Out-Null
-
-        # Download and extract Base Image to lowerdir (Read-Only)
-        Write-Output -InputObject "Downloading and extracting Base Image..."
-        Receive-FromStorage -FileName $baseFileName -TargetDirectory "/mnt/gentoo-lower"
-
-        # Handle Layer Image (Upper Dir)
-        if ($ForceRebuild) {
-            # If rebuilding, start with a fresh empty upper layer
-            Write-Output -InputObject "ForceRebuild specified. Starting with empty layer."
-        }
-        else {
-            # Otherwise, try to download the existing layer to resume or update it
-            Write-Output -InputObject "Downloading and extracting Layer Image..."
-            Receive-FromStorage -FileName $layerFileName -TargetDirectory "/mnt/gentoo-upper"
-        }
-
-        # Mount OverlayFS
-        # Combines lower (base) and upper (layer) into /mnt/gentoo
-        Write-Output -InputObject "Mounting overlayfs..."
-        mount -t overlay overlay -o "lowerdir=/mnt/gentoo-lower,upperdir=/mnt/gentoo-upper,workdir=/mnt/gentoo-work" /mnt/gentoo
-
-        # Restore resolv.conf (writes to upper layer effectively)
-        # This ensures networking works within the chroot
-        Write-Output -InputObject "Restoring resolv.conf..."
-        Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc -Force
-    }
-    else {
-        # Sub-mode: Standard (Non-Overlay)
-        # Handles Bootstrap, Temporary, or Base images directly.
-
-        if ($Bootstrap) {
-            $fileName = "$env:CONFIG_PREFIX-bootstrap.tar.xz"
-        }
-        elseif ($Temporary) {
-            $fileName = "$env:CONFIG_PREFIX-temporary.tar.zst"
-        }
-        else {
-            $fileName = "$env:CONFIG_PREFIX.tar.zst"
-        }
-
-        Write-Output -InputObject "Creating directories..."
-        New-Item -Path /mnt/gentoo -ItemType Directory -Force | Out-Null
-
-        Write-Output -InputObject "Downloading and extracting Base Image..."
-        Receive-FromStorage -FileName $fileName -TargetDirectory "/mnt/gentoo" -Bootstrap:$Bootstrap
-
-        Write-Output -InputObject "Restoring resolv.conf..."
-        Copy-Item -Path /etc/resolv.conf -Destination /mnt/gentoo/etc
-    }
+    Handle-FromMode -Overlay:$Overlay -LayerName $LayerName -ForceRebuild:$ForceRebuild -Bootstrap:$Bootstrap -Temporary:$Temporary
 }
 # MODE: TO (Upload / Backup)
 # This block handles archiving the filesystem and uploading it to storage.
 elseif ($To) {
-    # Sub-mode: Overlay
-    # Archives only the upper layer (changes made on top of the base).
-    if ($Overlay) {
-        if (-not $LayerName) {
-            Write-Error -Message "LayerName is required when Overlay is specified."
-        }
-
-        if ($Temporary) {
-            $fileName = "$env:CONFIG_PREFIX-$LayerName-temporary.tar.zst"
-        }
-        else {
-            $fileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
-        }
-        $targetDir = "/mnt/gentoo-upper"
-        # Exclude cache files from the layer archive
-        # When -Temporary is specified, include /tmp and /var/tmp
-        $excludeParams = @(
-            "--exclude=./root/.gnupg",
-            "--exclude=./root/.ssh",
-            "--exclude=./root/secureboot",
-            "--exclude=./var/cache/binhost",
-            "--exclude=./var/cache/binpkgs",
-            "--exclude=./var/cache/ccache",
-            "--exclude=./var/cache/distfiles/*",
-            "--exclude=./run/*",
-            "--exclude=./etc/resolv.conf"
-        )
-        if (-not $Temporary) {
-            $excludeParams += @(
-                "--exclude=./var/tmp/*",
-                "--exclude=./tmp/*"
-            )
-        }
-
-        Publish-SystemArchive -TargetDirectory $targetDir -FileName $fileName -ExcludeParams $excludeParams
-    }
-    else {
-        # Sub-mode: Standard (Non-Overlay)
-        # Archives the entire /mnt/gentoo directory.
-
-        if ($Temporary) {
-            $fileName = "$env:CONFIG_PREFIX-temporary.tar.zst"
-
-            # Clean up before archiving
-            Remove-Item -Path /mnt/gentoo/etc/resolv.conf
-        }
-        else {
-            $fileName = "$env:CONFIG_PREFIX.tar.zst"
-
-            # Aggressive cleanup for base images
-            Remove-Item -Path /mnt/gentoo/etc/resolv.conf, /mnt/gentoo/var/cache/distfiles/*, /mnt/gentoo/var/tmp/* -Recurse -Force -ErrorAction SilentlyContinue
-        }
-
-        $excludeParams = @(
-            "--exclude=./root/.gnupg",
-            "--exclude=./root/.ssh",
-            "--exclude=./root/secureboot"
-        )
-        Publish-SystemArchive -TargetDirectory "/mnt/gentoo" -FileName $fileName -ExcludeParams $excludeParams
-    }
+    Handle-ToMode -Overlay:$Overlay -LayerName $LayerName -Temporary:$Temporary
 }
 else {
     exit 1
