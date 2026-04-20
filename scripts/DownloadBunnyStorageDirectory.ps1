@@ -34,12 +34,15 @@ $PSNativeCommandUseErrorActionPreference = $true
 $Directories = $Path
 $Files = [System.Collections.Generic.List[string]]::new()
 
+# Read script block content once to prevent redundant disk I/O in runspaces
+$invokeWithRetryContent = [System.IO.File]::ReadAllText("$PSScriptRoot/Invoke-WithRetry.ps1")
+
 # Loop until there are no more directories to process
 do {
     # Process directories in parallel to list their contents
     $Directories = $Directories | ForEach-Object -Parallel {
         if (-not (Test-Path Function:\Invoke-WithRetry)) {
-            . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+            Invoke-Expression -Command $using:invokeWithRetryContent
         }
         $currentPath = $_
 
@@ -85,7 +88,7 @@ do {
 if ($Files.Count -gt 0) {
     $Files | ForEach-Object -Parallel {
         if (-not (Test-Path Function:\Invoke-WithRetry)) {
-            . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+            Invoke-Expression -Command $using:invokeWithRetryContent
         }
         $filePath = $_
 

@@ -29,10 +29,13 @@ param(
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
+# Read script block content once to prevent redundant disk I/O in runspaces
+$invokeWithRetryContent = [System.IO.File]::ReadAllText("$PSScriptRoot/Invoke-WithRetry.ps1")
+
 # Recursively find all files in the source path and upload them in parallel
 Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
     if (-not (Test-Path Function:\Invoke-WithRetry)) {
-        . "$using:PSScriptRoot/Invoke-WithRetry.ps1"
+        Invoke-Expression -Command $using:invokeWithRetryContent
     }
     $filePath = $_
 
