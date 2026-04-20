@@ -181,32 +181,43 @@ case $bootstrap in
     0)
         # Normal Operation
         # This mode handles syncing, updating the system, or installing specific packages.
-        if   (( sync_flag )); then
+
+        if (( sync_flag )); then
             emerge --sync
-        elif (( update )) && [[ ${#packages[@]} -eq 0 ]] && (( deselect == 0 )); then
-            t_emerge --deep --newuse --update "@world"
-
-            emerge --depclean
-        else
-            declare -a opts
-
-            (( resume )) && opts+=( --resume )
-
-            (( update )) && opts+=( --update --deep --newuse )
-
-            [[ ${#usepkg_exclude[@]} -gt 0 ]] && opts+=( --usepkg-exclude "${usepkg_exclude[*]}" )
-
-            (( oneshot )) && opts+=( --oneshot )
-
-            if (( deselect )); then
-                opts=()
-                opts+=( --deselect )
-            fi
-
-            t_emerge "${opts[@]}" "${packages[@]}"
-
-            emerge --depclean
         fi
+
+        # If there's nothing to emerge/deselect, we can just finish successfully
+        if (( update == 0 )) && (( deselect == 0 )) && [[ ${#packages[@]} -eq 0 ]] && (( resume == 0 )); then
+            exit 0
+        fi
+
+        if (( deselect )) && [[ ${#packages[@]} -eq 0 ]]; then
+            echo "Error: --deselect requires packages to be specified." >&2
+            exit 5
+        fi
+
+        if (( update )) && [[ ${#packages[@]} -eq 0 ]]; then
+            packages=("@world")
+        fi
+
+        declare -a opts
+
+        (( resume )) && opts+=( --resume )
+
+        (( update )) && opts+=( --update --deep --newuse )
+
+        [[ ${#usepkg_exclude[@]} -gt 0 ]] && opts+=( --usepkg-exclude "${usepkg_exclude[*]}" )
+
+        (( oneshot )) && opts+=( --oneshot )
+
+        if (( deselect )); then
+            opts=()
+            opts+=( --deselect )
+        fi
+
+        t_emerge "${opts[@]}" "${packages[@]}"
+
+        emerge --depclean
         ;;
     *)
         exit 4

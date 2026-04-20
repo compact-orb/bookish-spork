@@ -71,16 +71,20 @@ jobs:
         if: ${{ !inputs.skip-sync || !inputs.skip-update || inputs.deselect }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
-      - name: Emerge Sync
-        if: ${{ !inputs.skip-sync }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --sync
-
-      - name: Emerge Update
-        if: ${{ !inputs.skip-update || inputs.deselect }}
+      - name: Emerge Sync and Update
+        if: ${{ !inputs.skip-sync || !inputs.skip-update || inputs.deselect }}
         run: |
+          SYNC=""
           PACKAGES=""
           ONESHOT=""
           DESELECT=""
+          UPDATE=""
+          if [ "${{ !inputs.skip-sync }}" == "true" ]; then
+            SYNC="--sync"
+          fi
+          if [ "${{ !inputs.skip-update }}" == "true" ] || [ "${{ inputs.deselect }}" == "true" ]; then
+            UPDATE="--update"
+          fi
           if [ "${{ github.event.inputs.packages }}" != "" ]; then
             PACKAGES="--packages ${{ github.event.inputs.packages }}"
             ONESHOT="--oneshot"
@@ -89,7 +93,7 @@ jobs:
             ONESHOT=""
             DESELECT="--deselect"
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --update $DESELECT $PACKAGES $ONESHOT
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $SYNC $UPDATE $DESELECT $PACKAGES $ONESHOT
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update || inputs.deselect) }}
