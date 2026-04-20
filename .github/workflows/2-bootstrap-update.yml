@@ -56,7 +56,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./scripts/SetConfiguration.ps1
 
       - name: Set Up Binary Packages
-        if: ${{ !inputs.skip-update }}
+        if: ${{ !inputs['skip-update'] }}
         run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -From
 
       - name: Import Signing Key
@@ -68,35 +68,48 @@ jobs:
           REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
 
       - name: Mount Filesystems
-        if: ${{ !inputs.skip-sync || !inputs.skip-update || inputs.deselect }}
+        if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
-      - name: Emerge Sync
-        if: ${{ !inputs.skip-sync }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --sync
-
-      - name: Emerge Update
-        if: ${{ !inputs.skip-update || inputs.deselect }}
+      - name: Emerge Sync and Update
+        if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect }}
+        env:
+          PACKAGES_INPUT: ${{ inputs.packages }}
         run: |
-          PACKAGES=""
-          ONESHOT=""
-          DESELECT=""
-          if [ "${{ github.event.inputs.packages }}" != "" ]; then
-            PACKAGES="--packages ${{ github.event.inputs.packages }}"
-            ONESHOT="--oneshot"
+          if [ "${{ inputs.deselect }}" == "true" ] && [ -z "$PACKAGES_INPUT" ]; then
+            echo "::error::The 'deselect' option requires 'packages' to be provided."
+            exit 1
           fi
-          if [ "${{ github.event.inputs.deselect }}" == "true" ]; then
-            ONESHOT=""
-            DESELECT="--deselect"
+
+          declare -a args
+          if [ "${{ !inputs['skip-sync'] }}" == "true" ]; then
+            args+=( "--sync" )
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --update $DESELECT $PACKAGES $ONESHOT
+
+          if [ "${{ !inputs['skip-update'] }}" == "true" ] || [ "${{ inputs.deselect }}" == "true" ]; then
+            args+=( "--update" )
+
+            if [ -n "$PACKAGES_INPUT" ]; then
+              args+=( "--packages" )
+              read -ra pkgs <<< "$PACKAGES_INPUT"
+              args+=( "${pkgs[@]}" )
+            fi
+
+            if [ "${{ inputs.deselect }}" == "true" ]; then
+              args+=( "--deselect" )
+            elif [ -n "$PACKAGES_INPUT" ]; then
+              args+=( "--oneshot" )
+            fi
+          fi
+
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh "${args[@]}"
 
       - name: Unmount Filesystems
-        if: ${{ !cancelled() && (!inputs.skip-sync || !inputs.skip-update || inputs.deselect) }}
+        if: ${{ !cancelled() && (!inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect) }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: ${{ !cancelled() && !inputs.skip-update }}
+        if: ${{ !cancelled() && !inputs['skip-update'] }}
         run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
