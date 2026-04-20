@@ -88,12 +88,12 @@ jobs:
               args+=( "--packages" )
               read -ra pkgs <<< "$PACKAGES_INPUT"
               args+=( "${pkgs[@]}" )
+            fi
 
-              if [ "${{ inputs.deselect }}" == "true" ]; then
-                args+=( "--deselect" )
-              else
-                args+=( "--oneshot" )
-              fi
+            if [ "${{ inputs.deselect }}" == "true" ]; then
+              args+=( "--deselect" )
+            elif [ -n "$PACKAGES_INPUT" ]; then
+              args+=( "--oneshot" )
             fi
           fi
 
