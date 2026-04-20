@@ -188,6 +188,14 @@ case $bootstrap in
 
         # If there's nothing to emerge/deselect, we can just finish successfully
         if (( update == 0 )) && (( deselect == 0 )) && [[ ${#packages[@]} -eq 0 ]] && (( resume == 0 )); then
+            if (( oneshot )); then
+                echo "Error: --oneshot requires packages, --update, or --resume." >&2
+                exit 5
+            fi
+            if [[ ${#usepkg_exclude[@]} -gt 0 ]]; then
+                echo "Error: --usepkg-exclude requires packages, --update, or --resume." >&2
+                exit 5
+            fi
             exit 0
         fi
 
