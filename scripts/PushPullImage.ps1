@@ -67,7 +67,12 @@ function Handle-FromMode {
         }
 
         $baseFileName = "$env:CONFIG_PREFIX.tar.zst"
-        $layerFileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
+        if ($Temporary) {
+            $layerFileName = "$env:CONFIG_PREFIX-$LayerName-temporary.tar.zst"
+        }
+        else {
+            $layerFileName = "$env:CONFIG_PREFIX-$LayerName.tar.zst"
+        }
 
         # Prepare directories for OverlayFS
         # - lower: Read-only base image
