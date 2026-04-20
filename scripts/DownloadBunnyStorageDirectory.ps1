@@ -42,7 +42,8 @@ do {
     # Process directories in parallel to list their contents
     $Directories = $Directories | ForEach-Object -Parallel {
         if (-not (Test-Path Function:\Invoke-WithRetry)) {
-            Invoke-Expression -Command $using:invokeWithRetryContent
+            $invokeWithRetryScriptBlock = [scriptblock]::Create($using:invokeWithRetryContent)
+            . $invokeWithRetryScriptBlock
         }
         $currentPath = $_
 
@@ -88,7 +89,8 @@ do {
 if ($Files.Count -gt 0) {
     $Files | ForEach-Object -Parallel {
         if (-not (Test-Path Function:\Invoke-WithRetry)) {
-            Invoke-Expression -Command $using:invokeWithRetryContent
+            $invokeWithRetryScriptBlock = [scriptblock]::Create($using:invokeWithRetryContent)
+            . $invokeWithRetryScriptBlock
         }
         $filePath = $_
 

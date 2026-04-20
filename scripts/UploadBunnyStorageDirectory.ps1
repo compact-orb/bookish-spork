@@ -35,7 +35,8 @@ $invokeWithRetryContent = [System.IO.File]::ReadAllText("$PSScriptRoot/Invoke-Wi
 # Recursively find all files in the source path and upload them in parallel
 Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
     if (-not (Test-Path Function:\Invoke-WithRetry)) {
-        Invoke-Expression -Command $using:invokeWithRetryContent
+        $invokeWithRetryScriptBlock = [scriptblock]::Create($using:invokeWithRetryContent)
+        . $invokeWithRetryScriptBlock
     }
     $filePath = $_
 
