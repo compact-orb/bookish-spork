@@ -22,12 +22,23 @@ function Set-GpgUltimateTrust {
         [string]$Message = ""
     )
 
-    $fingerprints = @(gpg --homedir "$HomeDir" --list-keys --with-colons | Select-String "^fpr:" | ForEach-Object { ($_.Line -split ":")[9] })
+    # Disable this preference locally within the function scope so we can deterministically check $LASTEXITCODE
+    $PSNativeCommandUseErrorActionPreference = $false
+
+    $gpgOutput = gpg --homedir "$HomeDir" --list-keys --with-colons
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to list GPG keys in $HomeDir. gpg exited with code $LASTEXITCODE."
+    }
+
+    $fingerprints = @($gpgOutput | Select-String "^fpr:" | ForEach-Object { ($_.Line -split ":")[9] })
     if ($fingerprints.Count -gt 0) {
         if (-not [string]::IsNullOrWhiteSpace($Message)) {
             Write-Output -InputObject $Message
         }
         @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$HomeDir" --batch --import-ownertrust
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to import owner trust in $HomeDir. gpg exited with code $LASTEXITCODE."
+        }
     }
 }
 
