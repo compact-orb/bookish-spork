@@ -25,7 +25,7 @@ function Set-GpgUltimateTrust {
     try {
         $gpgOutput = gpg --homedir "$HomeDir" --list-keys --with-colons
     } catch {
-        throw "Failed to list GPG keys in $HomeDir. $($_.Exception.Message)"
+        throw "Failed to list GPG keys in $HomeDir. gpg exit code: $LASTEXITCODE. $($_.Exception.Message)"
     }
 
     $fingerprints = @($gpgOutput | Select-String "^fpr:" | ForEach-Object { ($_.Line -split ":")[9] })
@@ -36,7 +36,7 @@ function Set-GpgUltimateTrust {
         try {
             @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$HomeDir" --batch --import-ownertrust
         } catch {
-            throw "Failed to import owner trust in $HomeDir. $($_.Exception.Message)"
+            throw "Failed to import owner trust in $HomeDir. gpg exit code: $LASTEXITCODE. $($_.Exception.Message)"
         }
     }
 }
