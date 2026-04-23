@@ -30,12 +30,16 @@ function Set-GpgUltimateTrust {
         throw "Failed to list GPG keys in $HomeDir. gpg exited with code $LASTEXITCODE."
     }
 
-    $fingerprints = @($gpgOutput | Select-String "^fpr:" | ForEach-Object { ($_.Line -split ":")[9] })
-    if ($fingerprints.Count -gt 0) {
+    [string[]]$ownerTrustData = foreach ($line in (@($gpgOutput) -match "^fpr:")) {
+        $line.Split(':')[9] + ":6:"
+    }
+
+    if ($ownerTrustData.Count -gt 0) {
         if (-not [string]::IsNullOrWhiteSpace($Message)) {
             Write-Output -InputObject $Message
         }
-        @($fingerprints | ForEach-Object { "$($_):6:" }) | gpg --homedir "$HomeDir" --batch --import-ownertrust
+
+        $ownerTrustData | gpg --homedir "$HomeDir" --batch --import-ownertrust
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to import owner trust in $HomeDir. gpg exited with code $LASTEXITCODE."
         }
