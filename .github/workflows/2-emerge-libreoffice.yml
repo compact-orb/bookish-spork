@@ -84,7 +84,7 @@ jobs:
         run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --packages dev-util/ccache
 
       - name: Setup Ccache Storage
-        if: ${{ !github.event.inputs.force_rebuild_ccache }}
+        if: ${{ github.event.inputs.force_rebuild_ccache != 'true' }}
         run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -From -LayerName libreoffice
 
       - name: Enable Ccache
