@@ -66,7 +66,7 @@ function Receive-Ccache {
                 throw "HTTP error $httpStatus from storage endpoint."
             }
 
-            Get-ChildItem -Path $cacheDir -Force | Remove-Item -Recurse -Force
+            Remove-Item -Path "$cacheDir/*" -Recurse -Force -ErrorAction SilentlyContinue
 
             # If it exists, download and extract. pipefail accurately halts execution on curl failures
             $bashScript = 'set -o pipefail; curl --header "accept: */*" --header "@$1" --silent --fail --show-error "$2" | tar --directory="$3" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"'
