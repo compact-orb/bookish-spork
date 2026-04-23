@@ -72,10 +72,9 @@ function Receive-Ccache {
             $bashScript = 'set -o pipefail; curl --header "accept: */*" --header "@$1" --silent --fail --show-error "$2" | tar --directory="$3" --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"'
             $url = "https://$env:BUNNY_STORAGE_ENDPOINT/$env:BUNNY_STORAGE_ZONE_NAME/$fileName"
 
-            $process = Start-Process -FilePath "bash" -ArgumentList "-c", $bashScript, "_", $headerFile, $url, $cacheDir -Wait -PassThru -NoNewWindow
-            
-            if ($process.ExitCode -ne 0) {
-                throw "Failed to download ccache archive. bash exited with code $($process.ExitCode)."
+            bash -c $bashScript "_" $headerFile $url $cacheDir
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to download ccache archive. bash exited with code $LASTEXITCODE."
             }
             
             Write-Output "Done fetching ccache."
