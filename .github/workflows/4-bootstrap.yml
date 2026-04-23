@@ -66,7 +66,9 @@ jobs:
 
       - name: Emerge (Step 1)
         if: ${{ github.event.inputs.step == '1' }}
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --bootstrap 1 --bootstrap-binrepos-architecture ${{ env.BOOTSTRAP_BINREPOS_ARCHITECTURE }}
+        env:
+          BOOTSTRAP_BINREPOS_ARCHITECTURE_VAR: ${{ env.BOOTSTRAP_BINREPOS_ARCHITECTURE }}
+        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --bootstrap 1 --bootstrap-binrepos-architecture "$BOOTSTRAP_BINREPOS_ARCHITECTURE_VAR"
 
       - name: Emerge (Step 2)
         if: ${{ github.event.inputs.step == '2' && github.event.inputs.resume != 'true' }}
@@ -82,7 +84,14 @@ jobs:
 
       - name: Upload Gentoo Binary Packages
         if: ${{ !cancelled() && github.event.inputs.step != '1' }}
-        run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -To ${{ github.event.inputs.resume != 'true' && '-NoOverlay' || '' }}
+        env:
+          RESUME_INPUT: ${{ inputs.resume }}
+        run: |
+          ARGS=("-File" "./scripts/PushPullBinaryPackages.ps1" "-To")
+          if [ "$RESUME_INPUT" != "true" ]; then
+            ARGS+=("-NoOverlay")
+          fi
+          sudo --preserve-env pwsh "${ARGS[@]}"
 
       - name: Upload Gentoo
         if: ${{ !cancelled() }}

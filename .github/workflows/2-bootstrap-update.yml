@@ -75,18 +75,21 @@ jobs:
         if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect }}
         env:
           PACKAGES_INPUT: ${{ inputs.packages }}
+          DESELECT_INPUT: ${{ inputs.deselect }}
+          SKIP_SYNC_INPUT: ${{ inputs['skip-sync'] }}
+          SKIP_UPDATE_INPUT: ${{ inputs['skip-update'] }}
         run: |
-          if [ "${{ inputs.deselect }}" == "true" ] && [ -z "$PACKAGES_INPUT" ]; then
+          if [ "$DESELECT_INPUT" == "true" ] && [ -z "$PACKAGES_INPUT" ]; then
             echo "::error::The 'deselect' option requires 'packages' to be provided."
             exit 1
           fi
 
           declare -a args
-          if [ "${{ !inputs['skip-sync'] }}" == "true" ]; then
+          if [ "$SKIP_SYNC_INPUT" != "true" ]; then
             args+=( "--sync" )
           fi
 
-          if [ "${{ !inputs['skip-update'] }}" == "true" ] || [ "${{ inputs.deselect }}" == "true" ]; then
+          if [ "$SKIP_UPDATE_INPUT" != "true" ] || [ "$DESELECT_INPUT" == "true" ]; then
             args+=( "--update" )
 
             if [ -n "$PACKAGES_INPUT" ]; then
@@ -95,7 +98,7 @@ jobs:
               args+=( "${pkgs[@]}" )
             fi
 
-            if [ "${{ inputs.deselect }}" == "true" ]; then
+            if [ "$DESELECT_INPUT" == "true" ]; then
               args+=( "--deselect" )
             elif [ -n "$PACKAGES_INPUT" ]; then
               args+=( "--oneshot" )

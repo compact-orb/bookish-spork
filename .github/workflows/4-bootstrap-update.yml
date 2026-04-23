@@ -70,13 +70,15 @@ jobs:
         if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] }}
         env:
           PACKAGES_INPUT: ${{ inputs.packages }}
+          SKIP_SYNC_INPUT: ${{ inputs['skip-sync'] }}
+          SKIP_UPDATE_INPUT: ${{ inputs['skip-update'] }}
         run: |
           declare -a args
-          if [ "${{ !inputs['skip-sync'] }}" == "true" ]; then
+          if [ "$SKIP_SYNC_INPUT" != "true" ]; then
             args+=( "--sync" )
           fi
 
-          if [ "${{ !inputs['skip-update'] }}" == "true" ]; then
+          if [ "$SKIP_UPDATE_INPUT" != "true" ]; then
             args+=( "--update" )
 
             if [ -n "$PACKAGES_INPUT" ]; then

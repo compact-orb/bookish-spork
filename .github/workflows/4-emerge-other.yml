@@ -53,9 +53,11 @@ jobs:
         run: bash ./scripts/ShowRunnerInfo.sh
 
       - name: Set Up Gentoo
+        env:
+          FORCE_REBUILD_INPUT: ${{ inputs.force_rebuild }}
         run: |
           ARGS=("-File" "./scripts/PushPullImage.ps1" "-From" "-Overlay" "-LayerName" "other")
-          if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
+          if [ "$FORCE_REBUILD_INPUT" == "true" ]; then
             ARGS+=("-ForceRebuild")
           fi
           sudo --preserve-env pwsh "${ARGS[@]}"
@@ -75,22 +77,33 @@ jobs:
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
       - name: Emerge
+        env:
+          NO_UPDATE_INPUT: ${{ inputs['no-update'] }}
+          PACKAGES_INPUT: ${{ inputs.packages }}
+          USEPKG_EXCLUDE_INPUT: ${{ inputs['usepkg-exclude'] }}
         run: |
-          UPDATE_FLAG="--update"
-          if [ "${{ github.event.inputs['no-update'] }}" = "true" ]; then
-            UPDATE_FLAG=""
+          declare -a args
+          if [ "$NO_UPDATE_INPUT" != "true" ]; then
+            args+=( "--update" )
           fi
-          PACKAGES=""
-          if [ "${{ github.event.inputs.packages }}" != "" ]; then
-            PACKAGES="--packages ${{ github.event.inputs.packages }}"
+
+          if [ -n "$PACKAGES_INPUT" ]; then
+            args+=( "--packages" )
+            read -ra pkgs <<< "$PACKAGES_INPUT"
+            args+=( "${pkgs[@]}" )
           else
-            PACKAGES="--packages $(cat ./${CONFIG_PREFIX}-emerge-other.list | tr '\n' ' ')"
+            args+=( "--packages" )
+            read -ra pkgs <<< "$(cat ./${CONFIG_PREFIX}-emerge-other.list | tr '\n' ' ')"
+            args+=( "${pkgs[@]}" )
           fi
-          USEPKG_EXCLUDE=""
-          if [ "${{ github.event.inputs['usepkg-exclude'] }}" != "" ]; then
-            USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs['usepkg-exclude'] }}"
+
+          if [ -n "$USEPKG_EXCLUDE_INPUT" ]; then
+            read -ra excludes <<< "$USEPKG_EXCLUDE_INPUT"
+            for exclude in "${excludes[@]}"; do
+              args+=( "--usepkg-exclude" "$exclude" )
+            done
           fi
-          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
+          sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh "${args[@]}"
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() }}
@@ -102,9 +115,11 @@ jobs:
 
       - name: Upload Gentoo Layer
         if: ${{ !cancelled() && !inputs.ephemeral }}
+        env:
+          TEMPORARY_INPUT: ${{ inputs.temporary }}
         run: |
           ARGS=("-File" "./scripts/PushPullImage.ps1" "-To" "-Overlay" "-LayerName" "other")
-          if [ "${{ github.event.inputs.temporary }}" == "true" ]; then
+          if [ "$TEMPORARY_INPUT" == "true" ]; then
             ARGS+=("-Temporary")
           fi
           sudo --preserve-env pwsh "${ARGS[@]}"
