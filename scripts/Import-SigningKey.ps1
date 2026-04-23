@@ -30,9 +30,8 @@ function Set-GpgUltimateTrust {
         throw "Failed to list GPG keys in $HomeDir. gpg exited with code $LASTEXITCODE."
     }
 
-    $ownerTrustData = [System.Collections.Generic.List[string]]::new()
-    foreach ($line in (@($gpgOutput) -match "^fpr:")) {
-        $ownerTrustData.Add((($line -split ":")[9]) + ":6:")
+    [string[]]$ownerTrustData = foreach ($line in (@($gpgOutput) -match "^fpr:")) {
+        $line.Split(':')[9] + ":6:"
     }
 
     if ($ownerTrustData.Count -gt 0) {
