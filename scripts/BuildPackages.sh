@@ -201,7 +201,6 @@ case $bootstrap in
         fi
 
         if (( sync_flag )); then
-            rm --recursive --force /var/db/repos/gentoo
             emerge --sync
         fi
 
