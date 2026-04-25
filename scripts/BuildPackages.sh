@@ -156,7 +156,7 @@ case $bootstrap in
 
         emerge --buildpkg=n --oneshot dev-lang/perl
 
-        rm -rf /var/db/repos/gentoo
+        rm --recursive --force /var/db/repos/gentoo
         emerge --sync
 
         rm /etc/portage/binrepos.conf/bootstrap.conf
@@ -201,7 +201,7 @@ case $bootstrap in
         fi
 
         if (( sync_flag )); then
-            rm -rf /var/db/repos/gentoo
+            rm --recursive --force /var/db/repos/gentoo
             emerge --sync
         fi
 
