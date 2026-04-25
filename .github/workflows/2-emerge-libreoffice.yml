@@ -31,11 +31,6 @@ on:
         required: false
         type: boolean
         default: false
-      force_rebuild_ccache:
-        description: 'Force a rebuild of the ccache layer (ignore existing)'
-        required: false
-        type: boolean
-        default: false
 #   schedule:
 #     - cron: '15 8 * * *'
 
@@ -79,17 +74,6 @@ jobs:
       - name: Mount Filesystems
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
-
-      - name: Emerge Ccache
-        run: sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh --packages dev-util/ccache
-
-      - name: Setup Ccache Storage
-        if: ${{ github.event.inputs.force_rebuild_ccache != 'true' }}
-        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -From -LayerName libreoffice
-
-      - name: Enable Ccache
-        run: sudo --preserve-env pwsh -File ./scripts/EnableCcache.ps1
-
       - name: Emerge
         run: |
           UPDATE_FLAG="--update"
@@ -107,11 +91,6 @@ jobs:
             USEPKG_EXCLUDE="--usepkg-exclude ${{ github.event.inputs['usepkg-exclude'] }}"
           fi
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh $PACKAGES $UPDATE_FLAG $USEPKG_EXCLUDE
-
-
-      - name: Teardown Ccache
-        if: ${{ !cancelled() }}
-        run: sudo --preserve-env pwsh -File ./scripts/PushPullCcache.ps1 -To -LayerName libreoffice
 
       - name: Unmount Filesystems
         if: ${{ !cancelled() }}
