@@ -13,6 +13,7 @@ dev-lang/php
 dev-libs/mimalloc
 dev-python/zstandard
 dev-util/github-cli
+media-libs/alsa-lib
 net-analyzer/traceroute
 net-dns/bind-tools
 net-libs/nodejs
