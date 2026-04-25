@@ -29,3 +29,4 @@ sys-boot/shim
 sys-fs/btrfs-progs
 sys-fs/dosfstools
 www-servers/nginx
+x11-libs/gtk+
