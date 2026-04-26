@@ -27,8 +27,8 @@ on:
         required: false
         default: false
         type: boolean
-#   schedule:
-#     - cron: '15 1 * * *'
+  schedule:
+    - cron: '15 16 * * *'
 
 env:
   BUNNY_STORAGE_ACCESS_KEY: ${{ secrets.BUNNY_STORAGE_ACCESS_KEY }}
