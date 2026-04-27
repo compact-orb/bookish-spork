@@ -39,6 +39,7 @@ dev-java/openjdk:21
 dev-java/openjdk:25
 dev-libs/mimalloc
 dev-python/zstandard
+dev-util/android-sdk-build-tools
 dev-util/android-sdk-cmdline-tools
 dev-util/android-tools
 dev-util/ghidra
