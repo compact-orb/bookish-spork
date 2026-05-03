@@ -20,6 +20,7 @@ net-dns/bind-tools
 net-libs/nodejs
 net-misc/aria2
 net-misc/mosh
+net-misc/socat
 net-vpn/i2pd
 net-vpn/tor
 net-vpn/wireguard-tools
