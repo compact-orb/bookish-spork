@@ -136,6 +136,7 @@ case $bootstrap in
         # This step sets up the basic environment, including the portage profile,
         # This step is specific to the current configuration (LLVM, Rust, etc).
         # If you change the configuration, you may need to update this step.
+        mkdir /var/db/repos/gentoo
         emerge-webrsync
 
         if [[ -n $portage_profile ]]; then
