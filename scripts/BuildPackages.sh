@@ -136,9 +136,9 @@ case $bootstrap in
         # This step sets up the basic environment, including the portage profile,
         # This step is specific to the current configuration (LLVM, Rust, etc).
         # If you change the configuration, you may need to update this step.
-        mv /etc/portage/repos.conf/gentoo.conf /etc/portage/repos.conf/gentoo.conf.bak
+        mv /etc/portage/repos.conf/gentoo.conf /tmp/gentoo.conf.bak
         emerge-webrsync
-        mv /etc/portage/repos.conf/gentoo.conf.bak /etc/portage/repos.conf/gentoo.conf
+        mv /tmp/gentoo.conf.bak /etc/portage/repos.conf/gentoo.conf
 
         if [[ -n $portage_profile ]]; then
             eselect --brief profile set "$portage_profile"
