@@ -136,8 +136,9 @@ case $bootstrap in
         # This step sets up the basic environment, including the portage profile,
         # This step is specific to the current configuration (LLVM, Rust, etc).
         # If you change the configuration, you may need to update this step.
-        mkdir /var/db/repos/gentoo
+        mv /etc/portage/repos.conf/gentoo.conf /etc/portage/repos.conf/gentoo.conf.bak
         emerge-webrsync
+        mv /etc/portage/repos.conf/gentoo.conf.bak /etc/portage/repos.conf/gentoo.conf
 
         if [[ -n $portage_profile ]]; then
             eselect --brief profile set "$portage_profile"
@@ -149,9 +150,13 @@ case $bootstrap in
 
         write_file /etc/portage/package.use/bootstrap "*/* -jemalloc -tcmalloc\nnet-libs/nghttp2 xml"
 
+        write_file /etc/portage/package.env/bootstrap "*/* gcc.conf"
+
         FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/rust dev-vcs/git llvm-core/clang
 
         emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
+
+        rm /etc/portage/package.env/bootstrap
 
         emerge --buildpkg=n --deep --oneshot sys-apps/portage
 
