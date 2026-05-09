@@ -53,7 +53,7 @@ if (-not $Endpoint) {
 
 MAKEOPTS="--jobs=4"
 
-EMERGE_DEFAULT_OPTS="--backtrack=1024 --buildpkg --quiet-build --usepkg --verbose --with-bdeps=y --keep-going"
+EMERGE_DEFAULT_OPTS="--buildpkg --usepkg --verbose --with-bdeps=y --keep-going"
 BINPKG_COMPRESS="zstd"
 BINPKG_COMPRESS_FLAGS="-19 -T4 --long"
 
@@ -61,7 +61,11 @@ FEATURES="binpkg-signing gpg-keepalive"
 BINPKG_GPG_SIGNING_GPG_HOME="/root/.gnupg"
 BINPKG_GPG_SIGNING_KEY="$signingKeyFingerprint"
 
+SECUREBOOT_SIGN_KEY="/root/secureboot/db.key"
+SECUREBOOT_SIGN_CERT="/root/secureboot/db.pem"
+MODULES_SIGN_KEY="/root/secureboot/db.key"
+MODULES_SIGN_CERT="/root/secureboot/db.pem"
+
 INSTALL_MASK="/boot"
 "@
 }
-
