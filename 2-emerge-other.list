@@ -25,6 +25,7 @@ app-misc/screen
 app-mobilephone/heimdall
 app-portage/gentoolkit
 app-shells/bash-completion
+app-shells/fzf
 app-shells/pwsh
 dev-build/cmake
 dev-cpp/sdbus-c++
@@ -102,6 +103,7 @@ sys-apps/flatpak
 sys-apps/fwupd
 sys-apps/i2c-tools
 sys-apps/policycoreutils
+sys-apps/ripgrep
 sys-apps/smartmontools
 sys-apps/usbutils
 sys-apps/zram-generator
