@@ -20,6 +20,7 @@ app-emulation/virtiofsd
 app-emulation/wine-staging
 app-emulation/winetricks
 app-misc/binwalk
+app-misc/broot
 app-misc/screen
 app-mobilephone/heimdall
 app-portage/gentoolkit
@@ -54,6 +55,7 @@ gnome-extra/gnome-logs
 gnome-extra/gnome-shell-extension-appindicator
 gnome-extra/gnome-system-monitor
 gnome-extra/gnome-tweaks
+gui-apps/foot
 gui-apps/waypipe
 mail-client/thunderbird-bin
 media-fonts/fonts-meta
