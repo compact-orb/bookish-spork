@@ -1,4 +1,1 @@
 net-misc/curl -openssl gnutls
-
-# Will remove when ebuild supports this with gnutls
-net-misc/curl -http3 -quic
