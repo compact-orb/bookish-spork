@@ -1,0 +1,20 @@
+#This fixes the emerge failure of gnome-base/librsvg-2.60.0
+LATEST_LLVM=""
+
+latest_version=0
+
+for dir in /usr/lib/llvm/*/bin; do
+    [[ -d "$dir" ]] || continue
+
+    version="${dir%/bin}"
+
+    version="${version##*/}"
+
+    if (( version > latest_version )); then
+        latest_version="$version"
+
+        LATEST_LLVM="$dir"
+    fi
+done
+
+export PATH="${LATEST_LLVM}:${PATH}"
