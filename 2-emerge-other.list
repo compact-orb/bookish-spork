@@ -126,5 +126,6 @@ sys-fs/fuse:0
 www-client/firefox-bin
 www-client/google-chrome
 www-client/microsoft-edge
+www-client/thorium-bin
 www-client/w3m
 www-servers/nginx
