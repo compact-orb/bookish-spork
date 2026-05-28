@@ -9,7 +9,6 @@ app-crypt/johntheripper-jumbo
 app-crypt/sbctl
 app-crypt/seahorse
 app-crypt/tpm2-tools
-app-editors/antigravity
 app-editors/gnome-text-editor
 app-editors/hexedit
 app-editors/vim
