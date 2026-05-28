@@ -71,7 +71,8 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --usepkg-exclude)
-            usepkg_exclude+=("$2")
+            read -r -a exclude_array <<< "$2"
+            usepkg_exclude+=("${exclude_array[@]}")
             shift 2
             ;;
         --bootstrap-binrepos-architecture)
@@ -229,7 +230,11 @@ case $bootstrap in
 
         (( update )) && opts+=( --update --deep --newuse )
 
-        [[ ${#usepkg_exclude[@]} -gt 0 ]] && opts+=( --usepkg-exclude "${usepkg_exclude[*]}" )
+        if [[ ${#usepkg_exclude[@]} -gt 0 ]]; then
+            for pkg in "${usepkg_exclude[@]}"; do
+                opts+=( --usepkg-exclude "$pkg" )
+            done
+        fi
 
         (( oneshot )) && opts+=( --oneshot )
 
