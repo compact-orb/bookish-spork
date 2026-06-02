@@ -1,1 +1,1 @@
-media-gfx/darktable no-lto.conf
+media-gfx/darktable clang-no-polly.conf no-lto.conf
