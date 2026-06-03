@@ -1,0 +1,2 @@
+# Mask problematic version due to ebuild bug passing 'no' to econf when USE="-libssh2"
+=net-analyzer/nmap-7.99
