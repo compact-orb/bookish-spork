@@ -18,3 +18,20 @@ for dir in /usr/lib/llvm/*/bin; do
 done
 
 export PATH="${LATEST_LLVM}:${PATH}"
+
+# Fix net-analyzer/nmap-7.99 build failure by filtering out the invalid 'no' econf argument
+# Remove later
+if [[ "${CATEGORY}/${PN}" == "net-analyzer/nmap" && "${PV}" == "7.99" ]]; then
+    if declare -f econf >/dev/null && ! declare -f original_econf >/dev/null; then
+        eval "original_econf() $(declare -f econf | tail -n +2)"
+        econf() {
+            local args=()
+            for arg in "$@"; do
+                if [[ "$arg" != "no" ]]; then
+                    args+=("$arg")
+                fi
+            done
+            original_econf "${args[@]}"
+        }
+    fi
+fi
