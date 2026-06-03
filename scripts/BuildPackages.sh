@@ -153,9 +153,9 @@ case $bootstrap in
 
         write_file /etc/portage/package.env/bootstrap "*/* gcc.conf"
 
-        FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/rust dev-vcs/git llvm-core/clang
+        FEATURES="binpkg-request-signature" emerge --binpkg-respect-use=n --getbinpkgonly --nodeps dev-lang/rust dev-vcs/git llvm-core/llvm llvm-core/clang
 
-        emerge --buildpkg=n --oneshot llvm-core/clang llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
+        emerge --buildpkg=n --getbinpkg --oneshot llvm-core/clang-common llvm-core/clang-linker-config llvm-runtimes/clang-runtime
 
         rm /etc/portage/package.env/bootstrap
 
