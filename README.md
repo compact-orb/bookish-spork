@@ -10,9 +10,9 @@ Each numbered directory contains a complete `/etc` tree for a target system.
 
 | Config | Profile | Arch | `-march`/`-mcpu` | Runner | Description |
 | -------- | --------- | ------ | ------------------- | -------- | ------------- |
-| `1` | `amd64/23.0/no-multilib/systemd` | amd64 | `x86-64-v3` | `ubuntu-24.04` | General x86_64v3 servers |
+| `1` | `amd64/23.0/no-multilib/systemd` + `features/selinux` | amd64 | `x86-64-v3` | `ubuntu-24.04` | General x86_64v3 servers |
 | `2` | `amd64/23.0/desktop/gnome/systemd` | amd64 | `goldmont-plus` | `ubuntu-24.04` | Gemini Lake desktop/workstation |
-| `3` | `arm64/23.0/systemd` | arm64 | `neoverse-n1` | `ubuntu-24.04-arm` | ARM cloud servers |
+| `3` | `arm64/23.0/systemd` + `features/selinux` | arm64 | `neoverse-n1` | `ubuntu-24.04-arm` | ARM cloud servers |
 
 All configurations use Clang/LLVM toolchain, thin LTO, and build with `-O3`.
 
