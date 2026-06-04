@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Reclaim runner storage space
-        uses: mathio/gha-cleanup@ce9480b80d151ff36572df0d3c54aef2653e6054
+        uses: compact-orb/gha-cleanup@85f74555394b3ddce87d3dfd254c1e2fa6133238
         with:
           remove-browsers: true
 
