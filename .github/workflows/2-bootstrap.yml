@@ -25,6 +25,7 @@ env:
   BUNNY_STORAGE_ZONE_NAME: ${{ secrets.BUNNY_STORAGE_ZONE_NAME }}
   CONFIG_PREFIX: 2
   BOOTSTRAP_BINREPOS_ARCHITECTURE: amd64
+  POWERSHELL_VERSION: '7.6.2'
 
 jobs:
   bootstrap:
@@ -32,9 +33,28 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Reclaim runner storage space
-        uses: compact-orb/gha-cleanup@85f74555394b3ddce87d3dfd254c1e2fa6133238
+        uses: mathio/gha-cleanup@ce9480b80d151ff36572df0d3c54aef2653e6054
         with:
           remove-browsers: true
+
+      - name: Cache PowerShell
+        id: cache-powershell
+        uses: actions/cache@v5
+        with:
+          path: ~/.powershell
+          key: powershell-${{ env.POWERSHELL_VERSION }}-${{ runner.arch }}
+
+      - name: Install PowerShell
+        run: |
+          if [ "${{ steps.cache-powershell.outputs.cache-hit }}" != "true" ]; then
+            ARCH=$(echo "${{ runner.arch }}" | tr '[:upper:]' '[:lower:]')
+            curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v${{ env.POWERSHELL_VERSION }}/powershell-${{ env.POWERSHELL_VERSION }}-linux-${ARCH}.tar.gz"
+            mkdir -p ~/.powershell
+            tar zxf /tmp/powershell.tar.gz -C ~/.powershell
+            rm /tmp/powershell.tar.gz
+          fi
+          chmod +x ~/.powershell/pwsh
+          sudo ln -sf ~/.powershell/pwsh /usr/bin/pwsh
 
       - uses: actions/checkout@v6
 
