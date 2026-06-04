@@ -43,6 +43,11 @@ jobs:
     name: Bootstrap Update
     runs-on: ubuntu-24.04
     steps:
+      - name: Reclaim runner storage space
+        uses: mathio/gha-cleanup@ce9480b80d151ff36572df0d3c54aef2653e6054
+        with:
+          remove-browsers: true
+
       - uses: actions/checkout@v6
 
       - name: Display Runner Info
