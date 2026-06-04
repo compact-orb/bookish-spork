@@ -30,6 +30,7 @@ sys-block/open-iscsi
 sys-boot/efibootmgr
 sys-boot/mokutil
 sys-boot/shim
+sys-devel/m4
 sys-fs/btrfs-progs
 sys-fs/dosfstools
 www-servers/nginx

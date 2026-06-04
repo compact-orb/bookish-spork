@@ -116,6 +116,7 @@ sys-boot/shim
 sys-devel/bc
 sys-devel/bison
 sys-devel/flex
+sys-devel/m4
 sys-fs/btrfs-progs
 sys-fs/compsize
 sys-fs/duperemove
