@@ -45,14 +45,16 @@ jobs:
           key: powershell-${{ env.POWERSHELL_VERSION }}-${{ runner.arch }}
 
       - name: Install PowerShell
+        if: steps.cache-powershell.outputs.cache-hit != 'true'
         run: |
-          if [ "${{ steps.cache-powershell.outputs.cache-hit }}" != "true" ]; then
-            ARCH=$(echo "${{ runner.arch }}" | tr '[:upper:]' '[:lower:]')
-            curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v${{ env.POWERSHELL_VERSION }}/powershell-${{ env.POWERSHELL_VERSION }}-linux-${ARCH}.tar.gz"
-            mkdir -p ~/.powershell
-            tar zxf /tmp/powershell.tar.gz -C ~/.powershell
-            rm /tmp/powershell.tar.gz
-          fi
+          ARCH=$(echo "${{ runner.arch }}" | tr '[:upper:]' '[:lower:]')
+          curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v${{ env.POWERSHELL_VERSION }}/powershell-${{ env.POWERSHELL_VERSION }}-linux-${ARCH}.tar.gz"
+          mkdir -p ~/.powershell
+          tar zxf /tmp/powershell.tar.gz -C ~/.powershell
+          rm /tmp/powershell.tar.gz
+
+      - name: Set Up PowerShell Symlink
+        run: |
           chmod +x ~/.powershell/pwsh
           sudo ln -sf ~/.powershell/pwsh /usr/bin/pwsh
 
