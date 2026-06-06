@@ -30,7 +30,7 @@ env:
 jobs:
   bootstrap:
     name: Bootstrap ${{ github.event.inputs.step }}
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     steps:
       - name: Reclaim runner storage space
         uses: mathio/gha-cleanup@ce9480b80d151ff36572df0d3c54aef2653e6054
