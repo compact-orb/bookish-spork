@@ -50,10 +50,15 @@ if (-not (Get-Command "mkfs.btrfs" -ErrorAction SilentlyContinue)) {
 $imagePath = "/mnt.btrfs"
 
 # Dynamically calculate the image size based on available free space on the root drive.
-# We multiply the physical free space by 3 to maximize the virtual capacity (since BTRFS
-# will compress files with zstd), ensuring a minimum size of 100GB.
+# We reserve 128MB of safety buffer for host OS operations, then multiply the remaining
+# physical space by 2.5 to calculate the virtual capacity (leveraging zstd compression).
 $rootFreeSpace = [System.IO.DriveInfo]::new("/").AvailableFreeSpace
-$targetSizeGB = [Math]::Max(100, [Math]::Floor(($rootFreeSpace * 3) / 1GB))
+$reservedSpace = 128MB
+$usablePhysicalSpace = $rootFreeSpace - $reservedSpace
+if ($usablePhysicalSpace -lt 0) {
+    $usablePhysicalSpace = 0
+}
+$targetSizeGB = [System.Math]::Floor(($usablePhysicalSpace * 2.5) / 1GB)
 $imageSize = "${targetSizeGB}G"
 
 if (Test-Path $imagePath) {
@@ -72,6 +77,16 @@ mkfs.btrfs -f -m single $imagePath
 Write-Output "Mounting BTRFS image onto /mnt..."
 mount -o loop,compress=zstd,noatime $imagePath /mnt
 
-# 6. Verify and display disk space
+# 6. Bind-mount the temporary staging folder /var/tmp/bookish-spork to BTRFS
+# This transparently ensures that all temporary files (images, binary packages, ccache)
+# are stored on BTRFS instead of the root drive, saving space and compressing writes.
+Write-Output "Preparing BTRFS staging directory..."
+New-Item -Path "/mnt/var/tmp/bookish-spork" -ItemType Directory -Force | Out-Null
+New-Item -Path "/var/tmp/bookish-spork" -ItemType Directory -Force | Out-Null
+
+Write-Output "Bind-mounting /var/tmp/bookish-spork to BTRFS..."
+mount --bind /mnt/var/tmp/bookish-spork /var/tmp/bookish-spork
+
+# 7. Verify and display disk space
 Write-Output "Mount successful. Disk space at /mnt:"
 df -h /mnt
