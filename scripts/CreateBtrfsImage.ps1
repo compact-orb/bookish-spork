@@ -50,15 +50,14 @@ if (-not (Get-Command "mkfs.btrfs" -ErrorAction SilentlyContinue)) {
 $imagePath = "/mnt.btrfs"
 
 # Dynamically calculate the image size based on available free space on the root drive.
-# We reserve 128MB of safety buffer for host OS operations, then multiply the remaining
-# physical space by 2.5 to calculate the virtual capacity (leveraging zstd compression).
+# physical space to calculate the virtual capacity.
 $rootFreeSpace = [System.IO.DriveInfo]::new("/").AvailableFreeSpace
 $reservedSpace = 128MB
 $usablePhysicalSpace = $rootFreeSpace - $reservedSpace
 if ($usablePhysicalSpace -lt 0) {
     $usablePhysicalSpace = 0
 }
-$targetSizeGB = [System.Math]::Floor(($usablePhysicalSpace * 2.5) / 1GB)
+$targetSizeGB = [System.Math]::Floor($usablePhysicalSpace / 1GB)
 $imageSize = "${targetSizeGB}G"
 
 if (Test-Path $imagePath) {
