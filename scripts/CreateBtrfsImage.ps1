@@ -72,15 +72,20 @@ truncate -s $imageSize $imagePath
 Write-Output "Formatting BTRFS image..."
 mkfs.btrfs -f -m single $imagePath
 
-# 5. Mount BTRFS image onto /mnt with loop, zstd compression, and noatime
+# 5. Mount BTRFS image onto /mnt with loop, zstd forced compression, and noatime
 Write-Output "Mounting BTRFS image onto /mnt..."
-mount -o loop,compress=zstd,noatime $imagePath /mnt
+mount -o loop,compress-force=zstd,noatime $imagePath /mnt
 
 # 6. Bind-mount the temporary staging folder /var/tmp/bookish-spork to BTRFS
 # This transparently ensures that all temporary files (images, binary packages, ccache)
 # are stored on BTRFS instead of the root drive, saving space and compressing writes.
 Write-Output "Preparing BTRFS staging directory..."
 New-Item -Path "/mnt/var/tmp/bookish-spork" -ItemType Directory -Force | Out-Null
+
+# Disable BTRFS compression on the staging directory since it stores pre-compressed binary packages and archives.
+Write-Output "Disabling BTRFS compression on staging directory..."
+btrfs property set /mnt/var/tmp/bookish-spork compression none
+
 New-Item -Path "/var/tmp/bookish-spork" -ItemType Directory -Force | Out-Null
 
 Write-Output "Bind-mounting /var/tmp/bookish-spork to BTRFS..."
