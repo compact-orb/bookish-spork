@@ -1,0 +1,2 @@
+# Break circular dependency between avahi and gtk
+net-dns/avahi -gtk

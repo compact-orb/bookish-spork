@@ -1,0 +1,2 @@
+# Break circular dependency between ncurses and gpm
+sys-libs/ncurses -gpm

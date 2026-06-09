@@ -1,0 +1,2 @@
+# required by games-util/steam-launcher
+sys-libs/libudev-compat ~amd64

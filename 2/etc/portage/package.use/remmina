@@ -1,1 +1,1 @@
-net-misc/remmina rdp vnc
+net-misc/remmina -zeroconf rdp vnc
