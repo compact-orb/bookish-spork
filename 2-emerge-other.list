@@ -49,6 +49,7 @@ dev-util/github-cli
 dev-util/meld
 dev-util/radare2
 dev-vcs/git-lfs
+games-util/steam-launcher
 gnome-base/gnome-light
 gnome-extra/gnome-calculator
 gnome-extra/gnome-clocks
