@@ -32,6 +32,9 @@ $PSNativeCommandUseErrorActionPreference = $true
 # Read the Invoke-WithRetry.ps1 file content once to prevent redundant disk I/O in runspaces
 $invokeWithRetryContent = [System.IO.File]::ReadAllText("$PSScriptRoot/Invoke-WithRetry.ps1")
 
+# Track whiteouts across parallel threads
+$whiteouts = [System.Collections.Concurrent.ConcurrentBag[string]]::new()
+
 # Recursively find all files in the source path and upload them in parallel
 Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
     if (-not (Test-Path Function:\Invoke-WithRetry)) {
@@ -43,6 +46,7 @@ Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
     # OverlayFS whiteouts (char dev 0,0) mean the file was deleted — propagate to remote.
     $item = Get-Item "$using:Path/$filePath"
     if ($item.UnixStat -and $item.UnixStat.ItemType -eq "CharacterDevice") {
+        ($using:whiteouts).Add($filePath)
         Invoke-WithRetry -ActionName "delete $filePath" -MaxRetries 3 -ScriptBlock {
             Invoke-RestMethod -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN/$using:env:BUNNY_STORAGE_ZONE_NAME$using:Destination/$filePath" -Headers @{"accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method DELETE | Out-Null
             Write-Output "Deleted $filePath from $using:Destination"
@@ -56,3 +60,7 @@ Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
         Write-Output -InputObject "Uploaded $filePath to $using:Destination"
     }
 } -ThrottleLimit $ThrottleLimit
+
+if ($whiteouts.Count -gt 0) {
+    Write-Error "OverlayFS whiteouts detected — these packages were deleted from the binary package repo and need rebuilding:`n$($whiteouts | ForEach-Object { "  $_" } | Out-String)"
+}
