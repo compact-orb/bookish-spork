@@ -40,8 +40,15 @@ Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
     }
     $filePath = $_
 
+    # Skip OverlayFS whiteouts (char dev 0,0) — they represent deletions.
+    # The rebuilt package appears as a normal file and overwrites the stale remote copy.
+    $item = Get-Item "$using:Path/$filePath"
+    if ($item.UnixStat -and $item.UnixStat.ItemType -eq "CharacterDevice") {
+        Write-Warning "Skipping OverlayFS whiteout: $filePath"
+        return
+    }
+
     Invoke-WithRetry -ActionName "upload $filePath" -MaxRetries 3 -ScriptBlock {
-        # Upload the file using the Bunny Storage API
         Invoke-RestMethod -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN/$using:env:BUNNY_STORAGE_ZONE_NAME$using:Destination/$filePath" -Headers @{"accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method PUT -ContentType "application/octet-stream" -InFile "$using:Path/$filePath" | Out-Null
 
         Write-Output -InputObject "Uploaded $filePath to $using:Destination"
