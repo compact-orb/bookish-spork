@@ -40,11 +40,13 @@ Get-ChildItem -Path $Path -Recurse -Name -File | ForEach-Object -Parallel {
     }
     $filePath = $_
 
-    # Skip OverlayFS whiteouts (char dev 0,0) — they represent deletions.
-    # The rebuilt package appears as a normal file and overwrites the stale remote copy.
+    # OverlayFS whiteouts (char dev 0,0) mean the file was deleted — propagate to remote.
     $item = Get-Item "$using:Path/$filePath"
     if ($item.UnixStat -and $item.UnixStat.ItemType -eq "CharacterDevice") {
-        Write-Warning "Skipping OverlayFS whiteout: $filePath"
+        Invoke-WithRetry -ActionName "delete $filePath" -MaxRetries 3 -ScriptBlock {
+            Invoke-RestMethod -Uri "https://$using:env:BUNNY_STORAGE_ENDPOINT_CDN/$using:env:BUNNY_STORAGE_ZONE_NAME$using:Destination/$filePath" -Headers @{"accept" = "application/json"; "accesskey" = $using:env:BUNNY_STORAGE_ACCESS_KEY } -Method DELETE | Out-Null
+            Write-Output "Deleted $filePath from $using:Destination"
+        }
         return
     }
 
