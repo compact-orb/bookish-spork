@@ -27,6 +27,11 @@ on:
         required: false
         default: false
         type: boolean
+      force:
+        description: 'Force rebuild specified packages (ignores --update)'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '15 16 * * *'
 
@@ -88,7 +93,7 @@ jobs:
         run: sudo --preserve-env pwsh -File ./scripts/SetConfiguration.ps1
 
       - name: Set Up Binary Packages
-        if: ${{ !inputs['skip-update'] }}
+        if: ${{ !inputs['skip-update'] || inputs.force }}
         run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -From
 
       - name: Import Signing Key
@@ -100,16 +105,20 @@ jobs:
           REDESIGNED_BROCCOLI_SSH_KEY: ${{ secrets.REDESIGNED_BROCCOLI_SSH_KEY }}
 
       - name: Mount Filesystems
-        if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect }}
+        if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect || inputs.force }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1
 
       - name: Emerge Sync and Update
-        if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect }}
+        if: ${{ !inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect || inputs.force }}
         env:
           PACKAGES_INPUT: ${{ inputs.packages }}
         run: |
           if [ "${{ inputs.deselect }}" == "true" ] && [ -z "$PACKAGES_INPUT" ]; then
             echo "::error::The 'deselect' option requires 'packages' to be provided."
+            exit 1
+          fi
+          if [ "${{ inputs.force }}" == "true" ] && [ -z "$PACKAGES_INPUT" ]; then
+            echo "::error::The 'force' option requires 'packages' to be provided."
             exit 1
           fi
 
@@ -118,8 +127,10 @@ jobs:
             args+=( "--sync" )
           fi
 
-          if [ "${{ !inputs['skip-update'] }}" == "true" ] || [ "${{ inputs.deselect }}" == "true" ]; then
-            args+=( "--update" )
+          if [ "${{ !inputs['skip-update'] }}" == "true" ] || [ "${{ inputs.deselect }}" == "true" ] || [ "${{ inputs.force }}" == "true" ]; then
+            if [ "${{ inputs.force }}" != "true" ]; then
+              args+=( "--update" )
+            fi
 
             if [ -n "$PACKAGES_INPUT" ]; then
               args+=( "--packages" )
@@ -137,11 +148,11 @@ jobs:
           sudo --preserve-env chroot /mnt/gentoo bash /mnt/scripts/BuildPackages.sh "${args[@]}"
 
       - name: Unmount Filesystems
-        if: ${{ !cancelled() && (!inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect) }}
+        if: ${{ !cancelled() && (!inputs['skip-sync'] || !inputs['skip-update'] || inputs.deselect || inputs.force) }}
         run: sudo --preserve-env pwsh -File ./scripts/MountFilesystems.ps1 -Unmount
 
       - name: Upload Gentoo Binary Packages
-        if: ${{ !cancelled() && !inputs['skip-update'] }}
+        if: ${{ !cancelled() && (!inputs['skip-update'] || inputs.force) }}
         run: sudo --preserve-env pwsh -File ./scripts/PushPullBinaryPackages.ps1 -To
 
       - name: Upload Gentoo
