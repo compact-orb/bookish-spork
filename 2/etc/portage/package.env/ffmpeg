@@ -1,1 +1,1 @@
-<media-video/ffmpeg-9.0.0 clang-no-polly.conf
+media-video/ffmpeg full-lto.conf
