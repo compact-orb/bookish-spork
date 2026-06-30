@@ -32,6 +32,11 @@ on:
         required: false
         default: false
         type: boolean
+      oneshot:
+        description: 'Do not select the specified packages'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '15 16 * * *'
 
@@ -140,7 +145,7 @@ jobs:
 
             if [ "${{ inputs.deselect }}" == "true" ]; then
               args+=( "--deselect" )
-            elif [ -n "$PACKAGES_INPUT" ]; then
+            elif [ "${{ inputs.oneshot }}" == "true" ]; then
               args+=( "--oneshot" )
             fi
           fi
