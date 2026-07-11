@@ -26,6 +26,7 @@ app-portage/gentoolkit
 app-shells/bash-completion
 app-shells/fzf
 app-shells/pwsh
+app-text/tessdata_fast
 app-text/tesseract
 dev-build/cmake
 dev-cpp/sdbus-c++
