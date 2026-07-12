@@ -46,6 +46,8 @@ dev-util/android-sdk-build-tools
 dev-util/android-sdk-cmdline-tools
 dev-util/android-studio
 dev-util/android-tools
+dev-util/google-antigravity-cli
+dev-util/google-antigravity-ide
 dev-util/ghidra
 dev-util/github-cli
 dev-util/meld
