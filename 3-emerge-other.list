@@ -20,6 +20,7 @@ net-libs/nodejs
 net-misc/aria2
 net-misc/mosh
 net-misc/socat
+net-proxy/dante
 net-vpn/i2pd
 net-vpn/tor
 net-vpn/wireguard-tools
