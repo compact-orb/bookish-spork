@@ -68,6 +68,7 @@ media-fonts/fonts-meta
 media-gfx/darktable
 media-gfx/eog
 media-gfx/gimp
+media-gfx/img2pdf
 media-gfx/inkscape
 media-gfx/simple-scan
 media-libs/libva-intel-driver
