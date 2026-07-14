@@ -97,7 +97,6 @@ net-p2p/qbittorrent
 net-print/cups-filters
 net-print/cups-meta
 net-print/gutenprint
-net-proxy/dante
 net-proxy/mitmproxy
 net-vpn/cloudflare-warp
 net-vpn/i2pd
