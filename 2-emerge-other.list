@@ -83,7 +83,7 @@ media-video/vlc
 net-analyzer/nmap
 net-analyzer/openbsd-netcat
 net-analyzer/traceroute
-net-dns/bind-tools
+net-dns/bind
 net-fs/nfs-utils
 net-libs/nodejs
 net-misc/aria2
