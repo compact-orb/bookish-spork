@@ -79,6 +79,7 @@ media-sound/helvum
 media-sound/reaper-bin
 media-sound/spotify
 media-video/shotcut
+media-video/totem
 media-video/vlc
 net-analyzer/nmap
 net-analyzer/openbsd-netcat
