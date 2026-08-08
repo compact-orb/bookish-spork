@@ -59,6 +59,7 @@ gnome-base/gnome-light
 gnome-extra/gnome-calculator
 gnome-extra/gnome-clocks
 gnome-extra/gnome-logs
+gnome-extra/gnome-network-displays
 gnome-extra/gnome-shell-extension-appindicator
 gnome-extra/gnome-system-monitor
 gnome-extra/gnome-tweaks
