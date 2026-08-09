@@ -114,6 +114,7 @@ sys-apps/i2c-tools
 sys-apps/policycoreutils
 sys-apps/ripgrep
 sys-apps/smartmontools
+sys-apps/tuned
 sys-apps/usbutils
 sys-apps/zram-generator
 sys-auth/nss-mdns
