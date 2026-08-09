@@ -196,7 +196,13 @@ function Handle-ToMode {
         $excludeParams = @(
             "--exclude=./root/.gnupg",
             "--exclude=./root/.ssh",
-            "--exclude=./root/secureboot"
+            "--exclude=./root/secureboot",
+            "--exclude=./var/cache/binhost",
+            "--exclude=./var/cache/binpkgs",
+            "--exclude=./var/cache/ccache",
+            "--exclude=./var/cache/distfiles/*",
+            "--exclude=./run/*",
+            "--exclude=./etc/resolv.conf"
         )
         Publish-SystemArchive -TargetDirectory "/mnt/gentoo" -FileName $fileName -ExcludeParams $excludeParams
     }
