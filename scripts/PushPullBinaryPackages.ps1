@@ -44,6 +44,7 @@ if ($From) {
 
     # Mount the overlay filesystem at the package cache location.
     # This merges 'lower' and 'upper' at '/mnt/gentoo/var/cache/binpkgs'.
+    New-Item -Path "/mnt/gentoo/var/cache/binpkgs" -ItemType Directory -Force | Out-Null
     mount --types "overlay" "overlay" --options "lowerdir=/var/tmp/bookish-spork/binpkgs-store/lower,upperdir=/var/tmp/bookish-spork/binpkgs-store/upper,workdir=/var/tmp/bookish-spork/binpkgs-store/work" "/mnt/gentoo/var/cache/binpkgs"
 }
 elseif ($To) {
