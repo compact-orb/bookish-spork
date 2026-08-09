@@ -104,6 +104,7 @@ net-proxy/mitmproxy
 net-vpn/cloudflare-warp
 net-vpn/i2pd
 net-vpn/tor
+net-vpn/windscribe-bin
 net-vpn/wireguard-tools
 sci-geosciences/gnome-maps
 sys-apps/baobab
