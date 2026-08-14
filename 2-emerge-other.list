@@ -9,6 +9,7 @@ app-crypt/johntheripper-jumbo
 app-crypt/sbctl
 app-crypt/seahorse
 app-crypt/tpm2-tools
+app-editors/antigravity-ide
 app-editors/gnome-text-editor
 app-editors/hexedit
 app-editors/vim
@@ -47,8 +48,7 @@ dev-util/android-sdk-build-tools
 dev-util/android-sdk-cmdline-tools
 dev-util/android-studio
 dev-util/android-tools
-dev-util/google-antigravity-cli
-dev-util/google-antigravity-ide
+dev-util/antigravity-cli
 dev-util/ghidra
 dev-util/github-cli
 dev-util/meld
