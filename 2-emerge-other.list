@@ -46,7 +46,6 @@ dev-libs/mimalloc
 dev-python/zstandard
 dev-util/android-sdk-build-tools
 dev-util/android-sdk-cmdline-tools
-dev-util/android-studio
 dev-util/android-tools
 dev-util/antigravity-cli
 dev-util/ghidra
