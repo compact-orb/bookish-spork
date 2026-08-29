@@ -94,6 +94,7 @@ net-misc/mosh
 net-misc/rclone
 net-misc/remmina
 net-misc/socat
+net-misc/telnet-bsd
 net-p2p/qbittorrent
 net-print/cups-filters
 net-print/cups-meta
