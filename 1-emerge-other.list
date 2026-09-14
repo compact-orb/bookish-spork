@@ -17,7 +17,7 @@ dev-python/zstandard
 dev-util/github-cli
 media-libs/alsa-lib
 net-analyzer/traceroute
-net-dns/bind-tools
+net-dns/bind
 net-libs/nodejs
 net-misc/aria2
 net-misc/mosh
